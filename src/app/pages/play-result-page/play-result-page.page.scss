@@ -1,0 +1,69 @@
+.level-info h2 {
+  font-size: 1.2rem;
+  margin-bottom: 0;
+}
+
+.level-info p {
+  font-size: 0.9rem;
+  color: #555;
+}
+
+.total-time {
+  margin: 10px 0;
+  font-size: 1rem;
+}
+
+.stats-grid {
+  margin: 10px 0;
+
+  .stat-card {
+    border: 2px solid #ff9000;
+    border-radius: 5px;
+    padding: 10px;
+    text-align: center;
+    font-weight: bold;
+    color: #ff9000;
+
+    span {
+      display: block;
+      font-size: 1.2rem;
+      margin-top: 5px;
+    }
+  }
+}
+
+.chart-container {
+  width: 150px;
+  height: 150px;
+  margin: 15px auto;
+}
+
+.question-table {
+  margin-top: 20px;
+
+  .table-header {
+    font-weight: bold;
+    background-color: #d0cece;
+    padding: 5px 0;
+  }
+
+  ion-row.correct {
+    background-color: #27ae60;
+    color: #fff;
+  }
+
+  ion-row.incorrect {
+    background-color: #c0392b;
+    color: #fff;
+  }
+
+  ion-col {
+    padding: 5px 0;
+  }
+}
+
+.completion-msg {
+  margin-top: 15px;
+  font-size: 0.9rem;
+  color: #333;
+}

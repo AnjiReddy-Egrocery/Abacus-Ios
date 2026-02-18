@@ -1,0 +1,60 @@
+.main-toolbar {
+  --background: #4e148c;
+  color: white;
+}
+
+.toolbar-content {
+  display: flex;
+  align-items: center;
+  width: 100%;
+}
+
+.toolbar-profile {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+}
+
+.toolbar-text {
+  flex: 1;
+  margin-left: 10px;
+  font-size: 16px;
+}
+
+.toolbar-logo {
+  width: 40px;
+}
+
+.custom-tab {
+  --background: #4e148c;
+  border-radius: 16px 16px 0 0;
+  height: 70px;
+}
+
+.center-button {
+  position: absolute;
+  top: -25px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: white;
+  border-radius: 50%;
+  padding: 10px;
+}
+
+.center-button img {
+  width: 60px;
+}
+
+.menu-header {
+  display: flex;
+  align-items: center;
+  padding: 20px;
+  background: #4e148c;
+  color: white;
+}
+
+.profile-img {
+  width: 60px;
+  border-radius: 50%;
+  margin-right: 10px;
+}

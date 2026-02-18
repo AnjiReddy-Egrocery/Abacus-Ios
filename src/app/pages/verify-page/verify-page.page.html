@@ -1,0 +1,59 @@
+<ion-content fullscreen class="signin-bg">
+
+  <div class="curve-bg"></div>
+
+  <!-- Header -->
+  <div class="header">
+    <h1>{{ 'OTP Verification' }}</h1>
+  </div>
+
+  <div class="card">
+
+   
+
+
+    <!-- SIGN IN FORM -->
+    <div  class="form">
+
+      <label>Otp</label>
+      <div class="input-box">
+        <input type="otp" placeholder="Otp"  [(ngModel)]="Otp">
+        <ion-icon name="mail-outline"></ion-icon>
+      </div>
+
+      <label>Password</label>
+      <div class="input-box">
+       <input
+          [type]="showPassword ? 'text' : 'password'"
+          placeholder="Password"
+          [(ngModel)]="password">
+
+        <ion-icon
+          [name]="showPassword ? 'eye-off-outline' : 'eye-outline'"
+          (click)="togglePassword()">
+        </ion-icon>
+      </div>
+
+      <label>Confirm Password</label>
+      <div class="input-box">
+      <input
+        [type]="showConfirmPassword ? 'text' : 'password'"
+        placeholder="Confirm Password"
+        [(ngModel)]="confirmpassword">
+
+      <ion-icon
+        [name]="showConfirmPassword ? 'eye-off-outline' : 'eye-outline'"
+        (click)="toggleConfirmPassword()">
+      </ion-icon>
+    </div>
+
+      <ion-button expand="block" class="login-btn" (click)="goToVerify()">VerifyAccount</ion-button>
+
+   
+    </div>
+
+
+
+  </div>
+
+</ion-content>

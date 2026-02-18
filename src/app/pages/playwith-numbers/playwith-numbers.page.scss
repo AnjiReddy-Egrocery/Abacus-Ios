@@ -1,0 +1,122 @@
+.signin-bg {
+  --background: #4e148c;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Grey curve like Android */
+.curve-bg {
+  position: absolute;
+  top: 200px;
+  left: -70px;
+  right: -70px;
+  height: 100%;
+  background: #d9d9d9;
+  border-top-left-radius: 260px;
+  border-top-right-radius: 260px;
+  z-index: 0;
+}
+
+/* Header */
+.header {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  padding: 20px;
+  color: #fff;
+}
+
+.back-circle {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 10px;
+}
+
+.header h1 {
+  font-size: 26px;
+  font-weight: bold;
+}
+
+/* Card */
+.card {
+  position: relative;
+  z-index: 3;
+  margin: 40px 16px;
+  background: #fff;
+  border-radius: 25px;
+  padding: 20px;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+}
+
+.spinner-box {
+  background: white;
+  border: 2px solid black;
+  border-radius: 14px;
+  padding: 4px 10px;
+  margin-bottom: 14px;
+  margin-top: 5px;
+}
+
+.orange-btn {
+  --background: #ff6a00;
+  --border-radius: 28px;
+  height: 40px;
+  font-size: 16px;
+  margin-top: 16px;
+}
+
+.ionic-header {
+  display: flex;
+  align-items: center;
+  margin: 20px;
+}
+
+/* Circle drawable like Android */
+.back-circle {
+  width: 30px;
+  height: 30px;
+  background: #ffffff;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Icon size */
+.back-circle ion-icon {
+  font-size: 16px;
+  color: #000;
+}
+
+/* Title */
+.header-title {
+  font-size: 20px;
+  font-weight: bold;
+  color: #fff;
+  margin-left: 16px;
+}
+
+/* Remove ion-select focus underline / highlight */
+.spinner-box ion-select {
+  --highlight-color-focused: transparent;
+  --highlight-color: transparent;
+  --border-width: 0;
+  --box-shadow: none;
+}
+
+/* Remove outline when clicked */
+.spinner-box ion-select::part(container) {
+  border: none;
+  box-shadow: none;
+}
+
+/* Remove focus ring */
+.spinner-box ion-select:focus {
+  outline: none;
+}

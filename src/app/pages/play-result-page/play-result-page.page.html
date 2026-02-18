@@ -1,0 +1,65 @@
+<ion-content class="ion-padding">
+    <ion-title class="ion-text-center">Exam Report</ion-title>
+  <!-- Level & Date -->
+  <div class="level-info ion-text-center">
+    <h2>Level Play with number game level {{ levelValue }}</h2>
+    <p>{{ currentDateTime }}</p>
+  </div>
+
+  <!-- Back Button -->
+  <div class="ion-text-center">
+    <ion-button color="primary" fill="solid" (click)="backToDashboard()">back to dashboard</ion-button>
+  </div>
+
+  <!-- Total Time -->
+  <div class="total-time ion-text-center">
+    <strong>Total Time : {{ totalTime }}</strong>
+  </div>
+
+  <!-- Stats Cards -->
+  <ion-grid class="stats-grid">
+    <ion-row>
+      <ion-col><div class="stat-card orange">Total Question <span>{{ totalQuestions }}</span></div></ion-col>
+      <ion-col><div class="stat-card orange">Attempted <span>{{ attemptedCount }}</span></div></ion-col>
+      <ion-col><div class="stat-card orange">Correct <span>{{ correctCount }}</span></div></ion-col>
+      <ion-col><div class="stat-card orange">Incorrect <span>{{ wrongCount }}</span></div></ion-col>
+    </ion-row>
+  </ion-grid>
+
+  <!-- Pie Chart -->
+  <div class="chart-container ion-text-center">
+    <canvas id="pieChart"></canvas>
+  </div>
+
+  <!-- Question Table -->
+  <ion-grid class="question-table">
+    <ion-row class="table-header">
+      <ion-col>Question</ion-col>
+      <ion-col>Answer</ion-col>
+      <ion-col>Given</ion-col>
+      <ion-col>Time Spent</ion-col>
+    </ion-row>
+
+    <ion-row *ngFor="let q of questions; let i = index"
+             [ngClass]="{'correct': enteredAnswers[i] === originalAnswers[i] && enteredAnswers[i], 
+                         'incorrect': enteredAnswers[i] && enteredAnswers[i] !== originalAnswers[i]}">
+      <ion-col>{{ q }}</ion-col>
+      <ion-col>{{ originalAnswers[i] }}</ion-col>
+      <ion-col>{{ enteredAnswers[i] || '-' }}</ion-col>
+      <ion-col>{{ formatTime(questionTimes[i]) }}</ion-col>
+    </ion-row>
+  </ion-grid>
+
+  <!-- Completion Message -->
+  <div class="ion-text-center completion-msg">
+    <p>Great job on completing level {{ levelValue }}. Keep practicing!</p>
+    <p>and you will improve even more</p>
+  </div>
+
+  <!-- Action Buttons -->
+  <div class="ion-text-center ion-margin-top">
+    <ion-button color="secondary" (click)="retakeTest()">Retake</ion-button>
+    <ion-button color="primary" (click)="nextLevel()" [disabled]="levelValue === 5">Next Level</ion-button>
+  </div>
+
+</ion-content>

@@ -1,0 +1,80 @@
+<ion-content fullscreen class="signin-bg">
+
+  <div class="curve-bg"></div>
+
+  <!-- Header -->
+ <div class="ionic-header">
+
+  <!-- Back circle -->
+  <div class="back-circle" (click)="goHome()">
+    <ion-icon name="arrow-back-outline"></ion-icon>
+  </div>
+
+  <!-- Title -->
+  <div class="header-title">
+    Play with number
+  </div>
+
+</div>
+
+
+  <div class="card">
+
+   <h4 class="section-title">Start : Play with Number Game</h4>
+
+    <div class="spinner-box">
+      <ion-select interface="popover" placeholder="Select the Level"
+        [(ngModel)]="selectedLevel">
+        <ion-select-option *ngFor="let level of levels" [value]="level">
+          {{level}}
+        </ion-select-option>
+      </ion-select>
+    </div>
+
+    <ion-button expand="block" class="orange-btn" (click)="startNumberGame()">
+      Start Game
+    </ion-button>
+
+    <!-- CREATE SECTION -->
+    <h3 class="section-title">Create : Play with Number Game</h3>
+
+    <label class="label">Select Total Operations</label>
+    <div class="spinner-box">
+      <ion-select interface="popover" placeholder="Select the Option"
+        [(ngModel)]="selectedOperation">
+        <ion-select-option *ngFor="let op of operations" [value]="op">
+          {{op}}
+        </ion-select-option>
+      </ion-select>
+    </div>
+
+    <label class="label">Select Total Numbers</label>
+    <div class="spinner-box">
+      <ion-select interface="popover" placeholder="Select the Total Numbers"
+        [(ngModel)]="selectedOperands">
+        <ion-select-option *ngFor="let operand of operands" [value]="operand">
+          {{operand}}
+        </ion-select-option>
+      </ion-select>
+    </div>
+
+    <label class="label">Select Total Questions</label>
+    <div class="spinner-box">
+      <ion-select interface="popover" placeholder="Select the Total Questions"
+        [(ngModel)]="selectedTotalQuestions">
+        <ion-select-option *ngFor="let tq of totalQuestions" [value]="tq">
+          {{tq}}
+        </ion-select-option>
+      </ion-select>
+    </div>
+
+    <ion-button expand="block" class="orange-btn" (click)="createNumberGame()">
+      Create a Number Game
+    </ion-button>
+
+  
+
+
+  </div>
+
+</ion-content>

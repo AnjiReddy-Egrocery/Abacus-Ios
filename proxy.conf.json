@@ -1,0 +1,11 @@
+{
+  "/api": {
+    "target": "https://www.abacustrainer.com",
+    "secure": false,
+    "changeOrigin": true,
+    "pathRewrite": {
+      "^/api": ""
+    },
+    "logLevel": "debug"
+  }
+}

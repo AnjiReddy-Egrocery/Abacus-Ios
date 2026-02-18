@@ -1,0 +1,76 @@
+<!-- SIDE MENU -->
+<ion-menu side="start" menuId="mainMenu" contentId="main-content">
+ <ion-header>
+    <ion-toolbar style="--background:#4e148c; color:white">
+      
+    </ion-toolbar>
+
+    <!-- Header -->
+    <div class="menu-header">
+      <img src="assets/headerprofile.png" class="profile-img">
+      <div>
+        <h4>Hello, Welcome</h4>
+        <p>Divya</p>
+      </div>
+      <ion-buttons slot="end">
+        <!-- Close button for the menu -->
+        <ion-button fill="clear" color="light" (click)="closeMenu()">
+          <ion-icon slot="icon-only" name="close"></ion-icon>
+        </ion-button>
+      </ion-buttons>
+    </div>
+  </ion-header>
+
+  <ion-content>
+    <ion-list>
+
+      <ion-item>Dashboard</ion-item>
+      <ion-item>Work Sheet Subscription</ion-item>
+      <ion-item>Video Tutorials</ion-item>
+      <ion-item button (click)="goToPlaywithNumbers('play')">Play with Numbers</ion-item>
+      <ion-item>Visualization</ion-item>
+      <ion-item>Schedules</ion-item>
+      <ion-item>Progress Tracker</ion-item>
+      <ion-item>App Settings</ion-item>
+      <ion-item>About Us</ion-item>
+      <ion-item>Help & Support</ion-item>
+      <ion-item>Terms & Conditions</ion-item>
+      <ion-item>Profile</ion-item>
+      <ion-item>Logout</ion-item>
+
+    </ion-list>
+  </ion-content>
+</ion-menu>
+
+<!-- MAIN CONTENT -->
+<div id="main-content">
+
+  <!-- HEADER -->
+  <ion-header>
+    <ion-toolbar class="main-toolbar">
+
+      <ion-buttons slot="start">
+        <ion-menu-button></ion-menu-button>
+      </ion-buttons>
+
+      <div class="toolbar-content">
+        <img src="assets/headerprofile.png" class="toolbar-profile">
+
+        <div class="toolbar-text">
+          <span>Hello,</span>
+          <strong>Divya</strong>
+        </div>
+
+        <img src="assets/abacus_logo.png" class="toolbar-logo" style="margin-right: 15px;">
+      </div>
+
+    </ion-toolbar>
+  </ion-header>
+
+  <!-- CONTENT -->
+  <ion-content>
+    <!-- Your fragment pages here -->
+  </ion-content>
+
+  
+</div>
