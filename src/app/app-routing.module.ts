@@ -24,6 +24,42 @@ export const routes: Routes = [
     path: 'exam-result',
     loadChildren: () => import('./pages/play-result-page/play-result-page.module').then( m => m.PlayResultPagePageModule)
   },
+  {
+    path: 'quizexam',
+    loadChildren: () => import('./pages/quizexam/quizexam.module').then( m => m.QuizexamPageModule)
+  },
+  {
+    path: 'about-us',
+    loadChildren: () => import('./pages/about-us/about-us.module').then( m => m.AboutUsPageModule)
+  },
+  {
+    path: 'appsetting',
+    loadChildren: () => import('./pages/appsetting/appsetting.module').then( m => m.AppsettingPageModule)
+  },
+  {
+    path: 'app-progress',
+    loadChildren: () => import('./pages/app-progress/app-progress.module').then( m => m.AppProgressPageModule)
+  },
+  {
+    path: 'refoundpolicy',
+    loadChildren: () => import('./pages/refoundpolicy/refoundpolicy.module').then( m => m.RefoundpolicyPageModule)
+  },
+  {
+    path: 'privacypolicy',
+    loadChildren: () => import('./pages/privacypolicy/privacypolicy.module').then( m => m.PrivacypolicyPageModule)
+  },
+  {
+    path: 'termsconditions',
+    loadChildren: () => import('./pages/termsconditions/termsconditions.module').then( m => m.TermsconditionsPageModule)
+  },
+  {
+    path: 'helpand-supoort',
+    loadChildren: () => import('./pages/helpand-supoort/helpand-supoort.module').then( m => m.HelpandSupoortPageModule)
+  },
+  {
+    path: 'profile',
+    loadChildren: () => import('./pages/profile/profile.module').then( m => m.ProfilePageModule)
+  },
 
 ];
 

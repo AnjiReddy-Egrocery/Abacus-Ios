@@ -1,0 +1,33 @@
+.edit-btn {
+  float: right;
+  margin-bottom: 10px;
+}
+
+.profile-card {
+  border-radius: 25px;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+}
+
+.profile-card ion-avatar {
+  width: 150px;
+  height: 150px;
+  margin: 0 auto;
+}
+
+.progress-text {
+  text-align: right;
+  font-weight: bold;
+  margin-bottom: 10px;
+}
+
+ion-chip {
+  margin: 5px 5px 0 0;
+  background: #4e148c;
+  color: #fff;
+}
+
+ion-item h2 {
+  font-size: 20px;
+  font-weight: bold;
+  margin: 5px 0;
+}

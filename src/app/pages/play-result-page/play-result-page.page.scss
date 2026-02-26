@@ -1,3 +1,11 @@
+.signin-bg {
+   position: relative;
+  overflow: hidden;
+   margin-top: 20px;
+
+  --padding-top: calc(env(safe-area-inset-top) + 0px);
+}
+
 .level-info h2 {
   font-size: 1.2rem;
   margin-bottom: 0;
@@ -40,30 +48,118 @@
 
 .question-table {
   margin-top: 20px;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  overflow: hidden;
+}
 
-  .table-header {
-    font-weight: bold;
-    background-color: #d0cece;
-    padding: 5px 0;
-  }
+/* Header */
+.question-table .table-header {
+  font-weight: bold;
+  background-color: #d0cece;
+  padding: 8px 0;
+  border-bottom: 2px solid #bfbfbf;
+}
 
-  ion-row.correct {
-    background-color: #27ae60;
-    color: #fff;
-  }
+/* Each row divider */
+.question-table ion-row {
+  border-bottom: 1px solid #e5e5e5;
+  padding: 6px 0;
+}
 
-  ion-row.incorrect {
-    background-color: #c0392b;
-    color: #fff;
-  }
+/* Remove last row line */
+.question-table ion-row:last-child {
+  border-bottom: none;
+}
 
-  ion-col {
-    padding: 5px 0;
-  }
+/* Correct */
+.question-table ion-row.correct {
+  background-color: #27ae60;
+  color: #fff;
+}
+
+/* Incorrect */
+.question-table ion-row.incorrect {
+  background-color: #c0392b;
+  color: #fff;
+}
+
+/* Column spacing */
+.question-table ion-col {
+  padding: 8px 4px;
+  text-align: center;
 }
 
 .completion-msg {
   margin-top: 15px;
   font-size: 0.9rem;
   color: #333;
+}
+.chart-container {
+  position: relative;
+  width: 250px;
+  height: 250px;
+  margin: 0 auto;
+}
+.chart-legend-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 40px;
+  margin-top: 20px;
+  flex-wrap: wrap;
+}
+
+.chart-box {
+  width: 260px;
+}
+
+.legend-box {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 20px;   /* space between items */
+  flex-wrap: wrap; /* mobile lo next line ki velladaniki */
+  margin-top: 10px;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 14px;
+}
+
+/* circle indicator */
+.color-circle {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  display: inline-block;
+}
+
+.attempted {
+  background: #f39c12;
+}
+
+.notattempted {
+  background: #9b59b6;
+}
+
+.correct {
+  background: #27ae60;
+}
+
+.incorrect {
+  background: #e74c3c;
+}
+.chart-box canvas {
+  max-width: 240px;
+}
+
+.next-btn {
+  --background: #ff7a00;   /* orange */
+  --color: #ffffff;        /* white text */
+  --border-radius: 8px;
+  font-weight: 600;
 }

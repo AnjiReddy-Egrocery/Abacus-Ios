@@ -2,6 +2,9 @@
   --background: #4e148c;
   position: relative;
   overflow: hidden;
+   margin-top: 20px;
+
+  --padding-top: calc(env(safe-area-inset-top) + 0px);
 }
 
 /* Grey curve like Android */
@@ -20,7 +23,10 @@
 .ionic-header {
   display: flex;
   align-items: center;
-  margin: 20px;
+  margin-left: 12px;
+  margin-right: 12px;
+
+  
 }
 
 /* Circle drawable like Android */
@@ -56,6 +62,7 @@
   border-radius: 20px;
   padding: 10px;
   margin: 12px;
+  margin-top: 16px;
 }
 
 .step-scroll {

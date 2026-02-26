@@ -1,5 +1,7 @@
-<ion-content class="ion-padding">
-    <ion-title class="ion-text-center">Exam Report</ion-title>
+<ion-content  fullscreen class="signin-bg">
+    <div class="exam-title ion-text-center" style="margin-top: 15px; margin-bottom: 15px;">
+    <h1>Exam Report</h1>
+  </div>
   <!-- Level & Date -->
   <div class="level-info ion-text-center">
     <h2>Level Play with number game level {{ levelValue }}</h2>
@@ -27,10 +29,42 @@
   </ion-grid>
 
   <!-- Pie Chart -->
-  <div class="chart-container ion-text-center">
-    <canvas id="pieChart"></canvas>
+<!-- Chart + Legend Side by Side -->
+<div class="chart-legend-wrapper">
+
+  <div class="chart-box">
+    <canvas baseChart
+      [data]="pieChartData"
+      [type]="'doughnut'"
+      [options]="pieChartOptions">
+    </canvas>
   </div>
 
+  <div class="legend-box">
+
+    <div class="legend-item">
+      <span class="color-circle attempted"></span>
+      <span>Attempted</span>
+    </div>
+
+    <div class="legend-item">
+      <span class="color-circle notattempted"></span>
+      <span>Not Attempted</span>
+    </div>
+
+    <div class="legend-item">
+      <span class="color-circle correct"></span>
+      <span>Correct</span>
+    </div>
+
+    <div class="legend-item">
+      <span class="color-circle incorrect"></span>
+      <span>Incorrect</span>
+    </div>
+
+  </div>
+
+</div>
   <!-- Question Table -->
   <ion-grid class="question-table">
     <ion-row class="table-header">
@@ -43,7 +77,7 @@
     <ion-row *ngFor="let q of questions; let i = index"
              [ngClass]="{'correct': enteredAnswers[i] === originalAnswers[i] && enteredAnswers[i], 
                          'incorrect': enteredAnswers[i] && enteredAnswers[i] !== originalAnswers[i]}">
-      <ion-col>{{ q }}</ion-col>
+      <ion-col [innerHTML]="formatQuestion(q)"></ion-col>
       <ion-col>{{ originalAnswers[i] }}</ion-col>
       <ion-col>{{ enteredAnswers[i] || '-' }}</ion-col>
       <ion-col>{{ formatTime(questionTimes[i]) }}</ion-col>
@@ -57,9 +91,9 @@
   </div>
 
   <!-- Action Buttons -->
-  <div class="ion-text-center ion-margin-top">
-    <ion-button color="secondary" (click)="retakeTest()">Retake</ion-button>
-    <ion-button color="primary" (click)="nextLevel()" [disabled]="levelValue === 5">Next Level</ion-button>
-  </div>
-
+ <div class="ion-text-center ion-margin-top">
+  <ion-button class="next-btn" (click)="nextLevel()" [disabled]="levelValue === 5">
+    Next Level
+  </ion-button>
+</div>
 </ion-content>

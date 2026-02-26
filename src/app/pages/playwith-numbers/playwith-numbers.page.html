@@ -3,31 +3,30 @@
   <div class="curve-bg"></div>
 
   <!-- Header -->
- <div class="ionic-header">
+  <div class="ionic-header">
 
-  <!-- Back circle -->
-  <div class="back-circle" (click)="goHome()">
-    <ion-icon name="arrow-back-outline"></ion-icon>
+    <div class="back-circle" (click)="goHome()">
+      <ion-icon name="arrow-back-outline"></ion-icon>
+    </div>
+
+    <div class="header-title">
+      Play with number
+    </div>
+
   </div>
-
-  <!-- Title -->
-  <div class="header-title">
-    Play with number
-  </div>
-
-</div>
-
 
   <div class="card">
 
-   <h4 class="section-title">Start : Play with Number Game</h4>
+    <h4 class="section-title">Start : Play with Number Game</h4>
 
     <div class="spinner-box">
       <ion-select interface="popover" placeholder="Select the Level"
         [(ngModel)]="selectedLevel">
+
         <ion-select-option *ngFor="let level of levels" [value]="level">
           {{level}}
         </ion-select-option>
+
       </ion-select>
     </div>
 
@@ -42,38 +41,64 @@
     <div class="spinner-box">
       <ion-select interface="popover" placeholder="Select the Option"
         [(ngModel)]="selectedOperation">
+
         <ion-select-option *ngFor="let op of operations" [value]="op">
           {{op}}
         </ion-select-option>
+
       </ion-select>
     </div>
 
     <label class="label">Select Total Numbers</label>
     <div class="spinner-box">
-      <ion-select interface="popover" placeholder="Select the Total Numbers"
-        [(ngModel)]="selectedOperands">
+      <ion-select interface="popover"
+        placeholder="Select the Total Numbers"
+        [(ngModel)]="selectedOperands"
+        (ionChange)="onOperandsChange()">
+
         <ion-select-option *ngFor="let operand of operands" [value]="operand">
           {{operand}}
         </ion-select-option>
+
       </ion-select>
+    </div>
+
+     <div *ngFor="let item of dynamicSpinners; let i = index" class="dynamic-section">
+
+      <label class="label">Select {{ i + 1 }} Number Range (upto)</label>
+
+      <div class="spinner-box">
+        <ion-select interface="popover"
+          placeholder="Select Range"
+          [(ngModel)]="item.selected">
+
+          <ion-select-option *ngFor="let opt of item.options" [value]="opt">
+            {{ opt }}
+          </ion-select-option>
+
+        </ion-select>
+      </div>
+
     </div>
 
     <label class="label">Select Total Questions</label>
     <div class="spinner-box">
-      <ion-select interface="popover" placeholder="Select the Total Questions"
+      <ion-select interface="popover"
+        placeholder="Select the Total Questions"
         [(ngModel)]="selectedTotalQuestions">
+
         <ion-select-option *ngFor="let tq of totalQuestions" [value]="tq">
           {{tq}}
         </ion-select-option>
+
       </ion-select>
     </div>
+
+  
 
     <ion-button expand="block" class="orange-btn" (click)="createNumberGame()">
       Create a Number Game
     </ion-button>
-
-  
-
 
   </div>
 

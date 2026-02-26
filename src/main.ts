@@ -8,6 +8,8 @@ import { IonicModule } from '@ionic/angular';
 import { IonicStorageModule } from '@ionic/storage-angular';
 import { routes } from './app/app-routing.module';
 
+import { provideCharts, withDefaultRegisterables } from 'ng2-charts';
+
 bootstrapApplication(AppComponent, {
   providers: [
     importProvidersFrom(
@@ -16,6 +18,8 @@ bootstrapApplication(AppComponent, {
     ),
     provideRouter(routes),
     provideHttpClient(),
+    // ✅ ADD THIS LINE (MOST IMPORTANT)
+    provideCharts(withDefaultRegisterables())
   ],
 }).catch(err => console.error(err));
 

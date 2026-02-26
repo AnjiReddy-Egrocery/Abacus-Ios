@@ -1,0 +1,40 @@
+<ion-content fullscreen class="signin-bg">
+
+  <div class="curve-bg"></div>
+
+  <!-- Header -->
+  <div class="ionic-header">
+
+    <div class="back-circle" (click)="goHome()">
+      <ion-icon name="arrow-back-outline"></ion-icon>
+    </div>
+
+    <div class="header-title">
+     Help and Support
+    </div>
+
+  </div>
+
+  <!-- Make this div scrollable by filling remaining space -->
+  <div class="card ">
+
+    <h4 class="section-title">Abacus Trainer Help and Support</h4>
+
+   <ion-list>
+      <ion-item *ngFor="let faq of faqs" lines="none">
+        <ion-label (click)="toggleFaq(faq)">
+          <div class="faq-question">
+            {{ faq.question }}
+            <span class="faq-icon">{{ faq.open ? '−' : '+' }}</span>
+          </div>
+          <div class="faq-answer" *ngIf="faq.open">
+            {{ faq.answer }}
+          </div>
+        </ion-label>
+      </ion-item>
+    </ion-list>
+  </div>
+
+
+
+</ion-content>

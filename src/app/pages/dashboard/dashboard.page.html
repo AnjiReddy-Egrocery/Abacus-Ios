@@ -1,16 +1,14 @@
-<!-- SIDE MENU -->
-<ion-menu side="start" menuId="mainMenu" contentId="main-content">
- <ion-header>
-    <ion-toolbar style="--background:#4e148c; color:white">
-      
-    </ion-toolbar>
+<ion-app>
 
-    <!-- Header -->
-    <div class="menu-header">
-      <img src="assets/headerprofile.png" class="profile-img">
+  <!-- SIDE MENU -->
+  <ion-menu side="start" contentId="main-content">
+    <ion-header>
+      <ion-toolbar style="--background:#4e148c; color:white; min-height: 60px;">
+        <div class="menu-header">
+      <img [src]="userImage" class="profile-img">
       <div>
         <h4>Hello, Welcome</h4>
-        <p>Divya</p>
+        <p>{{ userName }}</p>
       </div>
       <ion-buttons slot="end">
         <!-- Close button for the menu -->
@@ -19,58 +17,159 @@
         </ion-button>
       </ion-buttons>
     </div>
-  </ion-header>
+      </ion-toolbar>
+    </ion-header>
 
-  <ion-content>
-    <ion-list>
+    <ion-content>
+      <ion-list>
+        <ion-item button (click)="gotoDashBoard()">Dashboard</ion-item>
+        <ion-item>Work Sheet Subscription</ion-item>
+        <ion-item>Video Tutorials</ion-item>
+        <ion-item button (click)="goToPlaywithNumbers('play')">Play with Numbers</ion-item>
+        <ion-item>Visualization</ion-item>
+        <ion-item>Schedules</ion-item>
+        <ion-item button (click)="goToProgress()">Progress Tracker</ion-item>
+        <ion-item button (click)="gotoAppSetting()">App Settings </ion-item>
+        <ion-item button (click)="goToAboutUs()">About Us</ion-item>
+        <ion-item button (click)="goToRefoundPolicy()">Refound Policy</ion-item>
+        <ion-item button (click)="goToPrivacyPolicy()"> Privacy Policy</ion-item>
+        <ion-item button (click)="goToHelp()">Help & Support</ion-item>
+        <ion-item button (click)="gotoTermsConditions()">Terms & Conditions</ion-item>
+        <ion-item>Profile</ion-item>
+        <ion-item button (click)="logout()">Logout</ion-item>
+      </ion-list>
+    </ion-content>
+  </ion-menu>
 
-      <ion-item>Dashboard</ion-item>
-      <ion-item>Work Sheet Subscription</ion-item>
-      <ion-item>Video Tutorials</ion-item>
-      <ion-item button (click)="goToPlaywithNumbers('play')">Play with Numbers</ion-item>
-      <ion-item>Visualization</ion-item>
-      <ion-item>Schedules</ion-item>
-      <ion-item>Progress Tracker</ion-item>
-      <ion-item>App Settings</ion-item>
-      <ion-item>About Us</ion-item>
-      <ion-item>Help & Support</ion-item>
-      <ion-item>Terms & Conditions</ion-item>
-      <ion-item>Profile</ion-item>
-      <ion-item>Logout</ion-item>
 
-    </ion-list>
-  </ion-content>
-</ion-menu>
+  <!-- MAIN PAGE -->
+  <div class="ion-page" id="main-content">
 
-<!-- MAIN CONTENT -->
-<div id="main-content">
-
-  <!-- HEADER -->
-  <ion-header>
-    <ion-toolbar class="main-toolbar">
-
-      <ion-buttons slot="start">
-        <ion-menu-button></ion-menu-button>
-      </ion-buttons>
-
-      <div class="toolbar-content">
-        <img src="assets/headerprofile.png" class="toolbar-profile">
+    <ion-header>
+      <ion-toolbar class="main-toolbar">
+        <ion-buttons style="margin-top: 8px; margin-bottom: 10px;"  slot="start">
+          <ion-menu-button  style="color: white;"> </ion-menu-button>
+        </ion-buttons>
+         <div class="toolbar-content">
+          <img [src]="userImage" class="toolbar-profile"> <!-- dynamically set image -->
 
         <div class="toolbar-text">
           <span>Hello,</span>
-          <strong>Divya</strong>
+          <strong>{{ userName }}</strong>
         </div>
 
         <img src="assets/abacus_logo.png" class="toolbar-logo" style="margin-right: 15px;">
       </div>
+      </ion-toolbar>
+    </ion-header>
 
-    </ion-toolbar>
-  </ion-header>
+    <!-- PAGE CONTENT -->
+   <ion-content class="ion-padding">
 
-  <!-- CONTENT -->
-  <ion-content>
-    <!-- Your fragment pages here -->
-  </ion-content>
+<ng-container *ngIf="activeTab === 'home'">
 
-  
-</div>
+
+    <!-- Schedule Section Card -->
+  <div class="schedule-card">
+    <!-- Header -->
+    <div class="schedule-header">
+      <span class="schedule-title">Class Schedule</span>
+      <img src="../../../assets/calender_icon.png"  class="schedule-icon" (click)="goToSchedule()"/>
+    </div>
+
+    <!-- Top Card: Next Class -->
+    <div class="top-card">
+      <div class="next-class-text">Next Class</div>
+      <div class="join-now">Join Now</div>
+    </div>
+
+    <!-- Bottom Card: Details -->
+    <div class="bottom-card">
+      <div class="next-class-info">
+        <span id="txt_nxtSchedule">dd/mm/yyyy</span>,
+        <span id="txt_nextTime">[]</span>
+      </div>
+
+      <div class="hw-section">
+        <span>H/W (Last Class)</span> : 
+        <span id="txt_clcik_schedule" class="click-hw">Click Here</span>
+      </div>
+
+      <div class="total-classes">
+        <span>Total Class :</span>
+        <span id="txt_Completed">Completed:0</span>
+        <span id="txt_upComing">UpComing:0</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Play With Numbers Card -->
+  <div class="play-number-card" (click)="goToPlaywithNumbers('play')">
+    <div class="card-top">
+      <div class="card-text">
+        <div>Play</div>
+        <div>with</div>
+        <div>Numbers</div>
+      </div>
+      <img src="../../../assets/gif_play.gif" class="card-gif" />
+      <img src="../../../assets/numbers.png" class="card-image" />
+    </div>
+  </div>
+
+  <!-- Visualization Card -->
+  <div class="visualization-card">
+    <div class="card-top">
+      <div class="card-text">Visualization</div>
+      <img src="../../../assets/abacus_image.png" class="card-image" />
+    </div>
+  </div>
+
+
+
+</ng-container>
+
+  <app-class *ngIf="activeTab === 'class'"></app-class>
+  <app-ai-generation *ngIf="activeTab === 'ai'"></app-ai-generation>
+  <app-schedules *ngIf="activeTab === 'schedule'"></app-schedules>
+
+
+</ion-content>
+
+    <!-- FOOTER WITH TABS -->
+   <ion-footer slot="fixed" class="custom-footer">
+ <ion-toolbar class="custom-footer-toolbar">
+  <ion-tabs>
+    <ion-tab-bar slot="bottom" class="custom-tab-bar">
+
+       <ion-tab-button (click)="selectTab('home')" [class.activated]="activeTab==='home'">
+        <ion-icon name="home-outline"></ion-icon>
+        <ion-label>Home</ion-label>
+      </ion-tab-button>
+
+      <ion-tab-button (click)="selectTab('class')" [class.activated]="activeTab==='class'">
+        <ion-icon name="book-outline"></ion-icon>
+        <ion-label>Class</ion-label>
+      </ion-tab-button>
+
+     <ion-tab-button (click)="selectTab('ai')" [class.activated]="activeTab==='ai'">
+      <img src="../../../assets/iconsabacus.png" class="tab-icon" />
+    </ion-tab-button>
+
+      <ion-tab-button (click)="selectTab('schedule')" [class.activated]="activeTab==='schedule'">
+        <ion-icon name="calendar-outline"></ion-icon>
+        <ion-label>Schedule</ion-label>
+      </ion-tab-button>
+
+          <ion-tab-button routerLink="/profile">
+      <ion-icon name="person-outline"></ion-icon>
+      <ion-label>Profile</ion-label>
+    </ion-tab-button>
+
+    </ion-tab-bar>
+  </ion-tabs>
+  </ion-toolbar>
+</ion-footer>
+
+  </div>
+
+</ion-app>

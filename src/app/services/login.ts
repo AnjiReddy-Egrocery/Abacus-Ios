@@ -1,58 +1,111 @@
-import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Observable } from 'rxjs/internal/Observable';
-import { environment } from 'src/environments/environment';
+import { CapacitorHttp } from '@capacitor/core';
 
-export interface LoginDataResponse {
+export interface LoginResponse {
   status: string;
   errorCode: string;
-  result: any;
   message: string;
-  imageUrl: string;
+  result: any;
 }
 
-export interface RegisterDataResponce{
-   status: string;
+export interface RegisterResponse {
+  status: string;
   errorCode: string;
-  result: any;
   message: string;
-  imageUrl: string
+  result: {
+    studentId: string;
+    otp: string;
+    parentEmail: string;
+  };
 }
 
 @Injectable({
-  providedIn: 'root',
+  providedIn: 'root'
 })
 export class Login {
 
-  constructor(private http: HttpClient) {}
+private baseUrl = 'https://www.abacustrainer.com';
 
-  loginUser(loginMobile: string, loginPassword: string): Observable<any> {
-  const formData = new FormData();
-  formData.append('parentEmail', loginMobile);
-  formData.append('password', loginPassword);
+// ---------------- LOGIN ----------------
+async loginUser(email: string, password: string) {
 
-  return this.http.post(
-      `${environment.apiBaseUrl}/apicalls/Index/studentLogin`,
-      formData
-    );
+  const body = new URLSearchParams();
+
+  body.append('parentEmail', email);
+  body.append('password', password);
+
+  console.log('➡️ Login Body:', body.toString());
+
+  try {
+
+    const response = await CapacitorHttp.request({
+      method: 'POST',
+      url: `${this.baseUrl}/apicalls/Index/studentLogin`,
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded'
+      },
+      data: body.toString()
+    });
+
+    console.log('➡️ Raw Response:', response.data);
+
+    return typeof response.data === 'string'
+      ? JSON.parse(response.data)
+      : response.data;
+
+  } catch (error) {
+    console.error('❌ Login HTTP Error:', error);
+    throw error;
+  }
 }
 
-register(firstName: string, lastName: string, gender: string, dateOfBirth: string, motherTongue: string, email: string, mobile: string): Observable<RegisterDataResponce> {
-    const formData = new FormData();
-      formData.append('firstName', firstName);
-    formData.append('lastName', lastName);
-    formData.append('gender', gender);
-    formData.append('dateOfBirth', dateOfBirth);
-    formData.append('motherTongue', motherTongue);
-    formData.append('emailId', email);
-    formData.append('mobileNumber', mobile);
 
-    
-    
-   
+  // ---------------- REGISTRATION ----------------
+ 
+async register(
+  firstName: string,
+  lastName: string,
+  gender: string,
+  dateOfBirth: string,
+  motherTongue: string,
+  email: string,
+  mobile: string
+) {
 
-     const url = `${environment.apiBaseUrl}/apicalls/Index/studentRegistration`;
-     return this.http.post<RegisterDataResponce>(url, formData);
+  const body = new URLSearchParams();
+
+  body.append('firstName', firstName);
+  body.append('middleName', '');
+  body.append('lastName', lastName);
+  body.append('emailId', email);
+  body.append('mobileNumber', mobile);
+  body.append('gender', gender);
+  body.append('motherTongue', motherTongue);
+  body.append('dateOfBirth', dateOfBirth);
+
+  console.log('➡️ Register Body:', body.toString());
+
+  try {
+
+    const response = await CapacitorHttp.request({
+      method: 'POST',
+      url: 'https://www.abacustrainer.com/apicalls/Index/studentRegistration',
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded'
+      },
+      data: body.toString()
+    });
+
+    console.log('➡️ Raw Response:', response.data);
+
+    return typeof response.data === 'string'
+      ? JSON.parse(response.data)
+      : response.data;
+
+  } catch (error) {
+    console.error('❌ HTTP Error:', error);
+    throw error;
   }
-  
+}
+
 }

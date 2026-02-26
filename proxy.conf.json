@@ -3,9 +3,7 @@
     "target": "https://www.abacustrainer.com",
     "secure": false,
     "changeOrigin": true,
-    "pathRewrite": {
-      "^/api": ""
-    },
+    "pathRewrite": { "^/api": "" },
     "logLevel": "debug"
   }
 }

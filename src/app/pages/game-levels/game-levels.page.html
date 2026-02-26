@@ -63,6 +63,8 @@
       <ion-input
           type="number"
           [(ngModel)]="answer"
+          [value]="answer"
+          (ionInput)="onAnswerChange($event)"
           class="answer-input">
         </ion-input>
 

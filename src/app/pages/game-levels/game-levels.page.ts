@@ -73,12 +73,12 @@ export class GameLevelsPage {
     setTimeout(() => this.scrollToActiveStep(), 50);
   } else {
     // Last question reached → navigate to another page
-    console.log('All questions completed!');
     
-    // Example: navigate to "exam-result" page and pass answers & times
-    this.router.navigate(['/exam-result'], {
-      state: { answers: this.answers, times: this.questionTimes }
-    });
+    
+   console.log('Last question reached');
+
+    clearInterval(this.questionTimerInterval);
+    this.showCompletionPopup();
   }
 
   }
@@ -166,6 +166,10 @@ export class GameLevelsPage {
   }
 }
 
+onAnswerChange(event: any) {
+  this.answer = event.target.value ? event.target.value.toString() : '';
+}
+
   submitExam() {
      clearInterval(this.questionTimerInterval);
     this.showCompletionPopup();
@@ -197,13 +201,29 @@ export class GameLevelsPage {
 }
 
 showReportActivity() {
+
   const originalAnswers = this.questions.map(q => this.generateOriginalAnswer(q));
+
+  // ✅ Compare entered answers with original answers
+  const isCorrectArray = this.answers.map((ans, i) => {
+    const original = originalAnswers[i] || '';
+
+    // number compare
+    return ans && ans.trim() !== '' && Number(ans) === Number(original)
+      ? 'true'
+      : 'false';
+  });
 
   const reportData = {
     questions: this.questions,
     enteredAnswers: this.answers,
-    isQuestionAttempted: this.isAnswered.map(ans => ans ? 'true' : 'false'),
-    isQuestionCorrect: this.isAnswered.map(ans => ans ? 'true' : 'false'), // Replace with your correctness logic
+
+    // Attempted logic
+    isQuestionAttempted: this.answers.map(ans => ans && ans.trim() !== '' ? 'true' : 'false'),
+
+    // ✅ Correct logic FIXED
+    isQuestionCorrect: isCorrectArray,
+
     originalAnswers: originalAnswers,
     questionTimes: this.questionTimes,
     totalTime: this.totalTime,

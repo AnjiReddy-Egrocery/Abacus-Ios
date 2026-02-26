@@ -1,0 +1,57 @@
+<ion-content class="ion-padding">
+
+  <!-- Edit Profile Button -->
+  <ion-button fill="outline" color="primary" class="edit-btn" (click)="editProfile()">
+    Edit Profile
+  </ion-button>
+
+  <!-- Profile Picture & Name -->
+  <ion-card class="profile-card">
+    <ion-card-header class="ion-text-center">
+      <ion-avatar>
+        <img [src]="user.profilePic" />
+      </ion-avatar>
+      <ion-card-title>{{ user.firstName }} {{ user.lastName }}</ion-card-title>
+      <ion-card-subtitle>{{ user.level }}</ion-card-subtitle>
+    </ion-card-header>
+
+    <ion-card-content>
+
+      <!-- Progress Overview -->
+      <ion-item lines="none">
+        <ion-label>
+          <h2>Progress Overview</h2>
+        </ion-label>
+      </ion-item>
+      <ion-progress-bar [value]="user.progress/100" color="primary"></ion-progress-bar>
+      <p class="progress-text">{{ user.progress }}%</p>
+
+      <!-- Achievements -->
+      <ion-item lines="none">
+        <ion-label>
+          <h2>Achievements</h2>
+        </ion-label>
+      </ion-item>
+      <ion-chip *ngFor="let ach of user.achievements" color="primary">
+        <ion-label>{{ ach }}</ion-label>
+      </ion-chip>
+
+      <!-- Recent Activity -->
+      <ion-item lines="none">
+        <ion-label>
+          <h2>Recent Activity</h2>
+        </ion-label>
+      </ion-item>
+
+      <ion-list>
+        <ion-item *ngFor="let act of user.recentActivity">
+          <ion-label>
+            <strong>{{ act.label }}:</strong> {{ act.value }}
+          </ion-label>
+        </ion-item>
+      </ion-list>
+
+    </ion-card-content>
+  </ion-card>
+
+</ion-content>

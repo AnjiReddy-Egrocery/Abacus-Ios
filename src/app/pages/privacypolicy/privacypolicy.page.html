@@ -1,0 +1,27 @@
+<ion-content fullscreen class="signin-bg">
+
+  <div class="curve-bg"></div>
+
+  <!-- Header -->
+  <div class="ionic-header">
+
+    <div class="back-circle" (click)="goHome()">
+      <ion-icon name="arrow-back-outline"></ion-icon>
+    </div>
+
+    <div class="header-title">
+     Privacy Policy
+    </div>
+
+  </div>
+
+  <!-- Make this div scrollable by filling remaining space -->
+  <div class="card scrollable-card">
+
+    <h4 class="section-title">Abacus Trainer Privacy Policy</h4>
+
+    <div class="about-container" [innerHTML]="formattedAboutText"></div>
+
+  </div>
+
+</ion-content>

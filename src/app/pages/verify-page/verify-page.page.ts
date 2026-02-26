@@ -43,54 +43,65 @@ showConfirmPassword: boolean = false;
   }
 
 
-  async goToVerify() {
-         if (!this.Otp || !this.password || !this.confirmpassword) {
-            this.showToast('Please fill all fields');
-            return;
-          }
+ async goToVerify() {
 
-          // 👉 Password match check
-          if (this.password !== this.confirmpassword) {
-            this.showToast('Password and Confirm Password do not match');
-            return;
-          }
-
-          // 👉 OTP match check
-          if (this.Otp !== this.sentOtp) {
-            this.showToast('Invalid OTP');
-            return;
-          }
-
-       this.verifyservice.verifyOtp(this.studentId, this.Otp, this.password)
-          .subscribe(res => {
-            if (res.errorCode === '203') {
-              this.showToast('Invalid Otp');
-            } else if (res.errorCode === '200') {
-              
-                  const parentEmail = res.result.parentEmail;
-                  const password = res.result.password;
-
-
-                  // 👉 Navigate to verify page with data
-                  this.router.navigate(['/login'], {
-                    queryParams: {
-                         tab: 'signin',
-
-                      parentEmail: parentEmail,
-                      password: password
-                    }
-                  });
-
-            } else {
-              this.showToast('Unexpected response from server');
-            }
-          }, err => {
-            console.error(err);
-            this.showToast('Network error, try again');
-          });
-          
-            
+  if (!this.Otp || !this.password || !this.confirmpassword) {
+    this.showToast('Please fill all fields');
+    return;
   }
+
+  // 👉 Password match check
+  if (this.password !== this.confirmpassword) {
+    this.showToast('Password and Confirm Password do not match');
+    return;
+  }
+
+  // 👉 OTP match check
+  if (this.Otp !== this.sentOtp) {
+    this.showToast('Invalid OTP');
+    return;
+  }
+
+  try {
+
+    const res = await this.verifyservice.verifyOtp(
+      this.studentId,
+      this.Otp,
+      this.password
+    );
+
+    console.log('✅ Verify response:', res);
+
+    if (res.errorCode === '203') {
+      this.showToast('Invalid OTP');
+      return;
+    }
+
+    if (res.errorCode === '200') {
+
+      const parentEmail = res.result.parentEmail;
+      const password = res.result.password;
+
+      this.showToast('Account verified successfully');
+
+      this.router.navigate(['/login'], {
+        queryParams: {
+          tab: 'signin',
+          parentEmail,
+          password
+        }
+      });
+
+    } else {
+      this.showToast(res.message || 'Unexpected response from server');
+    }
+
+  } catch (err) {
+    console.error('❌ Verify error:', err);
+    this.showToast('Network error, try again');
+  }
+
+}
 
   async showToast(message: string) {
     const toast = await this.toastCtrl.create({

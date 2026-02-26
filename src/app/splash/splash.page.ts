@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { IonicModule, NavController } from '@ionic/angular';
+import { Storage } from '@ionic/storage-angular';
 
 @Component({
   selector: 'app-splash',
@@ -11,12 +12,25 @@ import { IonicModule, NavController } from '@ionic/angular';
 })
 export class SplashPage  {
 
-  constructor(private router: Router) { }
+  constructor(private router: Router, private storage: Storage) { }
 
- async ngOnInit() {
 
+
+   async ngOnInit() {
+
+    // 1️⃣ Initialize storage first
+    await this.storage.create();
+
+    // 2️⃣ Get login state
+    const loggedIn = await this.storage.get('isLoggedIn');
+
+    // 3️⃣ Navigate after splash delay
     setTimeout(() => {
-      this.router.navigateByUrl('/login');
+      if (loggedIn) {
+        this.router.navigateByUrl('/dashboard', { replaceUrl: true });
+      } else {
+        this.router.navigateByUrl('/login', { replaceUrl: true });
+      }
     }, 3200);
 
   }

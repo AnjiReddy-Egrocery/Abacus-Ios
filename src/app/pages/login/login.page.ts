@@ -3,9 +3,10 @@ import { HttpClientModule } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
+
 import { IonicModule, ToastController } from '@ionic/angular';
 import { Auth } from 'src/app/services/auth';
-import { Login, LoginDataResponse } from 'src/app/services/login';
+import { Login } from 'src/app/services/login';
 
 @Component({
   selector: 'app-login',
@@ -20,15 +21,15 @@ export class LoginPage {
   gender: string = '';
   selectedOption: string = 'B';
 
-  email: string = '';
-  password: string = '';
+  email = '';
+  password = '';
 
-  firstName: string = '';
-  lastName: string = '';
-  dob: string = '';
-  motherTongue: string = '';
-  emailreg: string = '';
-  mobile: string = '';
+  firstName = '';
+  lastName = '';
+  dob = '';
+  motherTongue = '';
+  emailreg = '';
+  mobile = '';
 
 
    showPassword: boolean = false;
@@ -67,36 +68,58 @@ openCalendar() {
   togglePass() {
     this.showPass = !this.showPass;
   }
+async goToLogin() {
+  if (!this.email || !this.password) {
+    this.showToast('Please enter email & password');
+    return;
+  }
 
-    async goToLogin() {
-    if (!this.email || !this.password) {
-      this.showToast(' Please enter email & password');
-      return;
+  if (!this.isValidEmail(this.email)) {
+    this.showToast('Please enter a valid email address');
+    return;
+  }
+
+  try {
+    const response = await this.loginService.loginUser(this.email, this.password);
+
+    if (response.status === 'Success' && response.errorCode === '200') {
+      const user = response.result;
+
+      const userData = {
+        name: user.firstName + ' ' + user.lastName,
+        email: user.parentEmail || '',
+        image: user.profilePic || 'assets/ic_launcher.png',
+        studentId: user.studentId // ✅ include studentId
+      };
+
+      // Store login info locally (optional)
+      await this.authService.setLoginData(userData);
+
+      this.showToast('✅ Login Successful');
+
+      // Pass all user info via router state
+      this.router.navigateByUrl('/dashboard', {
+        state: {
+          name: userData.name,
+          image: userData.image,
+          studentId: userData.studentId
+        }
+      });
+
+    } else if (response.errorCode === '202') {
+      this.showToast('❌ No user found or wrong credentials');
+    } else {
+      this.showToast('Unexpected server response');
     }
 
-    this.loginService.loginUser(this.email, this.password).subscribe({
-      next: async (response: LoginDataResponse) => {
-        if (response.errorCode === '200') {
-            const userData = {
-                name: response.result.userFirstName,
-                email: response.result.userEmail,
-                image: response.result.userImage || 'assets/ic_launcher.png'
-              };
-
-              await this.authService.setLoginData(userData);
-              this.showToast('✅ Login Successful');
-              this.router.navigateByUrl('/dashboard', { replaceUrl: true });
-            
-        } else {
-          this.showToast('❌ Incorrect Email or Password');
-        }
-      },
-      error: (err) => {
-        console.error('Login Error:', err);
-        this.showToast('Login failed. Check internet connection');
-      }
-    });
+  } catch (err) {
+    this.showToast('Network or server error. Check HTTPS / SSL');
   }
+}
+
+
+
+
 private async showToast(msg: string) {
     const toast = await this.toastCtrl.create({
       message: msg,
@@ -107,57 +130,85 @@ private async showToast(msg: string) {
     await toast.present();
   }
   
-  
-   async registerUser() {
-      if (!this.dob) {
-        alert('Select DOB');
-        return;
-      }
-      // 👉 FORMAT DOB
+async registerUser() {
+
+  console.log('Register button clicked');
+
+  console.log('Form values:', {
+    firstName: this.firstName,
+    lastName: this.lastName,
+    gender: this.gender,
+    formattedDob: this.dob,
+    motherTongue: this.motherTongue,
+    email: this.emailreg,
+    mobile: this.mobile,
+  });
+
+  // ✅ Validation
+  if (!this.firstName || !this.lastName || !this.emailreg || !this.mobile || !this.dob) {
+    this.showToast('Please fill all fields');
+    return;
+  }
+
   const formattedDob = new Date(this.dob).toISOString().split('T')[0];
 
-  console.log("Formatted DOB ", formattedDob);
+  try {
 
-       console.log(this.firstName);
-        console.log(this.lastName);
-        console.log(this.gender);
-        console.log(this.dob);
-        console.log(this.motherTongue);
-        console.log(this.emailreg);
-        console.log(this.mobile);
+    const rawRes = await this.loginService.register(
+      this.firstName,
+      this.lastName,
+      this.gender,
+      formattedDob,
+      this.motherTongue,
+      this.emailreg,
+      this.mobile
+    );
 
-        if (!this.firstName || !this.lastName || !this.emailreg || !this.mobile ) {
-          this.showToast('Please fill all fields');
-          return;
-        }
-     
-        // 🔹 Call Registration API
-        this.loginService.register(this.firstName, this.lastName, this.gender, formattedDob , this.motherTongue, this.emailreg, this.mobile)
-          .subscribe(res => {
-            if (res.errorCode === '203') {
-              this.showToast('Email or mobile already exists');
-            } else if (res.errorCode === '200') {
-                 const studentId = res.result.studentId;
-                  const otp = res.result.otp;
-                  const parentEmail = res.result.parentEmail;
+    console.log('📡 Registration API raw response:', rawRes);
 
-                  // 👉 Navigate to verify page with data
-                  this.router.navigate(['/verify'], {
-                    queryParams: {
-                      studentId: studentId,
-                      otp: otp,
-                      parentEmail: parentEmail
-                    }
-                  });
+    const res = typeof rawRes === 'string' ? JSON.parse(rawRes) : rawRes;
 
-            } else {
-              this.showToast('Unexpected response from server');
-            }
-          }, err => {
-            console.error(err);
-            this.showToast('Network error, try again');
-          });
-      }
+    console.log('✅ Parsed response:', res);
+
+    // ✅ FIXED SUCCESS CONDITION
+    if (
+      res.status === "Success" &&
+      res.errorCode === "200" &&
+      res.result
+    ) {
+
+      const { studentId, otp, parentEmail } = res.result;
+
+      console.log('➡️ Navigate to verify:', studentId, otp, parentEmail);
+
+      this.showToast('✅ Registration Successful');
+
+      this.router.navigate(['/verify'], {
+        queryParams: { studentId, otp, parentEmail }
+      });
+
+    }
+
+    // ❌ Duplicate case
+    else if (res?.errorCode === '203') {
+      this.showToast(res.errorMessage || 'Email or mobile already exists');
+    }
+
+    // ❌ Unknown response
+    else {
+      console.warn('Unexpected API structure:', res);
+      this.showToast(res?.message || 'Unexpected response from server');
+    }
+
+  } catch (err) {
+
+    console.error('❌ Registration Error:', err);
+
+    this.showToast('Network error. Check internet / SSL / API');
+  }
+}
+
+
 
      
  

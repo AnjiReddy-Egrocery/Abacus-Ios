@@ -1,9 +1,14 @@
 import type { CapacitorConfig } from '@capacitor/cli';
 
 const config: CapacitorConfig = {
-  appId: 'io.ionic.starter',
+  appId: 'com.dst.abacustrainer',
   appName: 'AbacusTrainer',
-  webDir: 'www'
+  webDir: 'www',
+
+  server:{
+    "cleartext": true
+  }
+  
 };
 
 export default config;

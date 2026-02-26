@@ -1,0 +1,56 @@
+<ion-content fullscreen class="signin-bg">
+  <div class="curve-bg"></div>
+
+  <!-- Header -->
+  <div class="ionic-header">
+    <div class="back-circle" (click)="goHome()"><ion-icon name="arrow-back-outline"></ion-icon></div>
+    <div class="header-title">{{ headerTitle }}</div>
+  </div>
+
+  <!-- Step Scroll -->
+  <div class="step-container">
+    <div class="arrow" (click)="scrollLeft()"><ion-icon name="chevron-back-outline"></ion-icon></div>
+    <div class="step-scroll" #scrollArea>
+      <div *ngFor="let q of quizData; let i=index"
+           #stepItem
+           class="step-item"
+           [ngClass]="{'active': currentIndex === i, 'answered': q.enterAnswer !== ''}"
+           (click)="goToQuestion(i)">
+        {{ i+1 }}
+      </div>
+    </div>
+    <div class="arrow" (click)="scrollRight()"><ion-icon name="chevron-forward-outline"></ion-icon></div>
+  </div>
+
+  <!-- Total Timer -->
+  <div class="total-time">Total Time : {{ totalTime }}</div>
+
+  <!-- Question Card -->
+  <div class="question-card">
+    <div class="question-header">
+      <div>Question {{ currentIndex+1 }}/{{ quizData.length }}</div>
+      <div>Time Spent: {{ questionTime }}</div>
+    </div>
+
+    <div class="question-box">
+      <div *ngFor="let part of splitQuestion(currentQuestion)">{{ part }}</div>
+    </div>
+
+    <div class="answer-section">
+      <span>Ans :</span>
+      <ion-input type="number"
+                 [(ngModel)]="answer"
+                 (ionInput)="onAnswerChange($event)"
+                 class="answer-input">
+      </ion-input>
+    </div>
+  </div>
+
+  <!-- Bottom Buttons -->
+  <div class="bottom-buttons">
+    <div class="prev-btn" (click)="previousQuestion()"><ion-icon name="play-back-outline"></ion-icon> PREV </div>
+    <div class="next-btn" (click)="nextQuestion()">SAVE & NEXT <ion-icon name="play-forward-outline"></ion-icon></div>
+  </div>
+
+  <div class="submit-btn" (click)="submitQuiz()">Submit Quiz</div>
+</ion-content>
