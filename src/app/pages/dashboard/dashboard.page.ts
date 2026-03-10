@@ -56,6 +56,31 @@ userImage: string = 'assets/headerprofile.png';
     this.router.navigateByUrl('/appsetting');
   }
 
+   goToAllocatedCourses(){
+    this.studentId = "2251"; // ✅ Temporary hardcode ID
+      console.log("Using Hardcoded Student ID:", this.studentId);
+
+  this.menuCtrl.close('mainMenu');
+
+  this.router.navigate(['/allocatedcourses'], {
+    queryParams: {
+      studentId: this.studentId
+    }
+  });
+  }
+
+  goToOrders(){
+    this.studentId = "2251"; // ✅ Temporary hardcode ID
+      console.log("Using Hardcoded Student ID:", this.studentId);
+    this.menuCtrl.close('mainMenu');
+
+  this.router.navigate(['/orders-page'], {
+    queryParams: {
+      studentId: this.studentId
+    }
+  });
+  }
+
   goToPrivacyPolicy(){
     this.menuCtrl.close('mainMenu'); // Close menu first
     this.router.navigateByUrl('/privacypolicy');

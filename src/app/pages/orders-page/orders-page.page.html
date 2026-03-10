@@ -1,0 +1,64 @@
+<ion-header class="custom-header">
+   <ion-toolbar>
+  <div class="ios-header">
+
+    <div class="back-circle" (click)="goHome()">
+      <ion-icon name="arrow-back-outline"></ion-icon>
+    </div>
+
+    <div class="header-title">
+       Orders List
+    </div>
+
+  </div>
+   </ion-toolbar>
+</ion-header>
+
+
+<ion-content fullscreen>
+
+  <div class="table-wrapper">
+
+    <table class="orders-table">
+
+      <thead>
+
+        <tr>
+          <th>#</th>
+          <th>Ordered On</th>
+          <th>Amount</th>
+          <th>Status</th>
+          <th>Action</th>
+        </tr>
+
+      </thead>
+
+      <tbody>
+
+        <tr *ngFor="let order of orders; let i=index">
+
+          <td>{{i+1}}</td>
+
+          <td>{{formatDate(order.orderedOn)}}</td>
+
+          <td>{{order.Amount}}</td>
+
+          <td>{{order.state}}</td>
+
+          <td>
+
+            <ion-button fill="clear" (click)="openOrder(order.orderId)">
+              <ion-icon name="eye-outline"></ion-icon>
+            </ion-button>
+
+          </td>
+
+        </tr>
+
+      </tbody>
+
+    </table>
+
+  </div>
+
+</ion-content>

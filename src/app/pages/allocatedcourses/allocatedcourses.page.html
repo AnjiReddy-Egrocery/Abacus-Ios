@@ -1,0 +1,39 @@
+<ion-header class="custom-header">
+   <ion-toolbar>
+  <div class="ios-header">
+
+    <div class="back-circle" (click)="goHome()">
+      <ion-icon name="arrow-back-outline"></ion-icon>
+    </div>
+
+    <div class="header-title">
+       Allocated Courses
+    </div>
+
+  </div>
+   </ion-toolbar>
+</ion-header>
+
+<ion-content fullscreen class="signin-bg">
+ 
+<div *ngFor="let course of courseTypes">
+
+  <div class="course-type-header">
+    {{course.courseType}}
+  </div>
+
+  <div *ngFor="let level of course.courseLevels"
+       class="level-card"
+       (click)="openLevel(level)">
+
+      {{level.courseLevel}}
+
+  </div>
+
+</div>
+
+</ion-content>
+
+
+
+

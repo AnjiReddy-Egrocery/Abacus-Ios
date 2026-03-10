@@ -1,0 +1,85 @@
+<ion-content fullscreen class="signin-bg">
+  <div class="exam-title ion-text-center" style="margin-top: 15px; margin-bottom: 15px;">
+    <h1>Exam Report</h1>
+  </div>
+
+  <div class="level-info ion-text-center">
+    <h2>{{ topicName }}</h2> 
+  </div>
+
+  <div class="ion-text-center">
+    <ion-button color="primary" fill="solid" (click)="backToDashboard()">Back to Dashboard</ion-button>
+  </div>
+
+  <div class="total-time ion-text-center">
+    <strong>Total Time: {{ totalTime }}</strong>
+  </div>
+
+  <!-- Stats Cards -->
+  <ion-grid class="stats-grid">
+    <ion-row>
+      <ion-col><div class="stat-card orange">Total Question <span>{{ totalQuestions }}</span></div></ion-col>
+      <ion-col><div class="stat-card orange">Attempted <span>{{ attemptedCount }}</span></div></ion-col>
+      <ion-col><div class="stat-card orange">Correct <span>{{ correctCount }}</span></div></ion-col>
+      <ion-col><div class="stat-card orange">Incorrect <span>{{ wrongCount }}</span></div></ion-col>
+    </ion-row>
+  </ion-grid>
+
+  <!-- Pie Chart -->
+ <!-- Pie Chart -->
+<!-- Chart + Legend Side by Side -->
+<div class="chart-legend-wrapper">
+
+  <div class="chart-box">
+    <canvas baseChart
+      [data]="pieChartData"
+      [type]="'doughnut'"
+      [options]="pieChartOptions">
+    </canvas>
+  </div>
+
+  <div class="legend-box">
+
+    <div class="legend-item">
+      <span class="color-circle attempted"></span>
+      <span>Attempted</span>
+    </div>
+
+    <div class="legend-item">
+      <span class="color-circle notattempted"></span>
+      <span>Not Attempted</span>
+    </div>
+
+    <div class="legend-item">
+      <span class="color-circle correct"></span>
+      <span>Correct</span>
+    </div>
+
+    <div class="legend-item">
+      <span class="color-circle incorrect"></span>
+      <span>Incorrect</span>
+    </div>
+
+  </div>
+
+</div>
+
+  <!-- Question Table -->
+  <ion-grid class="question-table">
+  <ion-row class="table-header">
+    <ion-col>Question</ion-col>
+    <ion-col>Answer</ion-col>
+    <ion-col>Given</ion-col>
+    <ion-col>Time Spent (s)</ion-col>
+  </ion-row>
+
+  <ion-row *ngFor="let q of questionData"
+    [ngClass]="{'correct': q.given && q.given === q.answer, 'incorrect': q.given && q.given !== q.answer}">
+    <ion-col [innerHTML]="q.question"></ion-col>
+    <ion-col>{{ q.answer }}</ion-col>        <!-- API correct answer -->
+    <ion-col>{{ q.given || '-' }}</ion-col>  <!-- student answer -->
+    <ion-col>{{ formatTime(q.time_taken) }}</ion-col>
+  </ion-row>
+</ion-grid>
+
+</ion-content>

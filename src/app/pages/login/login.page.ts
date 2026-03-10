@@ -82,15 +82,18 @@ async goToLogin() {
   try {
     const response = await this.loginService.loginUser(this.email, this.password);
 
+    console.log("Login API Response:", response);
+
     if (response.status === 'Success' && response.errorCode === '200') {
       const user = response.result;
-
+        console.log("Student ID from API:", user.studentId);
       const userData = {
         name: user.firstName + ' ' + user.lastName,
         email: user.parentEmail || '',
         image: user.profilePic || 'assets/ic_launcher.png',
         studentId: user.studentId // ✅ include studentId
       };
+      console.log("User Data Stored:", userData);
 
       // Store login info locally (optional)
       await this.authService.setLoginData(userData);

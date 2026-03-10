@@ -60,6 +60,70 @@ export const routes: Routes = [
     path: 'profile',
     loadChildren: () => import('./pages/profile/profile.module').then( m => m.ProfilePageModule)
   },
+  {
+    path: 'allocatedcourses',
+    loadChildren: () => import('./pages/allocatedcourses/allocatedcourses.module').then( m => m.AllocatedcoursesPageModule)
+  },
+  {
+    path: 'course-level',
+    loadChildren: () => import('./pages/allocated-course-levels/allocated-course-levels.module').then( m => m.AllocatedCourseLevelsPageModule)
+  },
+  {
+    path: 'allocated-topic-exam',
+    loadChildren: () => import('./pages/allocated-topic-exam/allocated-topic-exam.module').then( m => m.AllocatedTopicExamPageModule)
+  },
+  {
+    path: 'allocated-topic-exam-result-page',
+    loadChildren: () => import('./pages/allocated-topic-exam-result-page/allocated-topic-exam-result-page.module').then( m => m.AllocatedTopicExamResultPagePageModule)
+  },
+  {
+    path: 'allocated-topic-visualization-exam',
+    loadChildren: () => import('./pages/allocated-topic-visualization-exam/allocated-topic-visualization-exam.module').then( m => m.AllocatedTopicVisualizationExamPageModule)
+  },
+  {
+    path: 'allocated-topic-visualization-result-page',
+    loadChildren: () => import('./pages/allocated-topic-visualization-result-page/allocated-topic-visualization-result-page.module').then( m => m.AllocatedTopicVisualizationResultPagePageModule)
+  },
+  {
+    path: 'allocated-assignment-exam',
+    loadChildren: () => import('./pages/allocated-assignment-exam/allocated-assignment-exam.module').then( m => m.AllocatedAssignmentExamPageModule)
+  },
+  {
+    path: 'allocated-assignment-exam-result-page',
+    loadChildren: () => import('./pages/allocated-assignment-exam-result-page/allocated-assignment-exam-result-page.module').then( m => m.AllocatedAssignmentExamResultPagePageModule)
+  },
+  {
+    path: 'allocated-assignment-visualization-exam',
+    loadChildren: () => import('./pages/allocated-assignment-visualization-exam/allocated-assignment-visualization-exam.module').then( m => m.AllocatedAssignmentVisualizationExamPageModule)
+  },
+  {
+    path: 'allocated-assignment-visualization-result-page',
+    loadChildren: () => import('./pages/allocated-assignment-visualization-result-page/allocated-assignment-visualization-result-page.module').then( m => m.AllocatedAssignmentVisualizationResultPagePageModule)
+  },
+  {
+    path: 'allocated-view-topic-practices',
+    loadChildren: () => import('./pages/allocated-view-topic-practices/allocated-view-topic-practices.module').then( m => m.AllocatedViewTopicPracticesPageModule)
+  },
+  {
+    path: 'allocated-view-topic-result-practices',
+    loadChildren: () => import('./pages/allocated-view-topic-result-practices/allocated-view-topic-result-practices.module').then( m => m.AllocatedViewTopicResultPracticesPageModule)
+  },
+  {
+    path: 'orders-page',
+    loadChildren: () => import('./pages/orders-page/orders-page.module').then( m => m.OrdersPagePageModule)
+  },
+  {
+    path: 'orders-info-page',
+    loadChildren: () => import('./pages/orders-info-page/orders-info-page.module').then( m => m.OrdersInfoPagePageModule)
+  },
+  {
+    path: 'allocated-assignment-view-practices',
+    loadChildren: () => import('./pages/allocated-assignment-view-practices/allocated-assignment-view-practices.module').then( m => m.AllocatedAssignmentViewPracticesPageModule)
+  },
+  {
+    path: 'allocated-assignment-view-result-practices',
+    loadChildren: () => import('./pages/allocated-assignment-view-result-practices/allocated-assignment-view-result-practices.module').then( m => m.AllocatedAssignmentViewResultPracticesPageModule)
+  },
 
 ];
 

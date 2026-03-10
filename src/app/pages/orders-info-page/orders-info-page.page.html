@@ -1,0 +1,107 @@
+<ion-header class="custom-header">
+   <ion-toolbar>
+  <div class="ios-header">
+
+    <div class="back-circle" (click)="goHome()">
+      <ion-icon name="arrow-back-outline"></ion-icon>
+    </div>
+
+    <div class="header-title">
+       Orders Info
+    </div>
+
+  </div>
+   </ion-toolbar>
+</ion-header>
+
+
+<ion-content fullscreen>
+
+<div #rootLayout>
+
+<div class="container">
+
+<!-- ORDER TITLE -->
+<div class="order-title">
+
+  <div class="title-left">
+    ORDER INFO
+  </div>
+
+  <ion-button class="download-btn no-print" (click)="generatePDF()">
+    DOWNLOAD RECEIPT
+  </ion-button>
+
+</div>
+
+
+<!-- ORDER INFO TABLE -->
+
+<div class="info-row">
+  <div class="label">Ordered On</div>
+  <div class="colon">:</div>
+  <div class="value">{{formatDate(order?.orderedOn)}}</div>
+</div>
+
+<div class="info-row">
+  <div class="label">Order Status</div>
+  <div class="colon">:</div>
+  <div class="value">{{order?.state}}</div>
+</div>
+
+<div class="info-row">
+  <div class="label">Payment Through</div>
+  <div class="colon">:</div>
+  <div class="value">{{order?.paymentThrough}}</div>
+</div>
+
+<div class="info-row">
+  <div class="label">Payment Method</div>
+  <div class="colon">:</div>
+  <div class="value">{{order?.PaymentMethod}}</div>
+</div>
+
+<div class="info-row">
+  <div class="label">Currency</div>
+  <div class="colon">:</div>
+  <div class="value">{{order?.currency}}</div>
+</div>
+
+<div class="info-row">
+  <div class="label">Amount</div>
+  <div class="colon">:</div>
+  <div class="value">{{order?.Amount}}</div>
+</div>
+
+
+<!-- COURSES LIST -->
+
+<div class="course-title">
+  COURSES LIST
+</div>
+
+<div class="course-header">
+  <div class="sno">S No</div>
+  <div class="course">Course Info</div>
+  <div class="amount">Amount</div>
+</div>
+
+<div *ngFor="let sub of subscriptions; let i=index" class="course-card">
+
+  <div class="sno">{{i+1}}</div>
+
+  <div class="course">
+    {{sub.courseType}} - {{sub.courseLevel}}
+  </div>
+
+  <div class="amount">
+    {{sub.amount}}
+  </div>
+
+</div>
+
+</div>
+
+</div>
+
+</ion-content>

@@ -1,0 +1,165 @@
+/* Sign-in background / fullscreen content */
+.signin-bg {
+  position: relative;
+  overflow: hidden;
+  margin-top: 20px;
+  --padding-top: calc(env(safe-area-inset-top) + 0px);
+}
+
+/* Exam Title */
+.exam-title {
+  margin: 15px 0;
+  h1 {
+    font-size: 1.8rem;
+    font-weight: bold;
+    color: #4e1190;
+  }
+}
+
+/* Level Info */
+.level-info {
+  margin-bottom: 10px;
+  h2 {
+    font-size: 1.3rem;
+    font-weight: 600;
+    color: #333;
+  }
+}
+
+/* Total Time */
+.total-time {
+  margin: 10px 0;
+  font-size: 1rem;
+  font-weight: 500;
+}
+
+/* Stats Cards */
+.stats-grid {
+  margin: 15px 0;
+
+  .stat-card {
+    border: 2px solid #ff9000;
+    border-radius: 6px;
+    padding: 12px 8px;
+    text-align: center;
+    font-weight: bold;
+    color: #ff9000;
+    font-size: 0.95rem;
+
+    span {
+      display: block;
+      font-size: 1.2rem;
+      margin-top: 5px;
+    }
+  }
+}
+
+/* Pie Chart + Legend Wrapper */
+.chart-legend-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 40px;
+  flex-wrap: wrap;
+  margin-top: 20px;
+}
+
+/* Pie Chart Container */
+.chart-box {
+  width: 260px;
+}
+
+/* Legend */
+.legend-box {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 15px;
+  margin-top: 10px;
+
+  .legend-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 14px;
+
+    .color-circle {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      display: inline-block;
+    }
+
+    .attempted { background: #f39c12; }
+    .notattempted { background: #9b59b6; }
+    .correct { background: #27ae60; }
+    .incorrect { background: #e74c3c; }
+  }
+}
+
+/* Question Table */
+.question-table {
+  margin-top: 20px;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  overflow: hidden;
+
+  .table-header {
+    font-weight: bold;
+    background-color: #d0cece;
+    padding: 8px 0;
+    border-bottom: 2px solid #bfbfbf;
+  }
+
+  ion-row {
+    border-bottom: 1px solid #e5e5e5;
+    padding: 6px 0;
+    transition: background 0.3s, color 0.3s;
+
+    &.correct {
+      background-color: #27ae60;
+      color: #fff;
+    }
+    &.incorrect {
+      background-color: #c0392b;
+      color: #fff;
+    }
+  }
+
+  ion-row:last-child {
+    border-bottom: none;
+  }
+
+  ion-col {
+    padding: 8px 4px;
+    text-align: center;
+    font-size: 0.9rem;
+
+    img {
+      max-width: 100%;
+      height: auto;
+      border-radius: 4px;
+      margin-top: 4px;
+    }
+  }
+}
+
+/* Completion message */
+.completion-msg {
+  margin-top: 15px;
+  font-size: 0.9rem;
+  color: #333;
+}
+
+/* Pie Chart Canvas */
+.chart-box canvas {
+  max-width: 240px;
+}
+
+/* Next / Back Button */
+ion-button {
+  margin-top: 15px;
+  --border-radius: 8px;
+  font-weight: 600;
+}

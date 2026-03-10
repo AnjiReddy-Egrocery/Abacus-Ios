@@ -1,0 +1,78 @@
+<ion-header class="custom-header">
+   <ion-toolbar>
+  <div class="ios-header">
+
+    <div class="back-circle" (click)="goPreVious()">
+      <ion-icon name="arrow-back-outline"></ion-icon>
+    </div>
+
+    <div class="header-title">
+       Allocated Courses List
+    </div>
+
+  </div>
+   </ion-toolbar>
+</ion-header>
+
+<ion-content fullscreen class="signin-bg" >
+
+<div class="container">
+
+  <ng-container *ngFor="let item of displayList">
+
+    <!-- HEADER -->
+    <div *ngIf="item.type=='HEADER'" class="level-header">
+      {{item.title}}
+    </div>
+
+    <!-- ASSIGNMENT HEADER -->
+    <div *ngIf="item.type=='ASSIGNMENT_HEADER'" class="level-header">
+      {{item.title}}
+    </div>
+
+    <!-- TOPIC CARD -->
+    <ion-card *ngIf="item.type=='TOPIC' || item.type=='ASSIGNMENT_TOPIC'">
+
+      <ion-card-content>
+
+        <div class="topic-title">
+          {{item.title}}
+        </div>
+
+       <div class="buttons">
+
+  <!-- PRACTICE -->
+  <ion-button
+    size="small"
+    class="btn-practice"
+    (click)="openPractice(item)">
+    PracticeKnow
+  </ion-button>
+
+  <!-- VISUALIZATION -->
+  <ion-button
+    size="small"
+    class="btn-visual"
+    (click)="openVisualization(item)">
+    Visualization
+  </ion-button>
+
+  <!-- VIEW PRACTICE -->
+  <ion-button
+    size="small"
+     class="btn-view"
+    (click)="openViewPractice(item)">
+    ViewPractice
+  </ion-button>
+
+</div>
+
+      </ion-card-content>
+
+    </ion-card>
+
+  </ng-container>
+
+</div>
+
+</ion-content>

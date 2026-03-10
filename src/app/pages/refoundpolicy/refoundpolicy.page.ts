@@ -92,7 +92,7 @@ CONTACT US
 For any queries, feedback or support, contact us at:
 Email: info@abacustrainer.com
 Address: Narsingi, Gandipet, Hyderabad, Telangana
-`;
+Contact : 7799121321`;
 
     // Split by double line breaks for headings/paragraphs
     const lines = termsText.split('\n\n');

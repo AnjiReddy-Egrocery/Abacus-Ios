@@ -1,0 +1,98 @@
+.custom-header{
+  --background:#4e148c;
+}
+
+.header-container{
+  display:flex;
+  align-items:center;
+  padding:10px;
+}
+
+.back-circle{
+  width:36px;
+  height:36px;
+  border-radius:50%;
+  background:white;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  margin-right:10px;
+}
+
+.title{
+  color:white;
+  font-weight:bold;
+  font-size:16px;
+}
+
+.table-wrapper{
+  padding:10px;
+  overflow-x:auto;
+}
+
+.orders-table{
+  width:100%;
+  border-collapse:collapse;
+  text-align:center;
+}
+
+.orders-table th{
+  background:#f5f5f5;
+  border:1px solid #ccc;
+  padding:10px;
+  font-size:14px;
+}
+
+.orders-table td{
+  border:1px solid #ccc;
+  padding:10px;
+  font-size:13px;
+}
+.ionic-header {
+  display: flex;
+  background: #4e148c;
+  align-items: center;
+  
+  height: 50px;
+  
+  
+  
+}
+
+.custom-header ion-toolbar{
+  --background:#4e148c;
+  --color:#fff;
+  --min-height:0px;   /* header height control */
+  box-shadow:none;
+}
+
+.ios-header{
+  display:flex;
+  align-items:center;
+  padding-left:12px;
+  padding-right:12px;
+
+  padding-top:0px;   /* safe-area remove */
+  padding-bottom:12px;
+}
+
+
+.back-circle {
+  width: 34px;
+  height: 34px;
+  background: #ffffff;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.back-circle ion-icon{
+  font-size:18px;
+  color:#4e148c;
+}
+
+
+.main-container {
+  padding: 12px;
+}

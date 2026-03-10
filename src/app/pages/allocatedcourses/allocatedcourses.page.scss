@@ -1,0 +1,150 @@
+.header-toolbar {
+  --background: #4e1190;
+  color: white;
+}
+
+.signin-bg {
+  
+ overflow: hidden;
+  --padding-top: 2px;
+  margin-left: 12px;
+  margin-right: 12px;
+  margin-bottom: 10px;
+}
+
+/* Title */
+.header-title {
+  font-size: 20px;
+  font-weight: bold;
+  color: #fff;
+  margin-left: 16px;
+}
+
+.header {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  padding: 20px;
+  color: #fff;
+ 
+}
+
+.back-circle {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 10px;
+ 
+}
+
+.header h1 {
+  font-size: 26px;
+  font-weight: bold;
+  
+}
+.ionic-header {
+  display: flex;
+  background: #4e148c;
+  align-items: center;
+  
+  height: 50px;
+  
+  
+  
+}
+
+.custom-header ion-toolbar{
+  --background:#4e148c;
+  --color:#fff;
+  --min-height:0px;   /* header height control */
+  box-shadow:none;
+}
+
+.ios-header{
+  display:flex;
+  align-items:center;
+  padding-left:12px;
+  padding-right:12px;
+
+  padding-top:0px;   /* safe-area remove */
+  padding-bottom:12px;
+}
+
+
+.back-circle {
+  width: 34px;
+  height: 34px;
+  background: #ffffff;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.back-circle ion-icon{
+  font-size:18px;
+  color:#4e148c;
+}
+
+
+.main-container {
+  padding: 12px;
+}
+
+.course-type-header{
+
+  background:#752283;
+  color:#fff;
+
+  font-weight:bold;
+  font-size:16px;
+
+  padding:14px;
+  border-radius:6px;
+
+  margin-top:12px;
+}
+
+.level-card{
+
+  background:#fff;
+
+  padding:14px;
+  margin-top:10px;
+
+  border-radius:12px;
+
+  font-weight:600;
+
+  box-shadow:0 3px 8px rgba(0,0,0,0.18);
+}
+
+.topic-box{
+
+  margin-left:15px;
+  margin-top:10px;
+}
+
+.topic-header{
+
+  font-weight:bold;
+  color:#4e148c;
+  margin-bottom:6px;
+}
+
+.topic-item{
+
+  padding:8px;
+  background:#ffffff;
+
+  border-radius:8px;
+
+  margin-top:5px;
+
+  box-shadow:0 2px 5px rgba(0,0,0,0.1);
+}
