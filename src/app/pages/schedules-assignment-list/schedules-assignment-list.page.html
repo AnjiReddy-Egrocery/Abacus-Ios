@@ -1,0 +1,61 @@
+<ion-header>
+  <ion-toolbar class="header-toolbar">
+
+    <div class="header-container">
+
+      <div class="back-circle" (click)="backToBatch()">
+        <ion-icon name="arrow-back-outline"></ion-icon>
+      </div>
+
+      <div class="header-title">
+        {{headerText}}
+      </div>
+
+    </div>
+
+  </ion-toolbar>
+</ion-header>
+
+
+<ion-content>
+
+  <!-- Loader -->
+  <div class="loader" *ngIf="loading">
+    <ion-spinner name="crescent"></ion-spinner>
+  </div>
+
+  <!-- Topic List -->
+  <div *ngFor="let topic of topics">
+
+    <ion-card class="topic-card">
+
+      <ion-card-content>
+
+        <div class="topic-name">
+          {{topic.topicName}}
+        </div>
+
+        <div class="button-row">
+
+          <div class="btn practice" (click)="practiceNow(topic)">
+            Practice Now
+          </div>
+
+          <div class="btn visualization">
+            Visualization
+          </div>
+
+          <div class="btn result"
+               (click)="viewPractices(topic)">
+            View Practices : [{{topic.practicesCount}}]
+          </div>
+
+        </div>
+
+      </ion-card-content>
+
+    </ion-card>
+
+  </div>
+
+</ion-content>

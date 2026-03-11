@@ -12,7 +12,7 @@
     padding: 12px;
     
     ion-card-title {
-      font-size: 18px;
+      font-size: 16px;
       font-weight: bold;
       color: #4e148c;
     }
@@ -78,4 +78,22 @@
     margin: 15px auto;
     max-width: 700px;
   }
+}
+.batch-row{
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.batch-icon{
+  width: 50px;
+  height: 50px;
+}
+
+.batch-info{
+  flex: 1;
+}
+
+.batch-action{
+  margin-top: 6px;
 }

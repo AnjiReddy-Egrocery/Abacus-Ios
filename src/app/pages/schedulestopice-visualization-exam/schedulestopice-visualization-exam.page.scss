@@ -1,0 +1,219 @@
+.signin-bg {
+  --background: #4e148c;
+  position: relative;
+  overflow: hidden;
+  margin-top: 40px;
+
+    padding-top: calc(env(safe-area-inset-top) + 40px);
+}
+
+/* CURVE BACKGROUND */
+.curve-bg {
+  position: absolute;
+  top: 200px;
+  left: -70px;
+  right: -70px;
+  height: 100%;
+  background: #d9d9d9;
+  border-top-left-radius: 260px;
+  border-top-right-radius: 260px;
+  z-index: 0;
+}
+
+/* HEADER */
+.ionic-header{
+  display:flex;
+  align-items:center;
+  margin:12px;
+  margin-top:25px;
+}
+
+.back-circle {
+  width: 30px;
+  height: 30px;
+  background: white;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.back-circle ion-icon {
+  font-size: 16px;
+  color: black;
+}
+
+.header-title {
+  font-size: 20px;
+  font-weight: bold;
+  color: white;
+  margin-left: 16px;
+}
+
+
+/* STEP SCROLL */
+.step-container {
+  display: flex;
+  align-items: center;
+  background: white;
+  border-radius: 20px;
+  padding: 10px;
+  margin: 12px;
+  margin-top: 16px;
+}
+
+.step-container,
+.total-time,
+.question-card {
+  position: relative;
+  z-index: 2;
+}
+
+.question-image{
+  width:100%;
+  max-width:220px;
+  display:block;
+  margin:auto;
+}
+
+.question-text{
+  font-size:22px;
+  font-weight:bold;
+  text-align:center;
+}
+
+.step-scroll {
+  display: flex;
+  overflow-x: auto;
+  scroll-behavior: smooth;
+  padding: 5px 0;
+}
+
+.step-scroll::-webkit-scrollbar {
+  display: none;
+}
+
+.step-item {
+  flex: 0 0 auto;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: 2px solid gray;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 5px;
+}
+
+.step-item.active {
+  border: 3px solid orange;
+}
+
+.step-item.answered {
+  background: green;
+  color: white;
+  border: none;
+}
+
+.arrow {
+  width: 30px;
+  text-align: center;
+  font-size: 22px;
+}
+
+
+/* TOTAL TIMER */
+.total-time {
+  text-align: center;
+  font-size: 20px;
+  color: white;
+  margin: 15px 0;
+}
+
+
+/* QUESTION CARD */
+.question-card {
+  background: white;
+  border-radius: 20px;
+  padding: 20px;
+  position: relative;
+  z-index: 3;
+  margin: 12px;
+}
+
+.question-header {
+  display: flex;
+  justify-content: space-between;
+  font-weight: bold;
+}
+
+.question-box {
+  background: #dcd3f2;
+  margin: 20px auto;
+  width: 140px;
+  text-align: center;
+  padding: 15px;
+  border-radius: 10px;
+  font-size: 20px;
+}
+
+
+/* ANSWER */
+.answer-section {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.answer-input {
+  border: 2px solid orange;
+  width: 120px;
+  margin-left: 10px;
+  text-align: center;
+}
+
+
+/* BOTTOM BUTTONS */
+.bottom-buttons {
+  display: flex;
+  justify-content: space-between;
+  margin: 18px;
+  position: relative;
+  z-index: 5;
+}
+
+.prev-btn {
+  border: 2px solid #5b1fa6;
+  border-radius: 25px;
+  padding: 10px 20px;
+  color: #5b1fa6;
+  font-weight: bold;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.next-btn {
+  background: orange;
+  border-radius: 25px;
+  padding: 10px 20px;
+  color: white;
+  font-weight: bold;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+/* SUBMIT BUTTON */
+.submit-btn {
+  background: #5b1fa6;
+  margin: 30px auto;
+  width: 200px;
+  text-align: center;
+  padding: 12px;
+  border-radius: 12px;
+  color: white;
+  font-size: 20px;
+  position: relative;
+  z-index: 5;
+}

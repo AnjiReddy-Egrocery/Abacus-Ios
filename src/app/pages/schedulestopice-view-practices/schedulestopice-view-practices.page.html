@@ -1,0 +1,40 @@
+<ion-header class="custom-header">
+   <ion-toolbar>
+  <div class="ios-header">
+
+    <div class="back-circle" (click)="goPreVious()">
+      <ion-icon name="arrow-back-outline"></ion-icon>
+    </div>
+
+    <div class="header-title" style="margin-left: 12px;">
+      View Level Practices 
+    </div>
+
+  </div>
+   </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+
+  <ion-spinner *ngIf="loading" name="dots" class="spinner-center"></ion-spinner>
+
+  <ion-list *ngIf="!loading && practices.length > 0">
+    <ion-card *ngFor="let practice of practices">
+      <ion-card-header>
+        <ion-card-subtitle>Practiced On: {{ practice.startedOn }}</ion-card-subtitle>
+        <ion-card-title>{{ practice.topicName }}</ion-card-title>
+      </ion-card-header>
+
+      <ion-card-content>
+        <ion-button expand="block" color="danger" (click)="openViewResult(practice)">
+          View Result
+        </ion-button>
+      </ion-card-content>
+    </ion-card>
+  </ion-list>
+
+  <div *ngIf="!loading && practices.length === 0" class="no-data">
+    No Practices Found
+  </div>
+
+</ion-content>

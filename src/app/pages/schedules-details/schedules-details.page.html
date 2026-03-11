@@ -1,0 +1,62 @@
+<ion-header>
+  <ion-toolbar class="header-toolbar">
+
+    <div class="header-row">
+
+      <div class="back-circle" (click)="goBack()">
+        <ion-icon name="arrow-back-outline"></ion-icon>
+      </div>
+
+      <div class="header-title">
+        "{{batchName}}" Schedule Details
+      </div>
+
+    </div>
+
+  </ion-toolbar>
+</ion-header>
+
+
+<ion-content>
+
+  <div *ngIf="loading" class="spinner-center">
+    <ion-spinner name="crescent"></ion-spinner>
+  </div>
+
+  <div *ngFor="let d of dates">
+
+    <ion-card class="date-card">
+
+      <ion-card-content>
+
+        <div class="date-title">
+          {{d.scheduleDate}}
+        </div>
+
+        <div class="button-row">
+
+          <ion-button
+            color="warning"
+            class="btn"
+            (click)="viewTopics(d)"
+          >
+            View Topics
+          </ion-button>
+
+          <ion-button
+            color="success"
+            class="btn"
+            (click)="viewAssignments(d)"
+          >
+            View Assignments
+          </ion-button>
+
+        </div>
+
+      </ion-card-content>
+
+    </ion-card>
+
+  </div>
+
+</ion-content>

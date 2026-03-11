@@ -3,27 +3,32 @@
    
 
   <ion-card-content class="batch-card-content">
-    <div class="batch-row">
-      
-      <!-- Left Icon -->
-      <ion-avatar class="batch-icon">
-        <img src="../../../assets/users.png" alt="Batch Icon">
-      </ion-avatar>
+   <div class="batch-row">
 
-      <!-- Batch Info -->
-      <div class="batch-info">
-        <ion-card-title>{{ batch.batchName }}</ion-card-title>
-        <ion-card-subtitle>
-          Start Date: {{ batch.startDate }} | {{ batch.startTime }} - {{ batch.endTime }}
-        </ion-card-subtitle>
-        <div class="batch-action">
-        <ion-button color="danger" fill="solid" (click)="viewBatchSchedule(batch)">
-          View Batch Schedule
-        </ion-button>
-      </div>
-      </div>
+  <!-- Left Icon -->
+  <ion-avatar class="batch-icon">
+    <img src="../../../assets/users.png" alt="Batch Icon">
+  </ion-avatar>
 
+  <!-- Batch Info -->
+  <div class="batch-info">
+    <ion-card-title>{{ batch.batchName }}</ion-card-title>
+
+    <ion-card-subtitle>
+      Start Date: {{ batch.startDate }} | {{ batch.startTime }} - {{ batch.endTime }}
+    </ion-card-subtitle>
+    <ion-card-subtitle>
+      Start Time: {{ batch.startTime }} - {{ batch.endTime }}
+    </ion-card-subtitle>
+
+    <div class="batch-action">
+      <ion-button color="danger" fill="solid" (click)="viewBatchSchedule(batch)">
+        View Batch Schedule
+      </ion-button>
     </div>
+  </div>
+
+</div>
   </ion-card-content>
 
   </ion-card>

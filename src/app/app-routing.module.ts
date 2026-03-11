@@ -168,6 +168,42 @@ export const routes: Routes = [
     path: 'schedules',
     loadChildren: () => import('./pages/schedules/schedules.module').then( m => m.SchedulesPageModule)
   },
+  {
+    path: 'schedules-details',
+    loadChildren: () => import('./pages/schedules-details/schedules-details.module').then( m => m.SchedulesDetailsPageModule)
+  },
+  {
+    path: 'schedules-topic-list',
+    loadChildren: () => import('./pages/schedules-topic-list/schedules-topic-list.module').then( m => m.SchedulesTopicListPageModule)
+  },
+  {
+    path: 'schedules-assignment-list',
+    loadChildren: () => import('./pages/schedules-assignment-list/schedules-assignment-list.module').then( m => m.SchedulesAssignmentListPageModule)
+  },
+  {
+    path: 'schedulestopicexam',
+    loadChildren: () => import('./pages/schedulestopicexam/schedulestopicexam.module').then( m => m.SchedulestopicexamPageModule)
+  },
+  {
+    path: 'schedulestopicexam-result',
+    loadChildren: () => import('./pages/schedulestopicexam-result/schedulestopicexam-result.module').then( m => m.SchedulestopicexamResultPageModule)
+  },
+  {
+    path: 'schedulestopice-visualization-exam',
+    loadChildren: () => import('./pages/schedulestopice-visualization-exam/schedulestopice-visualization-exam.module').then( m => m.SchedulestopiceVisualizationExamPageModule)
+  },
+  {
+    path: 'schedulestopic-visualization-result',
+    loadChildren: () => import('./pages/schedulestopic-visualization-result/schedulestopic-visualization-result.module').then( m => m.SchedulestopicVisualizationResultPageModule)
+  },
+  {
+    path: 'schedulestopice-view-practices',
+    loadChildren: () => import('./pages/schedulestopice-view-practices/schedulestopice-view-practices.module').then( m => m.SchedulestopiceViewPracticesPageModule)
+  },
+  {
+    path: 'schedulestopic-view-practices-result',
+    loadChildren: () => import('./pages/schedulestopic-view-practices-result/schedulestopic-view-practices-result.module').then( m => m.SchedulestopicViewPracticesResultPageModule)
+  },
 
 ];
 

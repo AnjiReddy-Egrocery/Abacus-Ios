@@ -27,10 +27,15 @@ export class SchedulesPage implements OnInit {
   ) {}
 
   ngOnInit() {
-    this.route.queryParams.subscribe(params => {
-      this.studentId = params['studentId'];
-      this.loadBatches(this.studentId);
-    });
+    this.studentId = '2251'; // temporary test
+    console.log("StudentId Loaded:", this.studentId);
+
+  this.loadBatches(this.studentId);
+
+    // this.route.queryParams.subscribe(params => {
+    //   this.studentId = params['studentId'];
+    //   this.loadBatches(this.studentId);
+    // });
   }
 
   async loadBatches(studentId: string) {
@@ -60,7 +65,10 @@ export class SchedulesPage implements OnInit {
   }
 
   viewBatchSchedule(batch: BatchResult) {
-    this.router.navigate(['/batch-dates-details'], {
+    console.log("StudentId:", this.studentId);
+    console.log("BatchId:", batch.batchId);
+
+    this.router.navigate(['/schedules-details'], {
       queryParams: {
         studentId: this.studentId,
         batchId: batch.batchId,

@@ -1,0 +1,83 @@
+.header-toolbar {
+  --background: #4e148c;
+  color: white;
+}
+
+.header-container {
+  display: flex;
+  align-items: center;
+  padding: 10px;
+}
+
+.back-circle {
+  width: 36px;
+  height: 36px;
+  background: white;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 10px;
+}
+
+.back-circle ion-icon {
+  color: #4e148c;
+  font-size: 20px;
+}
+
+.header-title {
+  color: white;
+  font-size: 14px;
+  font-weight: bold;
+}
+
+/* Topic Card */
+
+.topic-card {
+  border-radius: 20px;
+  margin: 12px;
+}
+
+.topic-name {
+  font-size: 18px;
+  font-weight: 500;
+  margin-bottom: 14px;
+}
+
+/* Buttons Row */
+
+.button-row {
+  display: flex;
+  justify-content: space-between;
+}
+
+.btn {
+  flex: 1;
+  text-align: center;
+  padding: 10px;
+  border-radius: 10px;
+  margin: 4px;
+  font-size: 12px;
+  font-weight: bold;
+  color: white;
+}
+
+.practice {
+  background: #ff6600;
+}
+
+.visualization {
+  background: #ff6600;
+}
+
+.result {
+  background: #4e148c;
+}
+
+/* Loader */
+
+.loader {
+  display: flex;
+  justify-content: center;
+  margin-top: 40px;
+}
