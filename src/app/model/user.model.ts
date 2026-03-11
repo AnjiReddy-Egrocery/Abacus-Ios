@@ -3,4 +3,7 @@ export interface User {
   studentId: string;
   image?: string;
   email?: string;
+
+ 
+  level?: string;
 }

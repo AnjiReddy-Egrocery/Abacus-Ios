@@ -238,6 +238,14 @@ ion-tab-button.tab-selected {
   font-size: 20px;
   font-weight: bold;
 }
+.next-class-text1 {
+  font-size: 18px;
+  font-weight: bold;
+}
+.download-btn{
+--background:#FF6F00;
+}
+
 .join-now {
   background-color: #ff6600; /* orange_background */
   color: #fff;
@@ -250,11 +258,38 @@ ion-tab-button.tab-selected {
 
 /* Bottom Card */
 .bottom-card {
-  background-color: #dddada; /* bottom_card_view */
+  background: #FFF; /* bottom_card_view */
   border-bottom-left-radius: 20px;
   border-bottom-right-radius: 20px;
   margin-bottom: 8px;
   padding: 8px 16px;
+  border: 1px solid #f2e3e3;
+}
+.subscription-card {
+   display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border: 1px solid #f2e3e3;
+  padding: 15px;
+  border-radius: 8px;
+  background: #fff;
+}
+.left-content h3{
+  margin: 0;
+  font-size: 18px;
+}
+
+.view-details{
+  display: block;
+  margin-top: 6px;
+  color: blue;
+  text-decoration: none;
+  font-size: 14px;
+}
+
+.right-image img{
+  width: 80px;
+  height: auto;
 }
 .next-class-info {
   display: flex;
@@ -314,19 +349,3 @@ ion-tab-button.tab-selected {
   object-fit: contain;
 }
 
-/* Shadows below the card */
-// .shadow {
-//   border-radius: 15px;
-
-// }
-
-// .shadow-one {
-//   background: #A8DCF4; /* skyblue shadow */
-//   margin: -31px 32px 0 32px;
-// }
-
-// .shadow-two {
-//   background: #A8DCF4; /* second shadow layer */
-//   opacity: 0.6;
-//   margin: -11px 37px 0 37px;
-// }

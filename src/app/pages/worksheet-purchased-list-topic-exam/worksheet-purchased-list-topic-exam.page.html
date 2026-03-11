@@ -1,0 +1,130 @@
+<ion-content fullscreen class="signin-bg">
+
+  <div class="curve-bg"></div>
+
+  <!-- HEADER -->
+  <div class="ionic-header">
+
+    <div class="back-circle" (click)="goBack()">
+      <ion-icon name="arrow-back-outline"></ion-icon>
+    </div>
+
+    <div class="header-title">
+      {{topicName}}
+    </div>
+
+  </div>
+
+
+  <!-- QUESTION STEPS -->
+  <div class="step-container">
+
+    <div class="arrow" (click)="scrollLeft()">
+      <ion-icon name="chevron-back-outline"></ion-icon>
+    </div>
+
+    <div class="step-scroll" #scrollArea>
+
+      <div
+        *ngFor="let q of questions; let i=index"
+        #stepItem
+        class="step-item"
+        [ngClass]="{
+          'active': currentIndex === i,
+          'answered': isAnswered[i]
+        }"
+        (click)="goToQuestion(i)"
+      >
+        {{i+1}}
+      </div>
+
+    </div>
+
+    <div class="arrow" (click)="scrollRight()">
+      <ion-icon name="chevron-forward-outline"></ion-icon>
+    </div>
+
+  </div>
+
+
+  <!-- TOTAL TIMER -->
+  <div class="total-time">
+    Total Time : {{ totalTime }}
+  </div>
+
+
+  <!-- QUESTION CARD -->
+  <div class="question-card">
+
+    <div class="question-header">
+      <div>
+        Question {{currentIndex+1}} / {{questions.length}}
+      </div>
+
+      <div>
+        Time Spent: {{questionTime}}
+      </div>
+    </div>
+
+
+    <!-- QUESTION -->
+    <div class="question-box">
+
+      <img
+    *ngIf="getQuestionImage(currentQuestion)"
+    [src]="getQuestionImage(currentQuestion)"
+    class="question-image"
+  />
+
+  <!-- TEXT QUESTION -->
+  <div
+    *ngIf="!getQuestionImage(currentQuestion)"
+    class="question-text"
+  >
+    <div *ngFor="let part of splitQuestion(currentQuestion)">
+    {{ part }}
+  </div>
+  </div>
+
+    </div>
+
+
+    <!-- ANSWER -->
+    <div class="answer-section">
+
+      <span>Ans :</span>
+
+      <ion-input
+        type="number"
+        [(ngModel)]="answers"
+        (ionInput)="onAnswerChange($event)"
+        class="answer-input">
+      </ion-input>
+
+    </div>
+
+  </div>
+
+
+  <!-- BUTTONS -->
+
+
+   <div class="bottom-buttons">
+
+  <div class="prev-btn" (click)="prevQuestion()">
+    <ion-icon name="play-back-outline"></ion-icon>
+    PREV
+  </div>
+
+  <div class="next-btn" (click)="nextQuestion()">
+    SAVE AND NEXT
+    <ion-icon name="play-forward-outline"></ion-icon>
+  </div>
+
+</div>
+
+<div class="submit-btn" (click)="submitExam()">
+  Submit Exam
+</div>
+
+</ion-content>

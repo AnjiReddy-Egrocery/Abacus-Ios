@@ -1,0 +1,69 @@
+<ion-header class="custom-header">
+   <ion-toolbar>
+  <div class="ios-header">
+
+    <div class="back-circle" (click)="goHome()">
+      <ion-icon name="arrow-back-outline"></ion-icon>
+    </div>
+
+    <div class="header-title" style="padding-left: 12px;">
+       Courses Levels Topic
+    </div>
+
+  </div>
+   </ion-toolbar>
+
+   </ion-header>
+
+<ion-content >
+
+<ion-card *ngFor="let topic of topics">
+
+  <ion-card-header>
+
+    <ion-card-title>
+      {{topic.topic}}
+    </ion-card-title>
+
+  </ion-card-header>
+
+  <ion-card-content>
+
+    <ion-grid>
+
+      <ion-row>
+
+        <ion-col size="4">
+          <ion-button class="btn-practice" size="small"
+            (click)="practice(topic)">
+            PracticeKnow
+          </ion-button>
+        </ion-col>
+
+        <ion-col size="4">
+          <ion-button class="btn-view" size="small"
+            (click)="viewPractice(topic)">
+            View Practices
+          </ion-button>
+        </ion-col>
+
+        <ion-col size="4">
+          <ion-button  class="btn-visual" size="small"
+            (click)="visualization(topic)">
+            Visualization
+          </ion-button>
+        </ion-col>
+
+      </ion-row>
+
+    </ion-grid>
+
+  </ion-card-content>
+
+</ion-card>
+
+<div *ngIf="topics.length==0" style="text-align:center;margin-top:40px">
+  {{emptyMessage}}
+</div>
+
+</ion-content>

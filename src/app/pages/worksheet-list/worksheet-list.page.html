@@ -1,0 +1,64 @@
+<ion-header class="custom-header">
+   <ion-toolbar>
+  <div class="ios-header">
+
+    <div class="back-circle" (click)="goHome()">
+      <ion-icon name="arrow-back-outline"></ion-icon>
+    </div>
+
+    <div class="header-title" style="padding-left: 12px;">
+       Orders
+    </div>
+
+  </div>
+   </ion-toolbar>
+</ion-header>
+<ion-content>
+
+  <!-- Empty Message -->
+  <div *ngIf="emptyMessage" class="empty-message">
+    {{emptyMessage}}
+  </div>
+
+  <!-- Order List -->
+  <div *ngIf="levels.length > 0">
+
+    <ion-card *ngFor="let item of levels" (click)="openPurchasedPage()">
+
+      <div class="order-card">
+
+        <!-- Course Image -->
+        <div class="order-img">
+
+          <img
+          *ngIf="item.courseType?.toLowerCase().includes('abacus junior')"
+          src="../../../assets/abacusjunior.png">
+
+          <img
+          *ngIf="item.courseType?.toLowerCase().includes('abacus senior')"
+          src="../../../assets/abacussenior.png">
+
+          <img
+          *ngIf="item.courseType?.toLowerCase().includes('vedic maths')"
+          src="../../../assets/vedicmaths.png">
+
+        </div>
+
+        <!-- Course Text -->
+        <div class="order-text">
+
+          <h2>{{item.courseType}}</h2>
+
+          <p>
+            Master mental math with ancient techniques
+          </p>
+
+        </div>
+
+      </div>
+
+    </ion-card>
+
+  </div>
+
+</ion-content>

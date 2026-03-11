@@ -1,0 +1,58 @@
+ion-card{
+  margin:10px;
+  border-radius:12px;
+  box-shadow:0 4px 8px rgba(0,0,0,0.15);
+}
+
+.level-card{
+  padding:16px;
+}
+
+.level-card h2{
+  font-size:18px;
+  font-weight:bold;
+  margin:0;
+}
+
+.empty{
+  text-align:center;
+  margin-top:40px;
+  color:red;
+}
+.custom-header ion-toolbar{
+  --background:#4e148c;
+  --color:#fff;
+  --min-height:0px;   /* header height control */
+  box-shadow:none;
+}
+
+.ios-header{
+  display:flex;
+  align-items:center;
+  padding-left:12px;
+  padding-right:12px;
+
+  padding-top:0px;   /* safe-area remove */
+  padding-bottom:12px;
+}
+
+
+.back-circle {
+  width: 34px;
+  height: 34px;
+  background: #ffffff;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.back-circle ion-icon{
+  font-size:18px;
+  color:#4e148c;
+}
+
+
+.main-container {
+  padding: 12px;
+}

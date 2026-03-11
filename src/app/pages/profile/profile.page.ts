@@ -2,6 +2,8 @@ import { CommonModule } from '@angular/common';
 import { Component, CUSTOM_ELEMENTS_SCHEMA, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { IonicModule } from '@ionic/angular';
+import { User } from 'src/app/model/user.model';
+import { Auth } from 'src/app/services/auth';
 
 @Component({
   selector: 'app-profile',
@@ -13,26 +15,48 @@ import { IonicModule } from '@ionic/angular';
 })
 export class ProfilePage implements OnInit {
 
-  user = {
-    firstName: 'Divya',
-    lastName: '',
-    level: 'Senior Level-1 : Abacus',
-    profilePic: 'assets/headerprofile.png',
-    progress: 75,
-    achievements: ['Set Reminder', 'Mental Math Pro', 'Addition Master'],
-    recentActivity: [
-      { label: 'Completed Quiz', value: 'Abacus Speed Test' },
-      { label: 'Played Abacus Race', value: 'Level 3' },
-      { label: 'Details', value: 'Join us for a competitive test to showcase your skills!' }
-    ]
-  };
+    user: any = {};
+  imageBaseUrl = "https://www.abacustrainer.com/assets/student_images/";
 
-  constructor() { }
+  constructor(private authService: Auth) {}
 
-  ngOnInit() {}
+  async ngOnInit() {
+    await this.loadUser();
+  }
 
-  editProfile() {
-    console.log('Edit profile clicked');
-    // navigate to edit page or modal
+  async loadUser() {
+
+    const userData: User | null = await this.authService.getUser();
+
+    if(userData){
+
+      this.user.firstName = userData.name;
+      this.user.lastName = '';
+
+      this.user.profilePic = userData.image
+        ? this.imageBaseUrl + userData.image
+        : 'assets/headerprofile.png';
+
+      this.user.level = userData.level || 'Senior Level-1 : Abacus';
+
+      this.user.progress = 75;
+
+      this.user.achievements = [
+        'Set Reminder',
+        'Mental Math Pro',
+        'Addition Master'
+      ];
+
+      this.user.recentActivity = [
+        { label: 'Completed Quiz', value: 'Abacus Speed Test' },
+        { label: 'Played Abacus Race', value: 'Level 3' },
+        { label: 'Details', value: 'Join us for a competitive test to showcase your skills!' }
+      ];
+    }
+
+  }
+
+  editProfile(){
+
   }
 }

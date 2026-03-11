@@ -69,9 +69,7 @@
    <ion-content class="ion-padding">
 
 <ng-container *ngIf="activeTab === 'home'">
-
-
-    Schedule Section Card
+   
   <div class="schedule-card">
     <!-- Header -->
     <div class="schedule-header">
@@ -79,7 +77,6 @@
       <img src="../../../assets/calender_icon.png"  class="schedule-icon" (click)="goToSchedule()"/>
     </div>
 
-    Top Card: Next Class
     <div class="top-card">
       <div class="next-class-text">Next Class</div>
       <div class="join-now">Join Now</div>
@@ -103,6 +100,29 @@
       </div>
     </div>
   </div>
+
+
+   <div class="top-card">
+      <div class="next-class-text1">Purchased WorkSheet Subscription List</div>
+    
+    </div>
+
+   <div class="subscription-card">
+  <div class="right-image">
+    <img src="../../../assets/book.png" alt="Worksheet">
+  </div>
+  <div class="left-content">
+    <h3>Subscribed</h3>
+    <h4>Worksheets</h4>
+    <ion-button class="download-btn" (click)="ViewMoreDetails()">
+    View More Details
+  </ion-button>
+  </div>
+
+  
+
+</div>
+  
 
   <!-- Play With Numbers Card -->
   <div class="play-number-card" (click)="goToPlaywithNumbers('play')">
@@ -131,9 +151,8 @@
 
   <app-class *ngIf="activeTab === 'class'"></app-class>
   <app-ai-generation *ngIf="activeTab === 'ai'"></app-ai-generation>
-  <app-schedules *ngIf="activeTab === 'schedule'"></app-schedules>
-
-
+  <app-schedules *ngIf="activeTab === 'schedules'" [studentId]="selectedStudentId"></app-schedules>
+  <app-profile *ngIf="activeTab === 'profile'"></app-profile>
 </ion-content>
 
     <!-- FOOTER WITH TABS -->
@@ -156,15 +175,14 @@
       <img src="../../../assets/iconsabacus.png" class="tab-icon" />
     </ion-tab-button>
 
-      <ion-tab-button (click)="selectTab('schedule')" [class.activated]="activeTab==='schedule'">
+      <ion-tab-button (click)="selectTab('schedules')" [class.activated]="activeTab==='schedules'">
         <ion-icon name="calendar-outline"></ion-icon>
         <ion-label>Schedule</ion-label>
       </ion-tab-button>
-
-          <ion-tab-button routerLink="/profile">
-      <ion-icon name="person-outline"></ion-icon>
-      <ion-label>Profile</ion-label>
-    </ion-tab-button>
+      <ion-tab-button (click)="selectTab('profile')" [class.activated]="activeTab==='profile'">
+        <ion-icon name="person-outline"></ion-icon>
+        <ion-label>Profile</ion-label>
+      </ion-tab-button>
 
     </ion-tab-bar>
   </ion-tabs>

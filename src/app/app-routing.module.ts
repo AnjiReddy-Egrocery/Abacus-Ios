@@ -124,6 +124,50 @@ export const routes: Routes = [
     path: 'allocated-assignment-view-result-practices',
     loadChildren: () => import('./pages/allocated-assignment-view-result-practices/allocated-assignment-view-result-practices.module').then( m => m.AllocatedAssignmentViewResultPracticesPageModule)
   },
+  {
+    path: 'worksheet-list',
+    loadChildren: () => import('./pages/worksheet-list/worksheet-list.module').then( m => m.WorksheetListPageModule)
+  },
+  {
+    path: 'worksheet-purchased-list',
+    loadChildren: () => import('./pages/worksheet-purchased-list/worksheet-purchased-list.module').then( m => m.WorksheetPurchasedListPageModule)
+  },
+  {
+    path: 'worksheet-purchased-list-topic',
+    loadChildren: () => import('./pages/worksheet-purchased-list-topic/worksheet-purchased-list-topic.module').then( m => m.WorksheetPurchasedListTopicPageModule)
+  },
+  {
+    path: 'worksheet-purchased-list-topic-exam',
+    loadChildren: () => import('./pages/worksheet-purchased-list-topic-exam/worksheet-purchased-list-topic-exam.module').then( m => m.WorksheetPurchasedListTopicExamPageModule)
+  },
+  {
+    path: 'worksheet-purchased-list-topic-exam-result',
+    loadChildren: () => import('./pages/worksheet-purchased-list-topic-exam-result/worksheet-purchased-list-topic-exam-result.module').then( m => m.WorksheetPurchasedListTopicExamResultPageModule)
+  },
+  {
+    path: 'worksheet-purchased-list-visualization-topic-exam',
+    loadChildren: () => import('./pages/worksheet-purchased-list-visualization-topic-exam/worksheet-purchased-list-visualization-topic-exam.module').then( m => m.WorksheetPurchasedListVisualizationTopicExamPageModule)
+  },
+  {
+    path: 'worksheet-purchased-list-visualization-topic-exam-result',
+    loadChildren: () => import('./pages/worksheet-purchased-list-visualization-topic-exam-result/worksheet-purchased-list-visualization-topic-exam-result.module').then( m => m.WorksheetPurchasedListVisualizationTopicExamResultPageModule)
+  },
+  {
+    path: 'worksheet-purchased-list-view-practices',
+    loadChildren: () => import('./pages/worksheet-purchased-list-view-practices/worksheet-purchased-list-view-practices.module').then( m => m.WorksheetPurchasedListViewPracticesPageModule)
+  },
+  {
+    path: 'worksheet-purchased-list-view-result',
+    loadChildren: () => import('./pages/worksheet-purchased-list-view-result/worksheet-purchased-list-view-result.module').then( m => m.WorksheetPurchasedListViewResultPageModule)
+  },
+  {
+    path: 'update-profile',
+    loadChildren: () => import('./pages/update-profile/update-profile.module').then( m => m.UpdateProfilePageModule)
+  },
+  {
+    path: 'schedules',
+    loadChildren: () => import('./pages/schedules/schedules.module').then( m => m.SchedulesPageModule)
+  },
 
 ];
 

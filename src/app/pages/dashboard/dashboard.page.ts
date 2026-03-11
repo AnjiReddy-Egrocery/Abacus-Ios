@@ -5,11 +5,14 @@ import { Router } from '@angular/router';
 import { IonicModule, IonMenu, MenuController, ToastController } from '@ionic/angular';
 import { User } from 'src/app/model/user.model';
 import { Auth } from 'src/app/services/auth';
+import { ProfilePage } from '../profile/profile.page';
+import { SchedulesPage } from '../schedules/schedules.page';
+
 
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-    imports: [IonicModule, FormsModule, CommonModule],
+    imports: [IonicModule, FormsModule, CommonModule, ProfilePage, SchedulesPage],
       schemas: [CUSTOM_ELEMENTS_SCHEMA],// ✅ ADD THIS LINE
   templateUrl: './dashboard.page.html',
   styleUrls: ['./dashboard.page.scss'],
@@ -20,15 +23,20 @@ export class DashboardPage {
 studentId: string = '';
 userImage: string = 'assets/headerprofile.png';
 
+
+  selectedStudentId!: string;      // for Schedule component
+
  
 
   
    activeTab: string = 'home'; 
   constructor(private authService: Auth,private menuCtrl: MenuController,private router: Router, private toastController: ToastController) {}
 
-  async ngOnInit() {
-     await this.loadUser();
-  }
+  
+  async ionViewWillEnter() {
+  await this.loadUser();
+  this.selectedStudentId = this.studentId; // default value
+}
 
   async loadUser() {
     const user: User | null = await this.authService.getUser();
@@ -96,6 +104,19 @@ userImage: string = 'assets/headerprofile.png';
     this.router.navigateByUrl('/helpand-supoort');
   }
 
+  ViewMoreDetails(){
+     this.studentId = "2251"; // ✅ Temporary hardcode ID
+      console.log("Using Hardcoded Student ID:", this.studentId);
+
+  this.menuCtrl.close('mainMenu');
+
+  this.router.navigate(['/worksheet-list'], {
+    queryParams: {
+      studentId: this.studentId
+    }
+  });
+  }
+
   goToRefoundPolicy(){
     this.menuCtrl.close('mainMenu'); // Close menu first
     this.router.navigateByUrl('/refoundpolicy');
@@ -105,6 +126,10 @@ userImage: string = 'assets/headerprofile.png';
     this.menuCtrl.close('mainMenu'); // Close menu first
     this.router.navigateByUrl('/app-progress');
   }
+
+  goToProfile(){
+  this.router.navigate(['/profile']);
+    }
 
    goToAboutUs() {
     this.menuCtrl.close('mainMenu'); // Close menu first
@@ -140,15 +165,13 @@ userImage: string = 'assets/headerprofile.png';
     });
     await toast.present();
   }
-  selectTab(tabName: string) {
-  if (this.activeTab === tabName) {
-    // User clicked the current tab
-    this.presentAlreadyActiveMessage(tabName);
-  } else {
-    this.activeTab = tabName;
-    // Load page content for this tab here
-    console.log("Navigating to tab:", tabName);
-  }
+ selectTab(tab: string) {
+  this.activeTab = tab;
+   if (tab === 'schedule') {
+      // Pass logged-in studentId to Schedule tab
+      this.selectedStudentId = '2251';
+      console.log("Schedule tab using static studentId:", this.selectedStudentId);
+    }
 }
 
 presentAlreadyActiveMessage(tabName: string) {

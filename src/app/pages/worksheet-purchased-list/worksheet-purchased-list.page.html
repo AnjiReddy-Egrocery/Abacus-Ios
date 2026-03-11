@@ -1,0 +1,38 @@
+<ion-header class="custom-header">
+   <ion-toolbar>
+  <div class="ios-header">
+
+    <div class="back-circle" (click)="goHome()">
+      <ion-icon name="arrow-back-outline"></ion-icon>
+    </div>
+
+    <div class="header-title" style="padding-left: 12px;">
+       Courses Levels
+    </div>
+
+  </div>
+   </ion-toolbar>
+</ion-header>
+
+
+<ion-content>
+
+  <ion-card *ngFor="let item of levels"
+  (click)="openLevel(item.courseLevelId)">
+
+    <div class="level-card">
+
+      <h2>{{item.courseLevel}}</h2>
+
+    </div>
+
+  </ion-card>
+
+
+  <div *ngIf="levels.length==0">
+
+    <p class="empty">{{emptyMessage}}</p>
+
+  </div>
+
+</ion-content>

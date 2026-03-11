@@ -1,0 +1,81 @@
+/* schedules.page.scss */
+
+/* Card container */
+.batch-card {
+  margin: 10px 0;
+  border-radius: 12px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+  overflow: hidden;
+
+  ion-card-header {
+    background-color: #f5f5f5;
+    padding: 12px;
+    
+    ion-card-title {
+      font-size: 18px;
+      font-weight: bold;
+      color: #4e148c;
+    }
+
+      .batch-icon {
+      width: 60px;
+      height: 60px;
+      margin-right: 16px;
+    }
+
+    ion-card-subtitle {
+      font-size: 14px;
+      color: #666;
+      margin-top: 4px;
+    }
+     .batch-action {
+       
+      ion-button {
+        min-width: 140px;         // make button a bit wider
+        height: 40px;             // adjust height
+        font-size: 14px;          // text size
+        --border-radius: 8px;     // rounded corners
+        --background: #FF5722;    // danger color
+        --color: #ffffff;         // text color
+      }
+    }
+  }
+
+  ion-card-content {
+    padding: 12px;
+
+    p {
+      font-size: 14px;
+      margin-bottom: 10px;
+      color: #333;
+    }
+
+    ion-button {
+      --border-radius: 8px;
+      --background: #FF5722;
+      --color: #fff;
+      font-weight: bold;
+    }
+  }
+}
+
+/* Center text when no batches */
+.ion-text-center {
+  font-size: 16px;
+  color: #666;
+  margin-top: 30px;
+}
+
+/* Optional: Add hover effect for cards */
+.batch-card:hover {
+  transform: translateY(-2px);
+  transition: transform 0.2s ease-in-out;
+}
+
+/* Responsive spacing */
+@media (min-width: 768px) {
+  .batch-card {
+    margin: 15px auto;
+    max-width: 700px;
+  }
+}

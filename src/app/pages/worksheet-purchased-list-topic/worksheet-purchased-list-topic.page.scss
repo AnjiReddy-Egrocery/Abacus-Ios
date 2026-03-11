@@ -1,0 +1,84 @@
+ion-card{
+
+border-radius:12px;
+margin:12px;
+box-shadow:0 3px 10px rgba(0,0,0,0.2);
+
+}
+
+ion-card-title{
+
+font-size:18px;
+font-weight:bold;
+
+}
+
+ion-content {
+  --padding-start: 0;
+  --padding-end: 0;
+  --padding-top: 0;
+  --padding-bottom: 0;
+}
+
+.btn-practice{
+  --background:#ff6600;
+  --color:#fff;
+}
+
+.btn-visual{
+  --background:#198754;
+  --color:#fff;
+}
+
+.btn-view{
+  --background:#8F8A8A;
+  --color:#fff;
+}
+
+.topic-container{
+  padding: 12px;
+}
+
+ion-button{
+
+font-size:12px;
+
+}
+
+.custom-header ion-toolbar{
+  --background:#4e148c;
+  --color:#fff;
+  --min-height:0px;   /* header height control */
+  box-shadow:none;
+}
+
+.ios-header{
+  display:flex;
+  align-items:center;
+  padding-left:12px;
+  padding-right:12px;
+
+  padding-top:0px;   /* safe-area remove */
+  padding-bottom:12px;
+}
+
+
+.back-circle {
+  width: 34px;
+  height: 34px;
+  background: #ffffff;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.back-circle ion-icon{
+  font-size:18px;
+  color:#4e148c;
+}
+
+
+.main-container {
+  padding: 12px;
+}
