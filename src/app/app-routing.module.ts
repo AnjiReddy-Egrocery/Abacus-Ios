@@ -204,6 +204,30 @@ export const routes: Routes = [
     path: 'schedulestopic-view-practices-result',
     loadChildren: () => import('./pages/schedulestopic-view-practices-result/schedulestopic-view-practices-result.module').then( m => m.SchedulestopicViewPracticesResultPageModule)
   },
+  {
+    path: 'schedules-assignment-exam',
+    loadChildren: () => import('./pages/schedules-assignment-exam/schedules-assignment-exam.module').then( m => m.SchedulesAssignmentExamPageModule)
+  },
+  {
+    path: 'schedules-assignment-exam-result',
+    loadChildren: () => import('./pages/schedules-assignment-exam-result/schedules-assignment-exam-result.module').then( m => m.SchedulesAssignmentExamResultPageModule)
+  },
+  {
+    path: 'schedules-assignment-visualization-exam',
+    loadChildren: () => import('./pages/schedules-assignment-visualization-exam/schedules-assignment-visualization-exam.module').then( m => m.SchedulesAssignmentVisualizationExamPageModule)
+  },
+  {
+    path: 'schedules-assignment-visualization-exam-result',
+    loadChildren: () => import('./pages/schedules-assignment-visualization-exam-result/schedules-assignment-visualization-exam-result.module').then( m => m.SchedulesAssignmentVisualizationExamResultPageModule)
+  },
+  {
+    path: 'schedules-assignment-view-practices',
+    loadChildren: () => import('./pages/schedules-assignment-view-practices/schedules-assignment-view-practices.module').then( m => m.SchedulesAssignmentViewPracticesPageModule)
+  },
+  {
+    path: 'schedules-assignment-view-practices-result',
+    loadChildren: () => import('./pages/schedules-assignment-view-practices-result/schedules-assignment-view-practices-result.module').then( m => m.SchedulesAssignmentViewPracticesResultPageModule)
+  },
 
 ];
 

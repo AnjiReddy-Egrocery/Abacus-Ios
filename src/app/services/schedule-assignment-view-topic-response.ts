@@ -1,21 +1,23 @@
 import { Injectable } from '@angular/core';
-import { CapacitorHttp } from '@capacitor/core';
 import { AllocatedTopicResponse } from '../model/viewTopic.model';
+import { CapacitorHttp } from '@capacitor/core';
 
 @Injectable({
   providedIn: 'root',
 })
-export class ScheduleTopicViewResponse {
-   constructor() {}
+export class ScheduleAssignmentViewTopicResponse {
+  constructor() {}
   
-    async getAllocatedTopicPractices(studentId: string, topicId: string): Promise<AllocatedTopicResponse> {
+   
+  
+    async getAllocatedAssignmentPractices(studentId: string, topicId: string): Promise<AllocatedTopicResponse> {
       const body = new URLSearchParams();
       body.append('studentId', studentId);
       body.append('topicId', topicId);
   
       const response = await CapacitorHttp.request({
         method: 'POST',
-        url: 'https://www.abacustrainer.com/apicalls/Index/getScheduleTopicPratices',
+        url: 'https://www.abacustrainer.com/apicalls/Index/getScheduleAssignmentTopicPratices',
         headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
         data: body.toString()
       });
@@ -28,6 +30,4 @@ export class ScheduleTopicViewResponse {
       return data as AllocatedTopicResponse;
     }
   
-   
-  }
-
+}

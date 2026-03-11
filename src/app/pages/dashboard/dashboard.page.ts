@@ -117,6 +117,13 @@ userImage: string = 'assets/headerprofile.png';
   });
   }
 
+  ViewMoreBatches(){
+     this.activeTab = 'schedules';
+
+  // pass studentId to schedules component
+  this.selectedStudentId = this.studentId;
+  }
+
   goToRefoundPolicy(){
     this.menuCtrl.close('mainMenu'); // Close menu first
     this.router.navigateByUrl('/refoundpolicy');

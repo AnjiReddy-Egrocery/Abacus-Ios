@@ -72,10 +72,27 @@
    
   <div class="schedule-card">
     <!-- Header -->
-    <div class="schedule-header">
-      <span class="schedule-title">Class Schedule</span>
-      <img src="../../../assets/calender_icon.png"  class="schedule-icon" (click)="goToSchedule()"/>
+      <div class="top-card">
+      <div class="next-class-text1">Schedules</div>
+    
     </div>
+      <div class="subscription-card">
+  <div class="right-image">
+    <img src="../../../assets/users.png" alt="Worksheet">
+  </div>
+  <div class="left-content">
+    <h3>Enrolled</h3>
+    <h4>Batches</h4>
+    <ion-button class="download-btn" (click)="ViewMoreBatches()">
+    View More Details
+  </ion-button>
+  </div>
+
+  
+
+</div>
+  
+
 
     <div class="top-card">
       <div class="next-class-text">Next Class</div>
@@ -138,12 +155,12 @@
   </div>
 
   <!-- Visualization Card -->
-  <!-- <div class="visualization-card">
+  <div class="visualization-card">
     <div class="card-top">
       <div class="card-text">Visualization</div>
       <img src="../../../assets/abacus_image.png" class="card-image" />
     </div>
-  </div> -->
+  </div>
 
 
 

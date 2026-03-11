@@ -91,7 +91,19 @@ export class SchedulesAssignmentListPage implements OnInit {
 
   practiceNow(topic: any) {
 
-    this.router.navigate(['/topic-practice'], {
+    this.router.navigate(['/schedules-assignment-exam'], {
+      queryParams: {
+        topicId: topic.topicId,
+        studentId: this.studentId,
+        topicName: topic.topicName
+      }
+    });
+
+  }
+
+    visualization(topic: any) {
+
+    this.router.navigate(['/schedules-assignment-visualization-exam'], {
       queryParams: {
         topicId: topic.topicId,
         studentId: this.studentId,
@@ -105,7 +117,7 @@ export class SchedulesAssignmentListPage implements OnInit {
 
     if (topic.practicesCount > 0) {
 
-      this.router.navigate(['/view-practice-list'], {
+      this.router.navigate(['/schedules-assignment-view-practices'], {
         queryParams: {
           topicId: topic.topicId,
           studentId: this.studentId,
