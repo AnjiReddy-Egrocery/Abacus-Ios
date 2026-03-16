@@ -228,6 +228,14 @@ export const routes: Routes = [
     path: 'schedules-assignment-view-practices-result',
     loadChildren: () => import('./pages/schedules-assignment-view-practices-result/schedules-assignment-view-practices-result.module').then( m => m.SchedulesAssignmentViewPracticesResultPageModule)
   },
+  {
+    path: 'work-sheet-subscription-courses',
+    loadChildren: () => import('./pages/work-sheet-subscription-courses/work-sheet-subscription-courses.module').then( m => m.WorkSheetSubscriptionCoursesPageModule)
+  },
+  {
+    path: 'work-sheet-subscription-courses-details',
+    loadChildren: () => import('./pages/work-sheet-subscription-courses-details/work-sheet-subscription-courses-details.module').then( m => m.WorkSheetSubscriptionCoursesDetailsPageModule)
+  },
 
 ];
 

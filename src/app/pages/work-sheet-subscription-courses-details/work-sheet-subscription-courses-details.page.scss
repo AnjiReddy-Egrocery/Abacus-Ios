@@ -1,0 +1,32 @@
+.section-title{
+  font-size:18px;
+  font-weight:bold;
+  margin:16px;
+}
+
+.summary{
+  background:#5E35B1;
+  color:white;
+  text-align:center;
+  padding:20px;
+  margin:16px;
+  border-radius:10px;
+}
+
+.buttons{
+  padding:16px;
+}
+
+.cart-button {
+  position: relative;
+}
+
+.cart-badge {
+  position: absolute;
+  top: 0px;        /* adjust vertical position */
+  right: 0px;      /* adjust horizontal position */
+  transform: translate(25%, -25%);
+  font-size: 0.7rem;
+  background-color: red;
+  color: white;
+}

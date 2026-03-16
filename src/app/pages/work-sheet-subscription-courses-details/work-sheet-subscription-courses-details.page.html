@@ -1,0 +1,81 @@
+<ion-header>
+  <ion-toolbar color="primary">
+    <ion-title>Course Details</ion-title>
+     <ion-buttons slot="end">
+      <ion-button class="cart-button" >
+        <ion-icon slot="icon-only" name="cart-outline"></ion-icon>
+        <ion-badge *ngIf="selectedLevelsCount > 0" class="cart-badge">
+          {{ selectedLevelsCount }}
+        </ion-badge>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+
+<!-- Duration -->
+<h2 class="section-title">Select Duration</h2>
+
+<ion-list>
+
+  <ion-item *ngFor="let d of durations">
+
+    <ion-checkbox
+      slot="start"
+      [checked]="selectedDurationId === d.durationId"
+      (ionChange)="selectDuration(d.durationId)">
+    </ion-checkbox>
+
+    {{d.duration}}
+
+  </ion-item>
+
+</ion-list>
+
+<!-- Levels -->
+<h2 class="section-title">Select Levels</h2>
+
+<ion-list>
+
+<ion-item *ngFor="let level of levels">
+
+  <ion-checkbox
+    slot="start"
+    [(ngModel)]="level.selected"
+    (ionChange)="calculateTotal()">
+  </ion-checkbox>
+    <ion-label>
+      {{ level.courseLevel }}
+    </ion-label>
+
+    <!-- Price right -->
+    <ion-note slot="end" *ngIf="level.price">
+      ₹ {{ level.price }}
+    </ion-note>
+</ion-item>
+
+</ion-list>
+
+<!-- Summary -->
+<div class="summary">
+  <h3>Total for Selected Levels</h3>
+  <p>₹ {{ totalAmount }}/-</p>
+  <p>{{ selectedLevelsCount }} level{{ selectedLevelsCount > 1 ? 's' : '' }} selected</p>
+</div>
+
+<!-- Buttons -->
+
+<div class="buttons">
+
+  <ion-button expand="block" color="warning" (click)="addToCart()">
+    Add To Cart
+  </ion-button>
+
+  <ion-button expand="block" color="primary">
+    View Cart
+  </ion-button>
+
+</div>
+
+</ion-content>

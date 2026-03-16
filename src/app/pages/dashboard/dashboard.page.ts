@@ -2,11 +2,14 @@ import { CommonModule } from '@angular/common';
 import { Component, CUSTOM_ELEMENTS_SCHEMA, OnInit, ViewChild } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
-import { IonicModule, IonMenu, MenuController, ToastController } from '@ionic/angular';
+import { AlertController, IonicModule, IonMenu, MenuController, ToastController } from '@ionic/angular';
 import { User } from 'src/app/model/user.model';
 import { Auth } from 'src/app/services/auth';
 import { ProfilePage } from '../profile/profile.page';
 import { SchedulesPage } from '../schedules/schedules.page';
+import { Preferences } from '@capacitor/preferences';
+import { BatchDetailServices } from 'src/app/services/batch-detail-services';
+import { BachDetailsResponse } from 'src/app/model/batchdetail.model';
 
 
 @Component({
@@ -25,18 +28,52 @@ userImage: string = 'assets/headerprofile.png';
 
 
   selectedStudentId!: string;      // for Schedule component
+  batchId: string = '';
 
  
 
   
    activeTab: string = 'home'; 
-  constructor(private authService: Auth,private menuCtrl: MenuController,private router: Router, private toastController: ToastController) {}
+  constructor(private authService: Auth,private menuCtrl: MenuController,private router: Router, 
+    private toastController: ToastController, private alertController: AlertController,
+  private batchService: BatchDetailServices) {}
 
   
   async ionViewWillEnter() {
   await this.loadUser();
   this.selectedStudentId = this.studentId; // default value
+   this.loadBatchDetails(this.studentId); 
 }
+
+  async loadBatchDetails(studentId: string) {
+
+     try {
+
+  const res: BachDetailsResponse = await this.batchService.getStudentAllSchedules(studentId);
+
+  if (res.errorCode === '200' && res.result.length > 0) {
+
+    this.batchId = res.result[0].batchId;   // ✅ only batchId
+    console.log("BatchId:", this.batchId);
+
+  } else if (res.errorCode === '202') {
+
+   // this.showToast('No batches found for this student');
+
+  } else {
+
+   // this.showToast('Data Error');
+
+  }
+
+} catch (error) {
+
+ 
+  console.error(error);
+
+}
+  }
+  
 
   async loadUser() {
     const user: User | null = await this.authService.getUser();
@@ -49,6 +86,8 @@ userImage: string = 'assets/headerprofile.png';
       : 'assets/headerprofile.png';
   }
   }
+
+  
 
     closeMenu() {
          this.menuCtrl.close('mainMenu'); // pass your menuId
@@ -119,6 +158,69 @@ userImage: string = 'assets/headerprofile.png';
 
   ViewMoreBatches(){
      this.activeTab = 'schedules';
+
+  // pass studentId to schedules component
+  this.selectedStudentId = this.studentId;
+  }
+  async openWorksheetSubscription() {
+
+  this.menuCtrl.close();
+
+  const studentId = this.studentId;
+  const batchId =this.batchId // your batchId variable
+
+  const { value } = await Preferences.get({ key: 'worksheet_first_time' });
+
+  if (!value) {
+    this.showWorksheetDialog(studentId, batchId);
+    await Preferences.set({ key: 'worksheet_first_time', value: 'true' });
+  } else {
+
+    this.router.navigate(['/work-sheet-subscription-courses'], {
+      queryParams: {
+        studentId: studentId,
+        batchId: batchId
+      }
+    });
+
+  }
+}
+
+async showWorksheetDialog(studentId: string, batchId: string) {
+
+  const alert = await this.alertController.create({
+    header: 'Worksheet Subscription',
+    message: 'Do you want to continue to Worksheet Subscription?',
+    buttons: [
+      {
+        text: 'No',
+        role: 'cancel',
+        handler: () => {
+          this.activeTab = 'home';
+        }
+      },
+      {
+        text: 'Yes',
+        handler: () => {
+
+          this.router.navigate(['/work-sheet-subscription-courses'], {
+            queryParams: {
+              studentId: studentId,
+              batchId: batchId
+            }
+          });
+
+        }
+      }
+    ]
+  });
+
+  await alert.present();
+}
+
+  goToSchedules(){
+     this.menuCtrl.close(); // Close menu first
+      this.activeTab = 'schedules';
 
   // pass studentId to schedules component
   this.selectedStudentId = this.studentId;

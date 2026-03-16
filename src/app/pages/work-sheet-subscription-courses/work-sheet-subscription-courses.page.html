@@ -1,0 +1,60 @@
+
+<ion-header>
+  <ion-toolbar style=" --background:#4e148c;">
+
+    <ion-buttons slot="start">
+      <ion-button (click)="goBack()">
+        <ion-icon style="color: white;" name="arrow-back-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+
+    <ion-title>Courses</ion-title>
+
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+
+  <div class="courses-container">
+
+    <ion-card *ngFor="let course of courses" class="course-card">
+
+      <div class="course-row">
+
+        <!-- Course Image -->
+        <div class="course-img">
+
+        <div class="course-img">
+          <img [src]="getCourseImage(course?.courseType)" />
+        </div>
+                </div>
+
+        <!-- Course Info -->
+        <div class="course-info">
+
+          <h2>
+            {{course.courseType}}
+            {{getLevelCount(course.courseType)}}
+          </h2>
+
+          <p>
+            Age group: {{getAgeRange(course.courseType)}}
+          </p>
+
+          <ion-button
+            color="danger"
+            size="small"
+            (click)="subscribe(course.courseTypeId)"
+          >
+            Subscribe Now
+          </ion-button>
+
+        </div>
+
+      </div>
+
+    </ion-card>
+
+  </div>
+
+</ion-content>
