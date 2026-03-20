@@ -132,21 +132,49 @@ return this.questions[this.currentIndex]?.question;
 
 handleQuestionDisplay() {
 
-    const question = this.currentQuestion;
-    if (!question) return;
+  const question = this.currentQuestion;
+  if (!question) return;
 
-    // if image → skip TTS
-    if (this.getQuestionImage(question)) {
-      this.displayText = '';
-      this.isButtonsEnabled = true;
-      return;
-    }
+  // ✅ IMAGE QUESTION
+   // if image → skip TTS
+    if (/<img[^>]+src="([^">]+)"/.test(question)) {
 
-    const text = this.getQuestionText(question);
-    const elements = text.split(/\s+/);
+    
 
-    this.speakAndDisplayOneByOne(elements);
+    this.showImageAlert();
+
+    // 3 sec delay → auto back
+  
+
+    return; // 🔥 stop further execution
   }
+  // ✅ TEXT QUESTION → TTS
+  const text = this.getQuestionText(question);
+  const elements = text.split(/\s+/);
+
+  this.speakAndDisplayOneByOne(elements);
+}
+
+ async showImageAlert() {
+  this.displayText = 'Beads question not available for visualization practice.';
+  this.isQuestionActive = true;
+  this.isButtonsEnabled = false;
+
+  // 🔹 Show alert
+  const alert = await this.alertController.create({
+    header: 'Visualization Info',
+    message: 'Beads question not available for visualization practice.',
+    buttons: ['OK']
+  });
+
+  await alert.present();
+
+  // 🔹 Wait for user to dismiss the alert, then go back
+  await alert.onDidDismiss();
+
+  // 🔹 Go back after alert closed
+  this.goBack();
+}
 
   async speakAndDisplayOneByOne(elements: string[]) {
 

@@ -71,12 +71,13 @@
       <ion-col>Time (s)</ion-col>
     </ion-row>
 
-    <ion-row *ngFor="let q of questionData"
-      [ngClass]="{'correct': q.is_correct, 'incorrect': q.given && !q.is_correct}">
+    <ion-row *ngFor="let q of questionData">
       <ion-col [innerHTML]="q.question"></ion-col>
-      <ion-col>{{ q.answer }}</ion-col>
-      <ion-col>{{ q.given || '-' }}</ion-col>
-      <ion-col>{{ formatTime(q.time_taken ?? 0) }}</ion-col>
+      <ion-col class="center-text">{{ q.answer }}</ion-col>
+      <ion-col [ngClass]="getGivenClass(q)">
+        {{ q.given || '-' }}
+      </ion-col>
+      <ion-col class="center-text">{{ formatTime(q.time_taken ?? 0) }}</ion-col>
     </ion-row>
   </ion-grid>
 </ion-content>

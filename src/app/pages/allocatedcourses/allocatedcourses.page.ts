@@ -3,7 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { Component, CUSTOM_ELEMENTS_SCHEMA, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { IonicModule, MenuController } from '@ionic/angular';
+import { AlertController, IonicModule, MenuController } from '@ionic/angular';
 import { Coursetyperesponse } from 'src/app/services/coursetyperesponse';
 
 @Component({
@@ -18,11 +18,12 @@ export class AllocatedcoursesPage implements OnInit {
 
  courseTypes:any[] = [];
   studentId:any;
-
+emptyMessage="";
 
   constructor(
     private http: HttpClient,
     private route: ActivatedRoute,
+    private alertCtrl: AlertController,
     private router: Router, private menu: MenuController, private courseService:Coursetyperesponse,
   ) {}
 
@@ -54,6 +55,14 @@ export class AllocatedcoursesPage implements OnInit {
   }
   else if(res.errorCode == "202"){
     //alert(res.errorMessage);
+   this.courseTypes = [];  // ensure list is empty
+  this.emptyMessage = res.errorMessage || 'No courses found';
+  const alert = await this.alertCtrl.create({
+    header: 'No Courses',
+    message: this.emptyMessage,
+    buttons: ['OK']
+  });
+  await alert.present();
   }
 
   }
