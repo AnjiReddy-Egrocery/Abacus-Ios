@@ -244,6 +244,30 @@ export const routes: Routes = [
     path: 'student-list',
     loadChildren: () => import('./pages/student-list/student-list.module').then( m => m.StudentListPageModule)
   },
+  {
+    path: 'start-game-result-page',
+    loadChildren: () => import('./pages/start-game-result-page/start-game-result-page.module').then( m => m.StartGameResultPagePageModule)
+  },
+  {
+    path: 'visualization-playwith-numbers',
+    loadChildren: () => import('./pages/visualization-playwith-numbers/visualization-playwith-numbers.module').then( m => m.VisualizationPlaywithNumbersPageModule)
+  },
+  {
+    path: 'visualization-game-levels/:level',
+    loadChildren: () => import('./pages/visualization-game-levels/visualization-game-levels.module').then( m => m.VisualizationGameLevelsPageModule)
+  },
+  {
+    path: 'visualization-exam-result',
+    loadChildren: () => import('./pages/visualization-exam-result/visualization-exam-result.module').then( m => m.VisualizationExamResultPageModule)
+  },
+  {
+    path: 'visualization-quiz-exam',
+    loadChildren: () => import('./pages/visualization-quiz-exam/visualization-quiz-exam.module').then( m => m.VisualizationQuizExamPageModule)
+  },
+  {
+    path: 'visualization-quiz-exam-result',
+    loadChildren: () => import('./pages/visualization-quiz-exam-result/visualization-quiz-exam-result.module').then( m => m.VisualizationQuizExamResultPageModule)
+  },
   
 
 ];

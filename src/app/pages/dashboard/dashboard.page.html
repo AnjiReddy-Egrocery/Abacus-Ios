@@ -26,7 +26,7 @@
         <ion-item button (click)="openWorksheetSubscription()">Work Sheet Subscription</ion-item>
         <ion-item>Video Tutorials</ion-item>
         <ion-item button (click)="goToPlaywithNumbers('play')">Play with Numbers</ion-item>
-        <ion-item>Visualization</ion-item>
+        <ion-item button (click)="goToPlaywithVisualizationNumbers('play')">Visualization</ion-item>
         <ion-item button (click)="goToSchedules()">Schedules</ion-item>
         <ion-item button (click)="goToAllocatedCourses()">Allocated Courses</ion-item>
         <ion-item button (click)="goToOrders()">Orders</ion-item>
@@ -173,7 +173,7 @@
   </div>
 
   <!-- Visualization Card -->
-  <div class="visualization-card">
+  <div class="visualization-card" (click)="goToPlaywithVisualizationNumbers('play')">
     <div class="card-top">
       <div class="card-text">Visualization</div>
       <img src="../../../assets/abacus_image.png" class="card-image" />

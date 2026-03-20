@@ -99,6 +99,10 @@ async loadUser() {
     this.menuCtrl.close('mainMenu'); // Close menu first
     this.router.navigateByUrl('/playwithnumbers', { replaceUrl: true });
   }
+  goToPlaywithVisualizationNumbers(page: string){
+     this.menuCtrl.close('mainMenu'); // Close menu first
+    this.router.navigateByUrl('/visualization-playwith-numbers', { replaceUrl: true });
+  }
   gotoAppSetting(){
      this.menuCtrl.close('mainMenu'); // Close menu first
     this.router.navigateByUrl('/appsetting');

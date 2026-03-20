@@ -6,16 +6,15 @@ import { AlertController, IonicModule } from '@ionic/angular';
 import { QUESTIONS } from 'src/app/data/questions-data';
 
 @Component({
-  selector: 'app-game-levels',
-  standalone: true,
+  selector: 'app-visualization-game-levels',
+   standalone: true,
       imports: [IonicModule, FormsModule, CommonModule],
         schemas: [CUSTOM_ELEMENTS_SCHEMA],// ✅ ADD THIS LINE
-        
-  templateUrl: './game-levels.page.html',
-  styleUrls: ['./game-levels.page.scss'],
+  templateUrl: './visualization-game-levels.page.html',
+  styleUrls: ['./visualization-game-levels.page.scss'],
 })
-export class GameLevelsPage {
-  @ViewChild('scrollArea') scrollArea!: ElementRef;
+export class VisualizationGameLevelsPage implements OnInit {
+ @ViewChild('scrollArea') scrollArea!: ElementRef;
   @ViewChildren('stepItem') stepItems!: QueryList<ElementRef>;
 
   questions: string[] = [];
@@ -182,7 +181,9 @@ onAnswerChange(event: any) {
       clearInterval(this.timerInterval); // stop total timer as well
     this.showCompletionPopup();
   }
-
+goHome(){
+  this.router.navigate(['/visualization-playwith-numbers']);
+}
   async showCompletionPopup() {
   const alert = await this.alertCtrl.create({
     header: 'Level-1 Completed',
@@ -234,11 +235,7 @@ showReportActivity() {
 };
   console.log('Report Data:', reportData);
 
-  this.router.navigate(['/exam-result'], { state: { report: reportData } });
-}
-
-goHome(){
-  this.router.navigate(['/playwithnumbers']);
+  this.router.navigate(['/visualization-exam-result'], { state: { report: reportData } });
 }
 
 generateOriginalAnswer(question: string): string {

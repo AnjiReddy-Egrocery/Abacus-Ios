@@ -4,18 +4,17 @@ import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { AlertController, IonicModule } from '@ionic/angular';
 import { QuizData } from 'src/app/model/quiz-data.model';
+import { TextToSpeech } from '@capacitor-community/text-to-speech';
 
 @Component({
-  selector: 'app-quizexam',
-  standalone: true,
-    imports: [IonicModule, FormsModule, CommonModule],
+  selector: 'app-visualization-quiz-exam',
+   imports: [IonicModule, FormsModule, CommonModule],
         schemas: [CUSTOM_ELEMENTS_SCHEMA],// ✅ ADD THIS LINE
-  templateUrl: './quizexam.page.html',
-  styleUrls: ['./quizexam.page.scss'],
+  templateUrl: './visualization-quiz-exam.page.html',
+  styleUrls: ['./visualization-quiz-exam.page.scss'],
 })
-export class QuizexamPage implements OnInit {
-
- @ViewChild('scrollArea') scrollArea!: ElementRef;
+export class VisualizationQuizExamPage implements OnInit {
+@ViewChild('scrollArea') scrollArea!: ElementRef;
   @ViewChildren('stepItem') stepItems!: QueryList<ElementRef>;
 
   questions: string[] = [];
@@ -35,6 +34,12 @@ export class QuizexamPage implements OnInit {
   questionTimerInterval: any;
   questionTime = '00:00';
 
+  displayText: string = '';          // For showing each number/operator
+
+
+isButtonsEnabled: boolean = false; // buttons start disabled during TTS
+isQuestionActive: boolean = false; // TTS running
+
   constructor(private router: Router, private route: ActivatedRoute, private alertCtrl: AlertController) {}
 
   ngOnInit() {
@@ -53,6 +58,10 @@ export class QuizexamPage implements OnInit {
     timeTaken: 0
   }));
 
+  setTimeout(() => {
+  this.speakQuestionWithTTS();
+}, 300);
+
   this.setHeaderTitle(this.questions[0]);
   this.startTotalTimer();
   this.startQuestionTimer();
@@ -63,8 +72,64 @@ export class QuizexamPage implements OnInit {
   }
 
   goHome(){
-    this.router.navigate(['/playwithnumbers']);
+    this.router.navigate(['/visualization-playwith-numbers']);
   }
+async speakQuestionWithTTS() {
+  const question = this.currentQuestion;
+  if (!question) return;
+
+  this.isQuestionActive = true;
+  this.isButtonsEnabled = false; // disable buttons while TTS runs
+  this.displayText = '';
+
+  const elements = question.split(/\s+/);
+
+  for (let i = 0; i < elements.length; i++) {
+    let clean = elements[i].trim();
+    if (!clean) continue;
+
+    let speakText = '';
+    let displayText = '';
+
+    if (clean.startsWith('+')) {
+      const num = clean.substring(1);
+      speakText = `plus ${num}`;
+      displayText = `+${num}`;
+    } else if (clean.startsWith('-')) {
+      const num = clean.substring(1);
+      speakText = `minus ${num}`;
+      displayText = `-${num}`;
+    } else if (clean.startsWith('*')) {
+      const num = clean.substring(1);
+      speakText = `multiply by ${num}`;
+      displayText = `*${num}`;
+    } else if (clean.startsWith('/')) {
+      const num = clean.substring(1);
+      speakText = `divide by ${num}`;
+      displayText = `/${num}`;
+    } else {
+      speakText = `plus ${clean}`;
+      displayText = `+${clean}`;
+    }
+
+    this.displayText = displayText;
+
+    await TextToSpeech.speak({
+      text: speakText,
+      lang: 'en-US',
+      rate: 1.0
+    });
+
+   
+  }
+
+  // ✅ At the end, say “Answer is” and enable buttons
+  this.displayText = 'Answer is';
+  await TextToSpeech.speak({ text: 'Answer is', lang: 'en-US' });
+
+  this.isQuestionActive = false;   // TTS finished
+  this.isButtonsEnabled = true;    // buttons now enabled
+}
 
  setHeaderTitle(question: string) {
   // Split numbers from operators
@@ -110,24 +175,32 @@ export class QuizexamPage implements OnInit {
   }
 
   nextQuestion() {
+    if (this.isQuestionActive) return; // prevent clicking during TTS
     this.saveCurrentAnswer();
     if (this.currentIndex < this.quizData.length - 1) {
       this.currentIndex++;
       this.answer = this.quizData[this.currentIndex].enterAnswer || '';
       this.startQuestionTimer();
       this.setHeaderTitle(this.quizData[this.currentIndex].question);
-      setTimeout(() => this.scrollToActiveStep(), 50);
+      setTimeout(() => {
+      this.scrollToActiveStep();
+      this.speakQuestionWithTTS(); // 🔹 speak question automatically
+    }, 50);
     } else this.submitQuiz();
   }
 
   previousQuestion() {
+     if (this.isQuestionActive) return;
     this.saveCurrentAnswer();
     if (this.currentIndex > 0) {
       this.currentIndex--;
       this.answer = this.quizData[this.currentIndex].enterAnswer || '';
       this.startQuestionTimer();
       this.setHeaderTitle(this.quizData[this.currentIndex].question);
-      setTimeout(() => this.scrollToActiveStep(), 50);
+      setTimeout(() => {
+      this.scrollToActiveStep();
+      this.speakQuestionWithTTS(); // 🔹 speak question automatically
+    }, 50);
     }
   }
 
@@ -137,7 +210,10 @@ export class QuizexamPage implements OnInit {
     this.answer = this.quizData[i].enterAnswer || '';
     this.startQuestionTimer();
     this.setHeaderTitle(this.quizData[i].question);
-    setTimeout(() => this.scrollToActiveStep(), 50);
+     setTimeout(() => {
+    this.scrollToActiveStep();
+    this.speakQuestionWithTTS();
+  }, 50);
   }
 
   startTotalTimer() {
@@ -177,6 +253,7 @@ export class QuizexamPage implements OnInit {
   }
 
   async submitQuiz() {
+     if (this.isQuestionActive) return;
     this.saveCurrentAnswer();
     clearInterval(this.timerInterval);
     clearInterval(this.questionTimerInterval);
@@ -197,7 +274,7 @@ export class QuizexamPage implements OnInit {
   console.log('Quiz Data:', this.quizData);
 
   // navigate and pass quizData and totalTime
-  this.router.navigate(['/start-game-result-page'], {
+  this.router.navigate(['/visualization-quiz-exam-result'], {
     state: {
       quizData: this.quizData,   // all questions
       totalTime: this.totalTime, // total timer

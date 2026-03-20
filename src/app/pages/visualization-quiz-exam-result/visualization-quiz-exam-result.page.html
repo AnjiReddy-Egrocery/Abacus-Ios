@@ -1,0 +1,79 @@
+<ion-content fullscreen class="signin-bg"> 
+  <div class="exam-title ion-text-center">
+    <h1>Exam Report</h1>
+  </div>
+    <div class="ion-text-center">
+    <ion-button color="primary" fill="solid" (click)="backToDashboard()">back to dashboard</ion-button>
+  </div>
+
+  <div class="level-info ion-text-center">
+  
+    <p>Total Time: {{ totalTime }}</p>
+  </div>
+
+   <ion-grid class="stats-grid">
+    <ion-row>
+      <ion-col><div class="stat-card orange">Total Question <span>{{ totalQuestions }}</span></div></ion-col>
+      <ion-col><div class="stat-card orange">Attempted <span>{{ attemptedCount }}</span></div></ion-col>
+      <ion-col><div class="stat-card orange">Correct <span>{{ correctCount }}</span></div></ion-col>
+      <ion-col><div class="stat-card orange">Incorrect <span>{{ wrongCount }}</span></div></ion-col>
+    </ion-row>
+  </ion-grid>
+
+  
+
+  <div class="chart-legend-wrapper">
+
+  <div class="chart-box">
+    <canvas baseChart
+      [data]="pieChartData"
+      [type]="'doughnut'"
+      [options]="pieChartOptions">
+    </canvas>
+  </div>
+
+  <div class="legend-box">
+
+    <div class="legend-item">
+      <span class="color-circle attempted"></span>
+      <span>Attempted</span>
+    </div>
+
+    <div class="legend-item">
+      <span class="color-circle notattempted"></span>
+      <span>Not Attempted</span>
+    </div>
+
+    <div class="legend-item">
+      <span class="color-circle correct"></span>
+      <span>Correct</span>
+    </div>
+
+    <div class="legend-item">
+      <span class="color-circle incorrect"></span>
+      <span>Incorrect</span>
+    </div>
+
+  </div>
+
+</div>
+
+  <ion-grid class="question-table">
+    <ion-row class="table-header">
+      <ion-col>Question</ion-col>
+      <ion-col>Answer</ion-col>
+      <ion-col>Given</ion-col>
+      <ion-col>Time</ion-col>
+    </ion-row>
+
+    <ion-row *ngFor="let q of quizData" 
+             [ngClass]="{'correct': q.isCorrect, 'incorrect': !q.isCorrect && q.enterAnswer}">
+      <ion-col [innerHTML]="formatQuestion(q.question)"></ion-col>
+      <ion-col>{{ q.correctAnswer }}</ion-col>
+      <ion-col>{{ q.enterAnswer || '-' }}</ion-col>
+      <ion-col>{{ formatTime(q.timeTaken) }}</ion-col>
+    </ion-row>
+  </ion-grid>
+
+  
+</ion-content>

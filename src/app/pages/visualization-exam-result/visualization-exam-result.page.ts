@@ -3,24 +3,19 @@ import { Component, CUSTOM_ELEMENTS_SCHEMA, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { IonicModule, ToastController } from '@ionic/angular';
-
-// ✅ Chart imports
-
-import { ChartConfiguration, ChartType } from 'chart.js';
+import { ChartConfiguration } from 'chart.js';
 import { BaseChartDirective } from 'ng2-charts';
 
-
 @Component({
-  selector: 'app-play-result-page',
+  selector: 'app-visualization-exam-result',
    standalone: true,
         imports: [IonicModule, FormsModule, CommonModule, BaseChartDirective],
           schemas: [CUSTOM_ELEMENTS_SCHEMA],// ✅ ADD THIS LINE
-   
-  templateUrl: './play-result-page.page.html',
-  styleUrls: ['./play-result-page.page.scss'],
+  templateUrl: './visualization-exam-result.page.html',
+  styleUrls: ['./visualization-exam-result.page.scss'],
 })
-export class PlayResultPagePage {
-    questions: string[] = [];
+export class VisualizationExamResultPage implements OnInit {
+questions: string[] = [];
   enteredAnswers: string[] = [];
   originalAnswers: string[] = [];
   questionTimes: number[] = [];
