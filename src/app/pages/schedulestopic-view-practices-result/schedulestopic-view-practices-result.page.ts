@@ -8,14 +8,17 @@ import { BaseChartDirective } from 'ng2-charts';
 import { ScheduleTopicViewResultResponse } from 'src/app/services/schedule-topic-view-result-response';
 
 interface QuestionItem {
+  question: string;
+  answer: string;
+  given?: string;
   is_currect: number;
-  question: string;      // question HTML/text
-  answer: string;        // correct answer
-  given?: string;        // student answer
-  is_correct?: boolean;  // true if answer is correct
-  time_taken?: number;   // seconds spent
-  image?: string;        // optional image URL
+  time_taken?: number;
+  status?: number;
+
+  // UI purpose
+  is_correct?: boolean;
 }
+
 
 // API result interface
 interface AllocatedResult {
@@ -62,7 +65,7 @@ topicName: string = '';
 
   pieChartType: ChartType = 'doughnut';
 
- pieChartData: ChartConfiguration<'doughnut'>['data'] = {
+  pieChartData: ChartConfiguration<'doughnut'>['data'] = {
     labels: ['Attempted', 'Not Attempted', 'Correct', 'Incorrect'],
     datasets: [
       {
@@ -75,94 +78,137 @@ topicName: string = '';
   pieChartOptions: ChartConfiguration<'doughnut'>['options'] = {
     responsive: true,
     plugins: {
-      title: { display: false },
       legend: { display: false },
     },
   };
 
-  constructor(private resultService: ScheduleTopicViewResultResponse,
-  private router: Router,
+  constructor(
+    private resultService: ScheduleTopicViewResultResponse,
+    private router: Router,
     private menuCtrl: MenuController,
-  private route: ActivatedRoute) {}
-ngOnInit() {
+    private route: ActivatedRoute
+  ) {}
 
-  this.route.queryParams.subscribe(params => {
+  ngOnInit() {
+    this.route.queryParams.subscribe(params => {
+      const examRnm = params['examRnm'];
+      this.topicName = params['topicName'];
 
-    const examRnm = params['examRnm'];
-    this.topicName = params['topicName'];
-
-    console.log("Received examRnm:", examRnm);
-
-    if (!examRnm) return;
-
-    this.loadResult(examRnm);
-
-  });
-
-}
-async loadResult(examRnm: any) {
-
-  try {
-
-    const res = await this.resultService.getAllocatedResult(examRnm);
-
-    console.log("RESULT API:", res);
-
-    if (res.status === 'Success' && res.result) {
-
-      const result = res.result;
-
-      // 🔹 questionsList parse
-      if (typeof result.questionsList === 'string') {
-        this.questionData = JSON.parse(result.questionsList);
+      if (examRnm) {
+        this.loadResult(examRnm);
       }
+    });
+  }
 
-      console.log("Parsed Questions:", this.questionData);
+  async loadResult(examRnm: any) {
+    
+    try {
+      const res: any = await this.resultService.getAllocatedResult(examRnm);
 
-      let attempted = 0;
-      let correct = 0;
-      let totalSeconds = 0;
+      console.log("RESULT API:", res);
 
-      for (const q of this.questionData) {
+      if (res.status === 'Success' && res.result) {
 
-        totalSeconds += q.time_taken ?? 0;
+        const result = res.result;
 
-        if (q.given) {
-          attempted++;
-
-          if (q.is_currect == 1) {
-            correct++;
+        // ✅ FIX 1: handle string OR array
+      if (result.questionsList) {
+          try {
+            this.questionData =
+              typeof result.questionsList === 'string'
+                ? JSON.parse(result.questionsList)
+                : result.questionsList;
+          } catch (e) {
+            console.error("Parse error:", e);
+            this.questionData = [];
           }
         }
 
+        let attempted = 0;
+        let correct = 0;
+        let totalSeconds = 0;
+
+        // ✅ MAIN LOOP (Android logic same)
+     this.questionData.forEach(q => {
+
+          totalSeconds += q.time_taken ?? 0;
+
+          if (q.status === 1) {
+            attempted++;
+
+            if (q.is_currect === 1) {
+              correct++;
+              q.is_correct = true;
+            } else {
+              q.is_correct = false;
+            }
+          } else {
+            q.is_correct = false;
+          }
+        });
+        this.totalQuestions = this.questionData.length;
+        this.attemptedCount = attempted;
+        this.correctCount = correct;
+        this.wrongCount = attempted - correct;
+
+        const notAttempted = this.totalQuestions - attempted;
+
+        // ✅ PIE CHART UPDATE
+        this.pieChartData = {
+          labels: ['Attempted', 'Not Attempted', 'Correct', 'Incorrect'],
+          datasets: [
+            {
+              data: [
+                attempted,
+                notAttempted,
+                correct,
+                this.wrongCount
+              ],
+              backgroundColor: ['#f39c12', '#9b59b6', '#27ae60', '#e74c3c'],
+            },
+          ],
+        };
+
+        console.log("Attempted:", attempted);
+        console.log("Correct:", correct);
+        console.log("Wrong:", this.wrongCount);
       }
 
-      this.totalQuestions = this.questionData.length;
-      this.attemptedCount = attempted;
-      this.correctCount = correct;
-      this.wrongCount = attempted - correct;
-
-      const notAttempted = this.totalQuestions - attempted;
-
-      console.log("Attempted:", attempted);
-      console.log("Correct:", correct);
-      console.log("Wrong:", this.wrongCount);
-
+    } catch (err) {
+      console.error("API Error", err);
     }
-
-  } catch (err) {
-    console.error("API Error", err);
   }
 
-}
+  // ✅ Android color logic same
+  getRowClass(q: any) {
+    if (!q.given || q.given === '') {
+      return 'not-attempted'; // white
+    } else if (q.given === q.answer) {
+      return 'correct'; // green
+    } else {
+      return 'incorrect'; // red
+    }
+  }
 
- backToDashboard() {
-  this.menuCtrl.close().then(() => {
-    this.router.navigate(['/dashboard']);
-  });
-}
+  backToDashboard() {
+    this.menuCtrl.close().then(() => {
+      this.router.navigate(['/dashboard']);
+    });
+  }
 
   formatTime(seconds: number | undefined): number {
     return seconds ?? 0;
   }
+  getGivenClass(q: any): string {
+
+  if (!q.given || q.given === '') {
+    return 'not-attempted';   // white
+  }
+
+  if (q.given == q.answer) {
+    return 'correct';         // green
+  }
+
+  return 'incorrect';         // red
+}
 }

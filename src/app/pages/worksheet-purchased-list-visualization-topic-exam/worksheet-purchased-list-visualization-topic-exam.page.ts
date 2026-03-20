@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { AlertController, IonicModule } from '@ionic/angular';
 import { WorksheetPurchasedListToopicExamServices } from 'src/app/services/worksheet-purchased-list-toopic-exam-services';
+import { TextToSpeech } from '@capacitor-community/text-to-speech';
 
 @Component({
   selector: 'app-worksheet-purchased-list-visualization-topic-exam',
@@ -21,6 +22,7 @@ studentId:any;
 topicId:any;
 
 practiceId:any;
+examRnm:any;
 topicName:any;
 
 questions:any[] = [];
@@ -40,6 +42,11 @@ questionTime='00:00';
 questionTimerInterval:any;
 
 questionTimes:number[]=[];
+
+ // 🔥 NEW
+  displayText: string = '';
+  isQuestionActive = false;
+  isButtonsEnabled = false;
 
 constructor(
 private route:ActivatedRoute,
@@ -74,6 +81,7 @@ console.log("EXAM API:",res);
 if(res.errorCode=='200'){
 
 this.practiceId=res.result.practiceId;
+this.examRnm = res.result.examRnm;
 
 let questionData = res.result.questionsList;
 
@@ -90,61 +98,174 @@ this.questionTimes = new Array(this.questions.length).fill(0);
 this.startTimer();
 this.startQuestionTimer();
 
+ // 🔥 ADD THIS FOR FIRST QUESTION TTS
+    setTimeout(() => {
+      this.handleQuestionDisplay();
+    }, 300);
+
 }
 
 }
 
 getQuestionImage(question: string): string | null {
 
-  if (!question) return null;
+if (!question) return null;
 
   const match = question.match(/<img[^>]+src="([^">]+)"/);
-
   return match ? match[1] : null;
-
 }
-
 getQuestionText(question: string): string {
-
   if (!question) return '';
 
-  const cleaned = question.replace(/<img[^>]+>/g, '');
+  let cleaned = question.replace(/<img[^>]+>/g, '');
+  cleaned = cleaned.replace(/<br\s*\/?>/gi, '\n');
 
   const div = document.createElement('div');
   div.innerHTML = cleaned;
 
   return div.textContent?.replace(/\u00A0/g, '').trim() || '';
-
 }
 
 get currentQuestion(){
 return this.questions[this.currentIndex]?.question;
 }
 
+handleQuestionDisplay() {
+
+    const question = this.currentQuestion;
+    if (!question) return;
+
+    // if image → skip TTS
+    if (this.getQuestionImage(question)) {
+      this.displayText = '';
+      this.isButtonsEnabled = true;
+      return;
+    }
+
+    const text = this.getQuestionText(question);
+    const elements = text.split(/\s+/);
+
+    this.speakAndDisplayOneByOne(elements);
+  }
+
+  async speakAndDisplayOneByOne(elements: string[]) {
+
+  this.isQuestionActive = true;
+  this.isButtonsEnabled = false;
+  this.displayText = '';
+
+  for (let i = 0; i < elements.length; i++) {
+
+    let clean = elements[i].trim();
+    if (!clean) continue;
+
+    let speakText = '';
+    let displayText = '';
+
+    if (clean.startsWith('+')) {
+      const num = clean.substring(1);
+      speakText = `plus ${num}`;
+      displayText = `+${num}`;
+    } else if (clean.startsWith('-')) {
+      const num = clean.substring(1);
+      speakText = `minus ${num}`;
+      displayText = `-${num}`;
+    } else {
+      speakText = `plus ${clean}`;
+      displayText = `+${clean}`;
+    }
+
+    // ✅ SHOW
+    this.displayText = displayText;
+
+    await TextToSpeech.speak({
+      text: speakText,
+      lang: 'en-US',
+      rate: 1.0
+    });
+
+    // ⏳ WAIT
+    await this.delay(1000);
+
+    // ❌ CLEAR (this is the key fix)
+    this.displayText = '';
+
+    await this.delay(300); // small gap before next number
+  }
+
+  // ✅ FINAL
+  this.displayText = 'Answer is';
+
+  await TextToSpeech.speak({
+    text: 'Answer is',
+    lang: 'en-US'
+  });
+
+  this.isButtonsEnabled = true;
+  this.isQuestionActive = false;
+  }
+
+  delay(ms: number) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+  }
+
+
+
 nextQuestion() {
-  // Save current answer
-  this.answers[this.currentIndex] = this.answer;
-  this.isAnswered[this.currentIndex] = this.answer.trim() !== '';
+    if (this.isQuestionActive) return;
 
-  // ✅ Save current question time
-  this.questionTimes[this.currentIndex] = this.questionSeconds;
+    this.answers[this.currentIndex] = this.answer;
+    this.isAnswered[this.currentIndex] = this.answer.trim() !== '';
+    this.questionTimes[this.currentIndex] = this.questionSeconds;
 
-  if (this.currentIndex < this.questions.length - 1) {
-    this.currentIndex++;
-    this.answer = this.answers[this.currentIndex] || '';
+    if (this.currentIndex < this.questions.length - 1) {
+      this.currentIndex++;
+      this.answer = this.answers[this.currentIndex] || '';
+      this.startQuestionTimer();
+
+      setTimeout(() => {
+        this.scrollToActiveStep();
+        this.handleQuestionDisplay();
+      }, 200);
+    } else {
+      this.showCompletionPopup();
+    }
+  }
+
+  prevQuestion() {
+    if (this.isQuestionActive) return;
+
+    this.answers[this.currentIndex] = this.answer;
+    this.isAnswered[this.currentIndex] = this.answer.trim() !== '';
+
+    if (this.currentIndex > 0) {
+      this.currentIndex--;
+      this.answer = this.answers[this.currentIndex] || '';
+      this.startQuestionTimer();
+
+      setTimeout(() => {
+        this.scrollToActiveStep();
+        this.handleQuestionDisplay();
+      }, 200);
+    }
+  }
+
+  goToQuestion(i: number) {
+    if (this.isQuestionActive) return;
+
+    this.answers[this.currentIndex] = this.answer;
+    this.isAnswered[this.currentIndex] = this.answer.trim() !== '';
+
+    this.currentIndex = i;
+    this.answer = this.answers[i] || '';
+
     this.startQuestionTimer();
 
-    setTimeout(() => this.scrollToActiveStep(), 50);
-  }else {
-    // Last question reached → navigate to another page
-    
-    
-   console.log('Last question reached');
-
-    clearInterval(this.questionTimerInterval);
-    this.showCompletionPopup();
+    setTimeout(() => {
+      this.scrollToActiveStep();
+      this.handleQuestionDisplay();
+    }, 200);
   }
-}
   async showCompletionPopup() {
    this.questionTimes[this.currentIndex] = this.questionSeconds;
 
@@ -173,36 +294,6 @@ goBack() {
   window.history.back();
 }
 
-prevQuestion(){
-
-this.answers[this.currentIndex] = this.answer;
-  this.isAnswered[this.currentIndex] = this.answer.trim() !== '';
-
-  // ✅ Save current question time
-  this.questionTimes[this.currentIndex] = this.questionSeconds;
-
-  if (this.currentIndex > 0) {
-    this.currentIndex--;
-    this.answer = this.answers[this.currentIndex] || '';
-    this.startQuestionTimer();
-
-    setTimeout(() => this.scrollToActiveStep(), 50);
-  }
-}
-
-goToQuestion(i:number){
-
-this.answers[this.currentIndex] = this.answer;
-this.isAnswered[this.currentIndex] = this.answer.trim() !== '';
-
-this.currentIndex = i;
-this.answer = this.answers[i] || '';
-
-this.startQuestionTimer();
-
-setTimeout(()=>this.scrollToActiveStep(),50);
-
-}
 
 startTimer(){
 
@@ -274,10 +365,14 @@ block:'nearest'
 }
 
 onAnswerChange(event:any){
+   if (this.isQuestionActive) return;
 this.answer = event.target.value ? event.target.value.toString() : '';
 }
 
   async submitExam(){
+     if (this.isQuestionActive) return;
+    this.answers[this.currentIndex] = this.answer;
+     this.isAnswered[this.currentIndex] = this.answer.trim() !== '';
 
 this.questionTimes[this.currentIndex] = this.questionSeconds;
 
@@ -301,16 +396,24 @@ this.questionTimes[this.currentIndex] = this.questionSeconds;
 await alert.present();
 }
   async submitExamData() {
-      const questionData = this.questions.map((q, i) => ({
+      const questionData = this.questions.map((q, i) => {
+
+    const given = (this.answers[i] || '').trim();
+    const correct = (q.answer || q.correctAnswer || '').trim();
+
+    return {
       question: q.question,
-      given: this.answers[i] || '',        // ✅ student’s answer
-      answer: q.correctAnswer || q.answer, // API correct answer
-      is_correct: this.answers[i] === (q.correctAnswer || q.answer),
-      time_taken: this.questionTimes[i] || 0,
-      status: this.answers[i] ? 'answered' : 'not_answered',
-    }));
+      given: given,
+      answer: correct,
+      is_currect: given === correct ? 1 : 0, // ✅ EXACT ANDROID KEY
+      time_taken: Math.floor((this.questionTimes[i] || 0)), // seconds
+      status: given ? 1 : 0 // ✅ EXACT ANDROID FORMAT
+    };
+
+  });
+  console.log("FINAL SUBMIT DATA:", questionData);
   try {
-    const res = await this.examService.submitAllocatedAssignmentExam(this.practiceId, questionData);
+    const res = await this.examService.submitAllocatedAssignmentExam(this.examRnm, questionData);
     console.log('Submission response:', res);
 
     if (res.errorCode === '200') {
@@ -350,22 +453,16 @@ splitQuestion(question: string): string[] {
 
   if (!question) return [];
 
-  // remove image tag
-  const cleaned = question.replace(/<img[^>]+>/g, '');
-
-  // convert <br> to newline
-  const withBreaks = cleaned.replace(/<br\s*\/?>/gi, '\n');
+  let cleaned = question.replace(/<img[^>]+>/g, '');
+  cleaned = cleaned.replace(/<br\s*\/?>/gi, '\n');
 
   const div = document.createElement('div');
-  div.innerHTML = withBreaks;
+  div.innerHTML = cleaned;
 
-  const text = div.textContent || '';
-
-  return text
+  return (div.textContent || '')
     .replace(/\u00A0/g, '')
     .split('\n')
     .map(v => v.trim())
     .filter(v => v.length > 0);
-
 }
 }

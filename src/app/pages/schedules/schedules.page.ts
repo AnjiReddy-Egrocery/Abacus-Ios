@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, CUSTOM_ELEMENTS_SCHEMA, OnInit } from '@angular/core';
+import { Component, CUSTOM_ELEMENTS_SCHEMA, Input, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { IonicModule, ToastController } from '@ionic/angular';
@@ -16,7 +16,7 @@ import { BatchDetailServices } from 'src/app/services/batch-detail-services';
 })
 export class SchedulesPage implements OnInit {
 
-  studentId!: string;
+ @Input() studentId!: string;   // ✅ add this
   batches: BatchResult[] = [];
 
   constructor(
@@ -27,15 +27,11 @@ export class SchedulesPage implements OnInit {
   ) {}
 
   ngOnInit() {
-    this.studentId = '2251'; // temporary test
-    console.log("StudentId Loaded:", this.studentId);
-
-  this.loadBatches(this.studentId);
-
-    // this.route.queryParams.subscribe(params => {
-    //   this.studentId = params['studentId'];
-    //   this.loadBatches(this.studentId);
-    // });
+   // this.studentId = '2251'; // temporary test
+   console.log("Received StudentId:", this.studentId);
+   if (this.studentId) {
+      this.loadBatches(this.studentId);
+    }
   }
 
   async loadBatches(studentId: string) {

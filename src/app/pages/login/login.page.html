@@ -22,9 +22,17 @@
 
       <label>Email</label>
       <div class="input-box">
-        <input type="email" placeholder="Email"  [(ngModel)]="email">
+        <input type="email" placeholder="Email"  [(ngModel)]="email" (input)="onEmailLoginChange()">
         <ion-icon name="mail-outline"></ion-icon>
       </div>
+
+      <p class="error" *ngIf="submitted && !email">
+        Email is required
+      </p>
+
+      <p class="error" *ngIf="submitted && email && !isValidEmail(email)">
+        Invalid Email
+      </p>
 
       <label>Password</label>
       <div class="input-box">
@@ -33,15 +41,18 @@
       <input
           [type]="showPassword ? 'text' : 'password'"
           placeholder="Password"
-          [(ngModel)]="password">
+          [(ngModel)]="password"
+          (input)="onPasswordChange()">
 
         <ion-icon
           [name]="showPassword ? 'eye-off-outline' : 'eye-outline'"
           (click)="togglePassword()">
         </ion-icon>
       </div>
-
-      <p class="forgot">Forgot Password?</p>
+    <p class="error" *ngIf="submitted && !password">
+        Password is required
+      </p>
+      <p class="forgot" (click)="goToForgotPassword()">Forgot Password?</p>
 
       <ion-button expand="block" class="login-btn" (click)="goToLogin()">Login</ion-button>
 
@@ -64,41 +75,62 @@
        <div class="input-box">
         <input type="firstName" placeholder="First Name" [(ngModel)]="firstName">        
       </div>
+      <p class="error" *ngIf="submitted && !firstName">First Name is required</p>
        <label>Last Name</label>
        <div class="input-box">
         <input type="lastName" placeholder="Last Name" [(ngModel)]="lastName">
        
       </div>
+      <p class="error" *ngIf="submitted && !lastName">Last Name is required</p>
           <div class="gender-row">
         <p class="input-box">Gender:</p>
 
         <label style="margin-top: -14px;">
-          <input type="radio" name="gender" value="Male" [(ngModel)]="gender"> Male
+          <input type="radio" name="gender" value="Male" [(ngModel)]="gender"  (change)="onGenderChange()"> Male
         </label>
 
         <label style="margin-top: -14px;">
-          <input type="radio" name="gender" value="Female" [(ngModel)]="gender"> Female
+          <input type="radio" name="gender" value="Female" [(ngModel)]="gender" (change)="onGenderChange()"> Female
         </label>
       </div>
+      <p class="error" *ngIf="submitted && !gender && !genderTouched">
+      Please select gender
+    </p>
      <label>Date of Birth</label>
      <div class="input-box">
       <input type="date" id="dob" placeholder="Date of Birth" [(ngModel)]="dob" (click)="openCalendar()">
     </div>
+    <p class="error" *ngIf="submitted && !dob">Date of Birth required</p>
        <label>Mother Tongue</label>
        <div class="input-box">
         <input type="tongue" placeholder="Mother Tongue" [(ngModel)]="motherTongue">
-       
+
       </div>
+       <p class="error" *ngIf="submitted && !motherTongue">Mother Tongue is required</p>
       <label>Email</label>
       <div class="input-box">
-        <input type="email" placeholder="Email" [(ngModel)]="emailreg">
+        <input type="email" placeholder="Email" [(ngModel)]="emailreg" (ngModelChange)="onEmailChange()">
         <ion-icon name="mail-outline"></ion-icon>
       </div>
+          <p class="error" *ngIf="submitted && !emailreg && !emailTouched">
+        Email is required
+      </p>
+
+      <p class="error" *ngIf="submitted && emailreg && !isValidEmail(emailreg) && !emailTouched">
+        Invalid Email
+      </p>
       <label>Mobile Number</label>
       <div class="input-box">
-        <input type="phone" placeholder="Mobile Number" [(ngModel)]="mobile">
+        <input type="phone" placeholder="Mobile Number" [(ngModel)]="mobile" (ngModelChange)="onMobileChange()">
        
       </div>
+     <p class="error" *ngIf="submitted && !mobile && !mobileTouched">
+      Mobile is required
+    </p>
+
+    <p class="error" *ngIf="submitted && mobile && mobile.length < 10 && !mobileTouched">
+      Invalid Mobile
+    </p>
 
       <ion-button expand="block" class="login-btn" (click)="registerUser()">Register</ion-button>
 

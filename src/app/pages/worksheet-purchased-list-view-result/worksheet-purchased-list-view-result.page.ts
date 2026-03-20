@@ -14,7 +14,9 @@ interface QuestionItem {
   given?: string;        // student answer
   is_correct?: boolean;  // true if answer is correct
   time_taken?: number;   // seconds spent
-  image?: string;        // optional image URL
+   status?: number;
+
+
 }
 
 // API result interface
@@ -63,7 +65,7 @@ export class WorksheetPurchasedListViewResultPage implements OnInit {
 
   pieChartType: ChartType = 'doughnut';
 
- pieChartData: ChartConfiguration<'doughnut'>['data'] = {
+  pieChartData: ChartConfiguration<'doughnut'>['data'] = {
     labels: ['Attempted', 'Not Attempted', 'Correct', 'Incorrect'],
     datasets: [
       {
@@ -76,7 +78,6 @@ export class WorksheetPurchasedListViewResultPage implements OnInit {
   pieChartOptions: ChartConfiguration<'doughnut'>['options'] = {
     responsive: true,
     plugins: {
-      title: { display: false },
       legend: { display: false },
     },
   };
@@ -114,45 +115,39 @@ async loadResult(examRnm: any) {
       const result = res.result;
 
       // 🔹 questionsList parse
-      if (typeof result.questionsList === 'string') {
-        this.questionData = JSON.parse(result.questionsList);
-
-  // 🔧 Fix image path + correct flag
-  this.questionData = this.questionData.map(q => {
-
-            if (q.question) {
-              q.question = q.question.replace(
-                '../../../assets/uploads/',
-                'https://www.abacustrainer.com/assets/uploads/'
-              );
-            }
-
-            // API spelling fix
-            q.is_correct = q.is_currect === 1;
-
-            return q;
-          });
-      }
-
+      if (result.questionsList) {
+          try {
+            this.questionData =
+              typeof result.questionsList === 'string'
+                ? JSON.parse(result.questionsList)
+                : result.questionsList;
+          } catch (e) {
+            console.error("Parse error:", e);
+            this.questionData = [];
+          }
+        }
       console.log("Parsed Questions:", this.questionData);
 
       let attempted = 0;
       let correct = 0;
       let totalSeconds = 0;
+  this.questionData.forEach(q => {
 
-      for (const q of this.questionData) {
+          totalSeconds += q.time_taken ?? 0;
 
-        totalSeconds += q.time_taken ?? 0;
+          if (q.status === 1) {
+            attempted++;
 
-        if (q.given) {
-          attempted++;
-
-          if (q.is_currect == 1) {
-            correct++;
+            if (q.is_currect === 1) {
+              correct++;
+              q.is_correct = true;
+            } else {
+              q.is_correct = false;
+            }
+          } else {
+            q.is_correct = false;
           }
-        }
-
-      }
+        });
 
       this.totalQuestions = this.questionData.length;
       this.attemptedCount = attempted;
@@ -160,6 +155,21 @@ async loadResult(examRnm: any) {
       this.wrongCount = attempted - correct;
 
       const notAttempted = this.totalQuestions - attempted;
+
+        this.pieChartData = {
+          labels: ['Attempted', 'Not Attempted', 'Correct', 'Incorrect'],
+          datasets: [
+            {
+              data: [
+                attempted,
+                notAttempted,
+                correct,
+                this.wrongCount
+              ],
+              backgroundColor: ['#f39c12', '#9b59b6', '#27ae60', '#e74c3c'],
+            },
+          ],
+        };
 
       console.log("Attempted:", attempted);
       console.log("Correct:", correct);
@@ -173,6 +183,16 @@ async loadResult(examRnm: any) {
 
 }
 
+ getRowClass(q: any) {
+    if (!q.given || q.given === '') {
+      return 'not-attempted'; // white
+    } else if (q.given === q.answer) {
+      return 'correct'; // green
+    } else {
+      return 'incorrect'; // red
+    }
+  }
+
  backToDashboard() {
   this.menuCtrl.close().then(() => {
     this.router.navigate(['/dashboard']);
@@ -182,4 +202,17 @@ async loadResult(examRnm: any) {
   formatTime(seconds: number | undefined): number {
     return seconds ?? 0;
   }
+
+    getGivenClass(q: any): string {
+
+  if (!q.given || q.given === '') {
+    return 'not-attempted';   // white
+  }
+
+  if (q.given == q.answer) {
+    return 'correct';         // green
+  }
+
+  return 'incorrect';         // red
+}
 }

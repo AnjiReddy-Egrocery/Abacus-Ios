@@ -74,18 +74,19 @@ userImage: string = 'assets/headerprofile.png';
 }
   }
   
-
-  async loadUser() {
-    const user: User | null = await this.authService.getUser();
-  console.log('Loaded user:', user); // Already confirmed works
+async loadUser() {
+  const user = await this.authService.getUser();
   if (user) {
     this.userName = user.name;
     this.studentId = user.studentId;
     this.userImage = user.image
       ? 'https://www.abacustrainer.com/assets/student_images/' + user.image
       : 'assets/headerprofile.png';
+  } else {
+    console.warn('User is null, redirecting to login');
+    this.router.navigateByUrl('/login', { replaceUrl: true });
   }
-  }
+}
 
   
 
@@ -104,7 +105,7 @@ userImage: string = 'assets/headerprofile.png';
   }
 
    goToAllocatedCourses(){
-    this.studentId = "2251"; // ✅ Temporary hardcode ID
+    //this.studentId = "2251"; // ✅ Temporary hardcode ID
       console.log("Using Hardcoded Student ID:", this.studentId);
 
   this.menuCtrl.close('mainMenu');
@@ -117,7 +118,7 @@ userImage: string = 'assets/headerprofile.png';
   }
 
   goToOrders(){
-    this.studentId = "2251"; // ✅ Temporary hardcode ID
+    //this.studentId = "2251"; // ✅ Temporary hardcode ID
       console.log("Using Hardcoded Student ID:", this.studentId);
     this.menuCtrl.close('mainMenu');
 
@@ -144,7 +145,7 @@ userImage: string = 'assets/headerprofile.png';
   }
 
   ViewMoreDetails(){
-     this.studentId = "2251"; // ✅ Temporary hardcode ID
+    // this.studentId = "2251"; // ✅ Temporary hardcode ID
       console.log("Using Hardcoded Student ID:", this.studentId);
 
   this.menuCtrl.close('mainMenu');
@@ -184,6 +185,18 @@ userImage: string = 'assets/headerprofile.png';
     });
 
   }
+}
+
+ViewMoreAllocatedCourses(){
+   console.log("Using Hardcoded Student ID:", this.studentId);
+
+  this.menuCtrl.close('mainMenu');
+
+  this.router.navigate(['/allocatedcourses'], {
+    queryParams: {
+      studentId: this.studentId
+    }
+  });
 }
 
 async showWorksheetDialog(studentId: string, batchId: string) {
@@ -278,7 +291,7 @@ async showWorksheetDialog(studentId: string, batchId: string) {
   this.activeTab = tab;
    if (tab === 'schedule') {
       // Pass logged-in studentId to Schedule tab
-      this.selectedStudentId = '2251';
+      this.selectedStudentId = this.studentId;
       console.log("Schedule tab using static studentId:", this.selectedStudentId);
     }
 }

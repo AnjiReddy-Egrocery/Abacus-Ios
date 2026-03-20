@@ -276,7 +276,9 @@ this.answer = event.target.value ? event.target.value.toString() : '';
 
   async submitExam(){
 
-this.questionTimes[this.currentIndex] = this.questionSeconds;
+    this.answers[this.currentIndex] = this.answer;
+    this.isAnswered[this.currentIndex] = this.answer.trim() !== '';
+    this.questionTimes[this.currentIndex] = this.questionSeconds;
 
   const alert = await this.alertController.create({
     header: 'www.abacustrainer.com',

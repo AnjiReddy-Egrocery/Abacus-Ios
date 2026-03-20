@@ -236,6 +236,15 @@ export const routes: Routes = [
     path: 'work-sheet-subscription-courses-details',
     loadChildren: () => import('./pages/work-sheet-subscription-courses-details/work-sheet-subscription-courses-details.module').then( m => m.WorkSheetSubscriptionCoursesDetailsPageModule)
   },
+  {
+    path: 'forgot-password',
+    loadChildren: () => import('./pages/forgot-password/forgot-password.module').then( m => m.ForgotPasswordPageModule)
+  },
+  {
+    path: 'student-list',
+    loadChildren: () => import('./pages/student-list/student-list.module').then( m => m.StudentListPageModule)
+  },
+  
 
 ];
 

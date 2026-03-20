@@ -12,27 +12,44 @@ import { Storage } from '@ionic/storage-angular';
 })
 export class SplashPage  {
 
-  constructor(private router: Router, private storage: Storage) { }
+ constructor(
+    private router: Router,
+    private storage: Storage
+  ) {}
 
-
-
-   async ngOnInit() {
-
-    // 1️⃣ Initialize storage first
+  async ngOnInit() {
     await this.storage.create();
 
-    // 2️⃣ Get login state
-    const loggedIn = await this.storage.get('isLoggedIn');
-
-    // 3️⃣ Navigate after splash delay
+    // Wait 3 seconds, then check login
     setTimeout(() => {
-      if (loggedIn) {
-        this.router.navigateByUrl('/dashboard', { replaceUrl: true });
-      } else {
-        this.router.navigateByUrl('/login', { replaceUrl: true });
-      }
-    }, 3200);
-
+      this.checkLogin();
+    }, 3000);
   }
 
+  async checkLogin() {
+    const isLoggedIn = await this.storage.get('isLoggedIn');
+    const studentList = await this.storage.get('student_list') || [];
+    const imageUrl = await this.storage.get('image_url') || '';
+
+    if (isLoggedIn && studentList.length > 0) {
+      // Multiple students
+      if (studentList.length > 1) {
+        this.router.navigate(['/student-list'], {
+          state: { studentList, imageUrl },
+          replaceUrl: true
+        });
+      }
+      // Single student
+      else {
+        const student = studentList[0];
+        this.router.navigate(['/dashboard'], {
+          queryParams: { studentId: student.studentId, imageUrl },
+          replaceUrl: true
+        });
+      }
+    } else {
+      // Not logged in → go to Welcome
+      this.router.navigate(['/welcome'], { replaceUrl: true });
+    }
+  }
 }

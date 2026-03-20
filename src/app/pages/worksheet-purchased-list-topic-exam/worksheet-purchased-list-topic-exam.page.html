@@ -70,23 +70,23 @@
     <!-- QUESTION -->
     <div class="question-box">
 
-      <img
+  <!-- IMAGE -->
+  <img
     *ngIf="getQuestionImage(currentQuestion)"
     [src]="getQuestionImage(currentQuestion)"
     class="question-image"
   />
 
-  <!-- TEXT QUESTION -->
-  <div
-    *ngIf="!getQuestionImage(currentQuestion)"
-    class="question-text"
-  >
+  <!-- TEXT -->
+  <div *ngIf="getQuestionText(currentQuestion)" class="question-text">
     <div *ngFor="let part of splitQuestion(currentQuestion)">
-    {{ part }}
-  </div>
+      {{ part }}
+    </div>
   </div>
 
-    </div>
+</div>
+
+ 
 
 
     <!-- ANSWER -->
@@ -96,7 +96,7 @@
 
       <ion-input
         type="number"
-        [(ngModel)]="answers"
+        [(ngModel)]="answer"
         (ionInput)="onAnswerChange($event)"
         class="answer-input">
       </ion-input>

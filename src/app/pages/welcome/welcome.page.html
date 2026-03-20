@@ -1,0 +1,100 @@
+<ion-content fullscreen>
+
+  <swiper-container
+    #swiper
+    pagination="true"
+    space-between="30"
+    (slidechange)="onSlideChange($event)">
+
+    <!-- SLIDE 1 -->
+    <swiper-slide>
+      <div class="first-slide slide1">
+
+        <div class="top-container">
+          <img src="../../../assets/first_slide_img.png" class="top-bg" />
+        </div>
+
+        <div class="text-area">
+          <h2>Welcome to Abacus Trainer</h2>
+          <p>
+            welcome to Abacus Trainer we're here to change the way kids learn maths.
+            Our Website
+          </p>
+        </div>
+
+      </div>
+    </swiper-slide>
+
+    <!-- SLIDE 2 -->
+    <swiper-slide>
+      <div class="first-slide slide2">
+
+        <div class="slide3">
+            <img src="../../../assets/seconslideimagesec.png" class="center-img" />
+            <h2>How our app helps to the student</h2>
+          <p>welcome to Abacus Trainer we're here to change the way kids learn maths.Our Website</p>
+        </div>
+
+       
+      </div>
+    </swiper-slide>
+
+    <!-- SLIDE 3 -->
+    <swiper-slide>
+      <div class="slide3">
+        <img src="../../../assets/third_slide_image.png" class="center-img" />
+
+        <h2 class="title">Benefits of Abacus</h2>
+
+    <!-- 2 COLUMN GRID -->
+    <div class="benefits-grid">
+
+      <!-- LEFT -->
+      <div class="column">
+        <p>• Concentration</p>
+        <p>• Memory</p>
+        <p>• Visualization</p>
+        <p>• Speed</p>
+        <p>• Understanding</p>
+        <p>• Problem-Solving</p>
+      </div>
+
+      <!-- RIGHT -->
+      <div class="column">
+        <p>• Discipline</p>
+        <p>• Performance</p>
+        <p>• Hemispheres</p>
+        <p>• Flexibility</p>
+        <p>• Listening</p>
+        <p>• Creativity</p>
+      </div>
+
+    </div>
+      </div>
+    </swiper-slide>
+
+  </swiper-container>
+
+  <!-- DOTS -->
+  <div class="dots-container">
+    <swiper-container-pagination></swiper-container-pagination>
+  </div>
+
+  <!-- BUTTONS -->
+  <div class="bottom-bar" [ngClass]="{'last-slide': isLastSlide}">
+
+    <ion-button fill="clear" *ngIf="!isLastSlide" (click)="skip()">
+      Skip
+    </ion-button>
+
+    <ion-button *ngIf="!isLastSlide" (click)="next()">
+      Next
+    </ion-button>
+
+    <ion-button *ngIf="isLastSlide" (click)="start()">
+      Got It
+    </ion-button>
+
+  </div>
+
+</ion-content>

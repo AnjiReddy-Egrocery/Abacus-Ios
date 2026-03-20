@@ -77,13 +77,10 @@
   />
 
   <!-- TEXT QUESTION -->
-  <div
-    *ngIf="!getQuestionImage(currentQuestion)"
-    class="question-text"
-  >
+ <div *ngIf="getQuestionText(currentQuestion)" class="question-text">
     <div *ngFor="let part of splitQuestion(currentQuestion)">
-    {{ part }}
-  </div>
+      {{ part }}
+    </div>
   </div>
 
     </div>
@@ -96,7 +93,7 @@
 
       <ion-input
         type="number"
-        [(ngModel)]="answers"
+        [(ngModel)]="answer"
         (ionInput)="onAnswerChange($event)"
         class="answer-input">
       </ion-input>

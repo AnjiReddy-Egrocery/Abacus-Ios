@@ -1,0 +1,19 @@
+<ion-content>
+
+  <div class="title">Students List</div>
+
+  <div class="card" *ngFor="let student of studentList">
+
+    <img 
+      [src]="imageBaseUrl + student.profilePic" 
+      (error)="student.profilePic = 'assets/abacus_logo.png'">
+
+    <h3>{{ student.firstName }} {{ student.lastName }}</h3>
+
+    <button (click)="goToDashboard(student)">
+      Go to Dashboard
+    </button>
+
+  </div>
+
+</ion-content>

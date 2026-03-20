@@ -40,7 +40,7 @@ async loginUser(email: string, password: string) {
 
     const response = await CapacitorHttp.request({
       method: 'POST',
-      url: `${this.baseUrl}/apicalls/Index/studentLogin`,
+      url: `${this.baseUrl}/apicalls/Index/loginStudents`,
       headers: {
         'Content-Type': 'application/x-www-form-urlencoded'
       },

@@ -96,9 +96,10 @@
 
       <ion-input
         type="number"
-        [(ngModel)]="answers"
+        [(ngModel)]="answer"
         (ionInput)="onAnswerChange($event)"
-        class="answer-input">
+        class="answer-input"
+        [disabled]="!isButtonsEnabled">
       </ion-input>
 
     </div>

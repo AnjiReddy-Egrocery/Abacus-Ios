@@ -15,7 +15,7 @@ export class BatchDetailServices {
     try {
       const body = new URLSearchParams();
       // body.append('studentId', studentId);
- body.append('studentId', '2251'); // ✅ static ID
+ body.append('studentId', studentId); // ✅ static ID
       const response: HttpResponse = await CapacitorHttp.request({
         method: 'POST',
         url: this.BASE_URL + 'getStudentAllSchedules',

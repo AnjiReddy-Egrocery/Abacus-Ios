@@ -17,36 +17,49 @@
 
       <label>Otp</label>
       <div class="input-box">
-        <input type="otp" placeholder="Otp"  [(ngModel)]="Otp">
+        <input type="otp" placeholder="Otp"  [(ngModel)]="Otp" (ngModelChange)="onOtpChange()">
         <ion-icon name="mail-outline"></ion-icon>
       </div>
+      <p class="error" *ngIf="submitted && !Otp && !otpTouched">
+      OTP is required
+    </p>
+
+    <p class="error" *ngIf="submitted && Otp && Otp !== sentOtp && !otpTouched">
+      Invalid OTP
+    </p>
 
       <label>Password</label>
       <div class="input-box">
        <input
           [type]="showPassword ? 'text' : 'password'"
           placeholder="Password"
-          [(ngModel)]="password">
+          [(ngModel)]="password"
+           (ngModelChange)="onPasswordChange()">
 
         <ion-icon
           [name]="showPassword ? 'eye-off-outline' : 'eye-outline'"
           (click)="togglePassword()">
         </ion-icon>
       </div>
-
+      <p class="error" *ngIf="submitted && !password && !passwordTouched">
+        Password is required
+      </p>
       <label>Confirm Password</label>
       <div class="input-box">
       <input
         [type]="showConfirmPassword ? 'text' : 'password'"
         placeholder="Confirm Password"
-        [(ngModel)]="confirmpassword">
+        [(ngModel)]="confirmpassword"
+        (ngModelChange)="onConfirmPasswordChange()">
 
       <ion-icon
         [name]="showConfirmPassword ? 'eye-off-outline' : 'eye-outline'"
         (click)="toggleConfirmPassword()">
       </ion-icon>
     </div>
-
+      <p class="error" *ngIf="submitted && confirmpassword && password !== confirmpassword && !confirmPasswordTouched">
+        Passwords do not match
+      </p>
       <ion-button expand="block" class="login-btn" (click)="goToVerify()">VerifyAccount</ion-button>
 
    

@@ -22,6 +22,7 @@ studentId:any;
 topicId:any;
 
 practiceId:any;
+examRnm: any;
 topicName:any;
 
 questions:any[] = [];
@@ -75,6 +76,7 @@ console.log("EXAM API:",res);
 if(res.errorCode=='200'){
 
 this.practiceId=res.result.practiceId;
+this.examRnm=res.result.examRnm;
 
 let questionData = res.result.questionsList;
 
@@ -97,25 +99,21 @@ this.startQuestionTimer();
 
 getQuestionImage(question: string): string | null {
 
-  if (!question) return null;
+if (!question) return null;
 
   const match = question.match(/<img[^>]+src="([^">]+)"/);
-
   return match ? match[1] : null;
-
 }
-
 getQuestionText(question: string): string {
-
   if (!question) return '';
 
-  const cleaned = question.replace(/<img[^>]+>/g, '');
+  let cleaned = question.replace(/<img[^>]+>/g, '');
+  cleaned = cleaned.replace(/<br\s*\/?>/gi, '\n');
 
   const div = document.createElement('div');
   div.innerHTML = cleaned;
 
   return div.textContent?.replace(/\u00A0/g, '').trim() || '';
-
 }
 
 get currentQuestion(){
@@ -277,7 +275,10 @@ this.answer = event.target.value ? event.target.value.toString() : '';
 
   async submitExam(){
 
-this.questionTimes[this.currentIndex] = this.questionSeconds;
+    this.answers[this.currentIndex] = this.answer;
+    this.isAnswered[this.currentIndex] = this.answer.trim() !== '';
+    this.questionTimes[this.currentIndex] = this.questionSeconds;
+
 
   const alert = await this.alertController.create({
     header: 'www.abacustrainer.com',
@@ -299,28 +300,52 @@ this.questionTimes[this.currentIndex] = this.questionSeconds;
 await alert.present();
 }
   async submitExamData() {
-      const questionData = this.questions.map((q, i) => ({
+    const questionData = this.questions.map((q, i) => {
+
+    const given = (this.answers[i] || '').trim();
+    const correct = (q.answer || q.correctAnswer || '').trim();
+
+    return {
       question: q.question,
-      given: this.answers[i] || '',        // ✅ student’s answer
-      answer: q.correctAnswer || q.answer, // API correct answer
-      is_correct: this.answers[i] === (q.correctAnswer || q.answer),
-      time_taken: this.questionTimes[i] || 0,
-      status: this.answers[i] ? 'answered' : 'not_answered',
-    }));
+      given: given,
+      answer: correct,
+      is_currect: given === correct ? 1 : 0, // ✅ EXACT ANDROID KEY
+      time_taken: Math.floor((this.questionTimes[i] || 0)), // seconds
+      status: given ? 1 : 0 // ✅ EXACT ANDROID FORMAT
+    };
+
+  });
+
+  console.log("FINAL SUBMIT DATA:", questionData);
+
   try {
-    const res = await this.examService.submitAllocatedTopicExam(this.practiceId, questionData);
-    console.log('Submission response:', res);
+
+    const res = await this.examService.submitAllocatedTopicExam(
+      this.examRnm,
+      questionData
+    );
+
+
+     console.log("ExamRnm",this.examRnm); 
+     console.log("SUBMIT API RAW RESPONSE:", res);
+    console.log("STATUS:", res?.status);
+    console.log("ERROR CODE:", res?.errorCode);
+    console.log("MESSAGE:", res?.message);
+    console.log("RESULT:", res?.result);
+
+    // ✅ PRETTY JSON (BEST)
+    console.log("FULL RESPONSE JSON:", JSON.stringify(res, null, 2));
 
     if (res.errorCode === '200') {
-      //alert('All Questions are Submitted');
       this.navigateToResultPage(questionData);
     } else {
-      alert('Submission failed: ' + res.message);
+      alert(res.message);
     }
+
   } catch (err) {
-    console.error('Submission error', err);
-    alert('Submission error!');
+    console.error(err);
   }
+
   }
   navigateToResultPage(questionData: any){
 
@@ -348,22 +373,16 @@ splitQuestion(question: string): string[] {
 
   if (!question) return [];
 
-  // remove image tag
-  const cleaned = question.replace(/<img[^>]+>/g, '');
-
-  // convert <br> to newline
-  const withBreaks = cleaned.replace(/<br\s*\/?>/gi, '\n');
+  let cleaned = question.replace(/<img[^>]+>/g, '');
+  cleaned = cleaned.replace(/<br\s*\/?>/gi, '\n');
 
   const div = document.createElement('div');
-  div.innerHTML = withBreaks;
+  div.innerHTML = cleaned;
 
-  const text = div.textContent || '';
-
-  return text
+  return (div.textContent || '')
     .replace(/\u00A0/g, '')
     .split('\n')
     .map(v => v.trim())
     .filter(v => v.length > 0);
-
 }
 }

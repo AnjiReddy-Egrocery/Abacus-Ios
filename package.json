@@ -23,6 +23,7 @@
     "@angular/platform-browser-dynamic": "^20.0.0",
     "@angular/router": "^20.0.0",
     "@capacitor-community/http": "^1.4.1",
+    "@capacitor-community/text-to-speech": "^8.0.0",
     "@capacitor/android": "^8.1.0",
     "@capacitor/app": "8.0.1",
     "@capacitor/core": "^8.1.0",
@@ -43,7 +44,7 @@
     "jspdf-autotable": "^5.0.7",
     "ng2-charts": "^7.0.0",
     "rxjs": "~7.8.0",
-    "swiper": "^9.4.1",
+    "swiper": "^10.3.1",
     "tslib": "^2.3.0",
     "zone.js": "~0.15.0"
   },

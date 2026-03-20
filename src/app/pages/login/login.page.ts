@@ -7,6 +7,8 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { IonicModule, ToastController } from '@ionic/angular';
 import { Auth } from 'src/app/services/auth';
 import { Login } from 'src/app/services/login';
+import { IonicStorageModule } from '@ionic/storage-angular';
+import { Storageservices } from 'src/app/services/storageservices';
 
 @Component({
   selector: 'app-login',
@@ -31,7 +33,10 @@ export class LoginPage {
   emailreg = '';
   mobile = '';
 
-
+submitted = false;
+genderTouched = false;
+emailTouched = false;
+mobileTouched = false;
    showPassword: boolean = false;
   
 constructor(
@@ -39,6 +44,7 @@ constructor(
     private router: Router, 
       private authService: Auth,
     private toastCtrl: ToastController,
+    private storage: Storageservices,
   private route: ActivatedRoute) {}
 
   ngOnInit() {
@@ -69,54 +75,67 @@ openCalendar() {
     this.showPass = !this.showPass;
   }
 async goToLogin() {
-  if (!this.email || !this.password) {
-    this.showToast('Please enter email & password');
-    return;
-  }
-
-  if (!this.isValidEmail(this.email)) {
-    this.showToast('Please enter a valid email address');
-    return;
-  }
+  this.submitted = true;
+  if (!this.email || !this.password) return;
+  if (!this.isValidEmail(this.email)) return;
 
   try {
     const response = await this.loginService.loginUser(this.email, this.password);
-
     console.log("Login API Response:", response);
 
-    if (response.status === 'Success' && response.errorCode === '200') {
-      const user = response.result;
-        console.log("Student ID from API:", user.studentId);
-      const userData = {
-        name: user.firstName + ' ' + user.lastName,
-        email: user.parentEmail || '',
-        image: user.profilePic || 'assets/ic_launcher.png',
-        studentId: user.studentId // ✅ include studentId
-      };
-      console.log("User Data Stored:", userData);
+    if (response.errorCode === '202') {
+      this.showToast('Incorrect, please check Email & Password');
+      return;
+    }
 
-      // Store login info locally (optional)
-      await this.authService.setLoginData(userData);
+    if (response.errorCode === '200' && response.result) {
 
-      this.showToast('✅ Login Successful');
+      const studentList = response.result || [];
+      const imageUrl = response.imageUrl;
 
-      // Pass all user info via router state
-      this.router.navigateByUrl('/dashboard', {
-        state: {
-          name: userData.name,
-          image: userData.image,
-          studentId: userData.studentId
-        }
-      });
+      console.log("Student List:", studentList);
 
-    } else if (response.errorCode === '202') {
-      this.showToast('❌ No user found or wrong credentials');
+      // ✅ Store in Ionic Storage (not localStorage)
+     await this.storage.set('student_list', studentList);
+    await this.storage.set('image_url', imageUrl);
+    await this.storage.set('isLoggedIn', true);
+
+      // Navigate after storage is ready
+      if (studentList.length > 1) {
+        this.showToast('Multiple Students Found');
+        this.router.navigate(['/student-list'], {
+          state: { studentList, imageUrl },
+          replaceUrl: true
+        });
+      } else {
+        const user = studentList[0];
+        const userData = {
+          name: user.firstName + ' ' + user.lastName,
+          email: user.parentEmail || '',
+          image: user.profilePic || 'assets/ic_launcher.png',
+          studentId: user.studentId
+        };
+
+        await this.authService.setLoginData(userData);
+
+        this.showToast('✅ Login Successful');
+        this.router.navigate(['/dashboard'], {
+          state: {
+            name: userData.name,
+            image: userData.image,
+            studentId: userData.studentId
+          },
+          replaceUrl: true
+        });
+      }
+
     } else {
-      this.showToast('Unexpected server response');
+      this.showToast(response.message || 'Unexpected server response');
     }
 
   } catch (err) {
-    this.showToast('Network or server error. Check HTTPS / SSL');
+    console.error(err);
+    this.showToast('Network or server error');
   }
 }
 
@@ -137,23 +156,22 @@ async registerUser() {
 
   console.log('Register button clicked');
 
-  console.log('Form values:', {
-    firstName: this.firstName,
-    lastName: this.lastName,
-    gender: this.gender,
-    formattedDob: this.dob,
-    motherTongue: this.motherTongue,
-    email: this.emailreg,
-    mobile: this.mobile,
-  });
+  this.submitted = true; // 🔥 trigger validation U
 
-  // ✅ Validation
-  if (!this.firstName || !this.lastName || !this.emailreg || !this.mobile || !this.dob) {
-    this.showToast('Please fill all fields');
-    return;
-  }
+
+  if (!this.firstName) return;
+  if (!this.lastName) return;
+  if (!this.gender) return;
+   
+  if (!this.dob) return;
+  if (!this.motherTongue) return;
+  if (!this.emailreg || !this.isValidEmail(this.emailreg)) return;
+  if (!this.mobile || this.mobile.length < 10) return;
 
   const formattedDob = new Date(this.dob).toISOString().split('T')[0];
+
+
+  
 
   try {
 
@@ -211,15 +229,31 @@ async registerUser() {
   }
 }
 
+onEmailLoginChange() {
+  if (this.submitted) this.submitted = false;
+}
 
+onPasswordChange() {
+  if (this.submitted) this.submitted = false;
+}
 
+onEmailChange() {
+  this.emailTouched = true;
+}
+
+onMobileChange() {
+  this.mobileTouched = true;
+}
+  
+onGenderChange() {
+  this.genderTouched = true;
+}
      
  
-
-  private isValidEmail(email: string) {
-    const emailPattern = /^[a-zA-Z0-9._-]+@[a-z]+\.[a-z]+$/;
-    return emailPattern.test(email);
-  }
+isValidEmail(email: string): boolean {
+  const pattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  return pattern.test(email);
+}
 
   private isValidMobile(mobile: string) {
     const phonePattern = /^[0-9]{10,15}$/;
@@ -229,6 +263,10 @@ async registerUser() {
 
 togglePassword() {
   this.showPassword = !this.showPassword;
+}
+
+goToForgotPassword(){
+  this.router.navigate(['/forgot-password']);
 }
 
 

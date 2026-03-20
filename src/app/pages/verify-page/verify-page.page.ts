@@ -24,7 +24,11 @@ export class VerifyPagePage  {
    showPassword: boolean = false;
 showConfirmPassword: boolean = false;
 
+submitted = false;
 
+otpTouched = false;
+passwordTouched = false;
+confirmPasswordTouched = false;
 
  constructor(private toastCtrl: ToastController,private router: Router,  private alertCtrl: AlertController,
     private verifyservice: Verify,  private modalCtrl: ModalController, private route: ActivatedRoute) {}
@@ -45,22 +49,16 @@ showConfirmPassword: boolean = false;
 
  async goToVerify() {
 
-  if (!this.Otp || !this.password || !this.confirmpassword) {
-    this.showToast('Please fill all fields');
-    return;
-  }
+  this.submitted = true; // 🔥 trigger validation
 
-  // 👉 Password match check
-  if (this.password !== this.confirmpassword) {
-    this.showToast('Password and Confirm Password do not match');
-    return;
-  }
+  if (!this.Otp) return;
+  if (!this.password) return;
+  if (!this.confirmpassword) return;
+
+  if (this.password !== this.confirmpassword) return;
 
   // 👉 OTP match check
-  if (this.Otp !== this.sentOtp) {
-    this.showToast('Invalid OTP');
-    return;
-  }
+   if (this.Otp !== this.sentOtp) return;
 
   try {
 
@@ -101,6 +99,18 @@ showConfirmPassword: boolean = false;
     this.showToast('Network error, try again');
   }
 
+}
+
+onOtpChange() {
+  this.otpTouched = true;
+}
+
+onPasswordChange() {
+  this.passwordTouched = true;
+}
+
+onConfirmPasswordChange() {
+  this.confirmPasswordTouched = true;
 }
 
   async showToast(message: string) {
