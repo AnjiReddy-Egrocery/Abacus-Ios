@@ -65,6 +65,7 @@
           [(ngModel)]="answer"
 
           (ionInput)="onAnswerChange($event)"
+          [disabled]="!isButtonsEnabled"
           class="answer-input">
         </ion-input>
 
@@ -73,22 +74,30 @@
   </div>
 
   <!-- Buttons -->
-  <div class="bottom-buttons">
+   <div class="bottom-buttons">
+     <ion-button 
+      fill="solid" 
+      color="primary" 
+      [disabled]="!isButtonsEnabled" 
+      (click)="prevQuestion()">
+    <ion-icon slot="start" name="play-back-outline"></ion-icon> PREV
+  </ion-button>
 
-    <div class="prev-btn" (click)="prevQuestion()">
-      <ion-icon name="play-back-outline"></ion-icon>
-      PREV
-    </div>
-
-    <div class="next-btn" (click)="nextQuestion()">
-      SAVE AND NEXT
-      <ion-icon name="play-forward-outline"></ion-icon>
-    </div>
-
+  <ion-button 
+      fill="solid" 
+      color="primary" 
+      [disabled]="!isButtonsEnabled" 
+      (click)="nextQuestion()">
+    SAVE & NEXT <ion-icon slot="end" name="play-forward-outline"></ion-icon>
+  </ion-button>
   </div>
 
-  <div class="submit-btn" (click)="submitExam()">
-    submit exam
-  </div>
+ <ion-button 
+    expand="block" 
+    color="success" 
+    [disabled]="!isButtonsEnabled" 
+    (click)="submitExam()">
+  Submit Quiz
+</ion-button>
 
 </ion-content>

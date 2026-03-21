@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { AlertController, IonicModule } from '@ionic/angular';
 import { QUESTIONS } from 'src/app/data/questions-data';
+import { TextToSpeech } from '@capacitor-community/text-to-speech';
 
 @Component({
   selector: 'app-visualization-game-levels',
@@ -30,10 +31,17 @@ export class VisualizationGameLevelsPage implements OnInit {
 
   questionSeconds = 0;
   questionTimerInterval: any;
-  questionTime = '00:01';
+  questionTime = '00:00';
   questionTimes: number[] = []; // store each question time
 
   levelNumber = '1';
+
+  displayText: string = '';          // For showing each number/operator
+
+
+isButtonsEnabled: boolean = false; // buttons start disabled during TTS
+isQuestionActive: boolean = false; // TTS running
+
 
   constructor(private route: ActivatedRoute,private router: Router, private alertCtrl: AlertController) {}
 
@@ -48,7 +56,12 @@ export class VisualizationGameLevelsPage implements OnInit {
     this.answers = new Array(this.questions.length).fill('');
     this.questionTimes = new Array(this.questions.length).fill(0);
 
-    this.startQuestionTimer();
+     setTimeout(() => {
+  this.speakQuestionWithTTS();
+}, 300);
+
+
+   // this.startQuestionTimer();
     this.startTimer();
   }
 
@@ -56,7 +69,75 @@ export class VisualizationGameLevelsPage implements OnInit {
     return this.questions[this.currentIndex];
   }
 
+  async speakQuestionWithTTS() {
+  const question = this.currentQuestion;
+  if (!question) return;
+
+  this.isQuestionActive = true;
+  this.isButtonsEnabled = false;
+
+  clearInterval(this.questionTimerInterval);
+
+  this.displayText = ''; // initially empty
+
+  const elements = this.splitQuestion(question);
+
+  for (let i = 0; i < elements.length; i++) {
+    let clean = elements[i].trim();
+    if (!clean) continue;
+
+    let speakText = '';
+
+    // 👉 ALWAYS say plus (even first number)
+   if (clean.startsWith('+')) {
+        const num = clean.substring(1);
+        speakText = `plus ${num}`;
+      }
+      else if (clean.startsWith('-')) {
+        const num = clean.substring(1);
+        speakText = `minus ${num}`;
+      }
+      else if (clean.startsWith('*')) {
+        const num = clean.substring(1);
+        speakText = `multiply by ${num}`;
+      }
+      else if (clean.startsWith('/')) {
+        const num = clean.substring(1);
+        speakText = `divide by ${num}`;
+      }
+      else {
+        // 👉 first number (no operator)
+        speakText = `${clean}`;
+      }
+
+    // ❌ HIDE numbers on screen
+    this.displayText = '';
+
+    await TextToSpeech.speak({
+      text: speakText,
+      lang: 'en-US',
+      rate: 1.0
+    });
+
+    await new Promise(res => setTimeout(res, 300));
+  }
+
+  // ✅ ONLY THIS SHOW
+  this.displayText = 'Answer is';
+
+  await TextToSpeech.speak({
+    text: 'Answer is',
+    lang: 'en-US'
+  });
+
+  this.isQuestionActive = false;
+  this.isButtonsEnabled = true;
+  this.questionSeconds = 0;
+  this.startQuestionTimer();
+}
+
   nextQuestion() {
+     if (this.isQuestionActive) return; // prevent clicking during TTS
     // Save current answer
       // Save current answer
   this.answers[this.currentIndex] = this.answer;
@@ -67,9 +148,13 @@ export class VisualizationGameLevelsPage implements OnInit {
   if (this.currentIndex < this.questions.length - 1) {
     // Move to next question
     this.currentIndex++;
+    this.questionSeconds = 0;
+    this.updateQuestionTimeUI();
     this.answer = this.answers[this.currentIndex] || '';
-    this.startQuestionTimer();
-    setTimeout(() => this.scrollToActiveStep(), 50);
+   setTimeout(() => {
+      this.scrollToActiveStep();
+      this.speakQuestionWithTTS(); // 🔹 speak question automatically
+    }, 50);
   } else {
     // Last question reached → navigate to another page
     
@@ -83,6 +168,7 @@ export class VisualizationGameLevelsPage implements OnInit {
   }
 
   prevQuestion() {
+     if (this.isQuestionActive) return; // prevent clicking during TTS
     // Save current answer
     this.answers[this.currentIndex] = this.answer;
     this.isAnswered[this.currentIndex] = this.answer.trim() !== '';
@@ -90,26 +176,37 @@ export class VisualizationGameLevelsPage implements OnInit {
 
     if (this.currentIndex > 0) {
       this.currentIndex--;
+      this.questionSeconds = 0;
+    this.updateQuestionTimeUI();
       this.answer = this.answers[this.currentIndex] || '';
-      this.startQuestionTimer();
-      setTimeout(() => this.scrollToActiveStep(), 50);
+      //this.startQuestionTimer();
+      setTimeout(() => {
+      this.scrollToActiveStep();
+      this.speakQuestionWithTTS(); // 🔹 speak question automatically
+    }, 50);
     }
   }
 
   goToQuestion(i: number) {
+     if (this.isQuestionActive) return; // prevent clicking during TTS
     // Save current answer
     this.answers[this.currentIndex] = this.answer;
     this.isAnswered[this.currentIndex] = this.answer.trim() !== '';
 
     // Move to clicked question
     this.currentIndex = i;
+    this.questionSeconds = 0;
+    this.updateQuestionTimeUI();
     this.answer = this.answers[this.currentIndex] || '';
 
     // Restart question timer
-    this.startQuestionTimer();
+   // this.startQuestionTimer();
 
     // Scroll step into view
-    setTimeout(() => this.scrollToActiveStep(), 50);
+     setTimeout(() => {
+      this.scrollToActiveStep();
+      this.speakQuestionWithTTS(); // 🔹 speak question automatically
+    }, 50);
   }
 
   startTimer() {
@@ -170,6 +267,7 @@ onAnswerChange(event: any) {
 }
 
   submitExam() {
+     if (this.isQuestionActive) return; // prevent clicking during TTS
       this.answers[this.currentIndex] = this.answer;
       this.isAnswered[this.currentIndex] = this.answer.trim() !== '';
     
@@ -276,5 +374,25 @@ generateOriginalAnswer(question: string): string {
 }
 
 
-  splitQuestion(question: string): string[] { return question.match(/[+-]?\d+|\d+/g) || []; }
+  splitQuestion(q: string): string[] {
+  // 👉 split into numbers and operators separately
+  const tokens = q.match(/(\d+|[+\-*/])/g) || [];
+
+  const result: string[] = [];
+
+  for (let i = 0; i < tokens.length; i++) {
+    if (['+', '-', '*', '/'].includes(tokens[i])) {
+      // combine operator with next number
+      if (i + 1 < tokens.length) {
+        result.push(tokens[i] + tokens[i + 1]);
+        i++; // skip next number
+      }
+    } else {
+      // first number
+      result.push(tokens[i]);
+    }
+  }
+
+  return result;
+}
 }

@@ -1,8 +1,8 @@
 import { CommonModule } from '@angular/common';
 import { Component, CUSTOM_ELEMENTS_SCHEMA, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { ActivatedRoute } from '@angular/router';
-import { IonicModule } from '@ionic/angular';
+import { ActivatedRoute, Router } from '@angular/router';
+import { AlertController, IonicModule } from '@ionic/angular';
 import { BaseChartDirective } from 'ng2-charts';
 import { CourseLevel, DurationResult } from 'src/app/model/course-detail.model';
 import { WorksheetCourseDetailResponse } from 'src/app/services/worksheet-course-detail-response';
@@ -29,7 +29,9 @@ courseTypeId = '';
 
   constructor(
     private route: ActivatedRoute,
-    private service: WorksheetCourseDetailResponse
+    private service: WorksheetCourseDetailResponse,
+    private router: Router,
+  private alertController: AlertController
   ) {}
 
   ngOnInit() {
@@ -141,28 +143,54 @@ calculateTotal() {
 }
 addToCart() {
   if (!this.selectedDurationId) {
-    alert('Please select a duration first');
+    this.showAlert('Please select a duration first');
     return;
   }
 
   const levelsToAdd = this.levels.filter(l => l.selected);
   if (levelsToAdd.length === 0) {
-    alert('Please select at least one level');
+    this.showAlert('Please select at least one level');
     return;
   }
 
-  // Add to local cart array
+  // Add selected levels to cart
   levelsToAdd.forEach(level => {
     if (!this.cartLevels.includes(level)) {
       this.cartLevels.push(level);
     }
   });
 
-  // Update badge count
-  this.selectedLevelsCount = this.cartLevels.length;
-
-  
+  console.log('Added to Cart:', this.cartLevels);
+  this.showAlert('Selected levels added to cart!');
 }
+// viewCart() {
+//   if (!this.selectedDurationId) {
+//     this.showAlert('Please select a duration first');
+//     return;
+//   }
 
+//   const levelsInCart = this.cartLevels.length;
+//   if (levelsInCart === 0) {
+//     this.showAlert('Cart is empty');
+//     return;
+//   }
+
+//   // Navigate to cart page and pass data
+//   const navigationExtras = {
+//     queryParams: {
+//       durationId: this.selectedDurationId,
+//       levels: JSON.stringify(this.cartLevels),
+//     }
+//   };
+//   this.router.navigate(['/cart'], navigationExtras);
+// }
+async showAlert(msg: string) {
+  const alert = await this.alertController.create({
+    header: 'Info',
+    message: msg,
+    buttons: ['OK']
+  });
+  await alert.present();
+}
   
 }

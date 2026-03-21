@@ -95,11 +95,11 @@ this.isAnswered = new Array(this.questions.length).fill(false);
 this.questionTimes = new Array(this.questions.length).fill(0);
 
 this.startTimer();
-this.startQuestionTimer();
+//this.startQuestionTimer();
 
  setTimeout(() => {
       this.handleQuestionDisplay();
-    }, 300);
+    }, 50);
 
 }
 
@@ -227,6 +227,8 @@ handleQuestionDisplay() {
 
   this.isButtonsEnabled = true;
   this.isQuestionActive = false;
+   this.questionSeconds = 0;
+  this.startQuestionTimer();
   }
 
   delay(ms: number) {
@@ -242,13 +244,16 @@ nextQuestion() {
   this.questionTimes[this.currentIndex] = this.questionSeconds;
 
   if (this.currentIndex < this.questions.length - 1) {
+     clearInterval(this.questionTimerInterval);
+    this.questionSeconds = 0;
+     this.updateQuestionTimeUI();
     this.currentIndex++;
     this.answer = this.answers[this.currentIndex] || '';
-    this.startQuestionTimer();
+   // this.startQuestionTimer();
 setTimeout(() => {
         this.scrollToActiveStep();
         this.handleQuestionDisplay();
-      }, 200);
+      }, 50);
   }else {
     // Last question reached → navigate to another page
     
@@ -296,8 +301,11 @@ this.answers[this.currentIndex] = this.answer;
 
   if (this.currentIndex > 0) {
     this.currentIndex--;
+      clearInterval(this.questionTimerInterval);
+    this.questionSeconds = 0;
+     this.updateQuestionTimeUI();
     this.answer = this.answers[this.currentIndex] || '';
-    this.startQuestionTimer();
+   // this.startQuestionTimer();
 
     setTimeout(() => {
         this.scrollToActiveStep();
@@ -313,14 +321,16 @@ this.answers[this.currentIndex] = this.answer;
 this.isAnswered[this.currentIndex] = this.answer.trim() !== '';
 
 this.currentIndex = i;
+  
+     this.updateQuestionTimeUI();
 this.answer = this.answers[i] || '';
 
-this.startQuestionTimer();
+//this.startQuestionTimer();
 
 setTimeout(() => {
       this.scrollToActiveStep();
       this.handleQuestionDisplay();
-    }, 200);
+    }, 50);
 
 }
 

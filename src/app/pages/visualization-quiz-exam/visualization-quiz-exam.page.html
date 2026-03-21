@@ -41,6 +41,7 @@
       <ion-input type="number"
                  [(ngModel)]="answer"
                  (ionInput)="onAnswerChange($event)"
+                 [disabled]="!isButtonsEnabled"
                  class="answer-input">
       </ion-input>
     </div>

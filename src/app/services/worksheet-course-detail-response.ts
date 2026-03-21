@@ -6,6 +6,9 @@ import { CourseLevelResponse, DurationListResponse } from '../model/course-detai
   providedIn: 'root',
 })
 export class WorksheetCourseDetailResponse {
+  addLevelToCart(courseLevelId: string, selectedDurationId: string) {
+    throw new Error('Method not implemented.');
+  }
 
   async getDurations(): Promise<DurationListResponse> {
 

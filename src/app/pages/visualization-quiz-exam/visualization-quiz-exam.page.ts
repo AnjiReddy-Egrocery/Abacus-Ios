@@ -64,7 +64,7 @@ isQuestionActive: boolean = false; // TTS running
 
   this.setHeaderTitle(this.questions[0]);
   this.startTotalTimer();
-  this.startQuestionTimer();
+ // this.startQuestionTimer();
   }
 
   get currentQuestion() {
@@ -79,40 +79,44 @@ async speakQuestionWithTTS() {
   if (!question) return;
 
   this.isQuestionActive = true;
-  this.isButtonsEnabled = false; // disable buttons while TTS runs
-  this.displayText = '';
+  this.isButtonsEnabled = false;
 
-  const elements = question.split(/\s+/);
+  clearInterval(this.questionTimerInterval);
+
+  this.displayText = ''; // initially empty
+
+  const elements = this.splitQuestion(question);
 
   for (let i = 0; i < elements.length; i++) {
     let clean = elements[i].trim();
     if (!clean) continue;
 
     let speakText = '';
-    let displayText = '';
 
-    if (clean.startsWith('+')) {
-      const num = clean.substring(1);
-      speakText = `plus ${num}`;
-      displayText = `+${num}`;
-    } else if (clean.startsWith('-')) {
-      const num = clean.substring(1);
-      speakText = `minus ${num}`;
-      displayText = `-${num}`;
-    } else if (clean.startsWith('*')) {
-      const num = clean.substring(1);
-      speakText = `multiply by ${num}`;
-      displayText = `*${num}`;
-    } else if (clean.startsWith('/')) {
-      const num = clean.substring(1);
-      speakText = `divide by ${num}`;
-      displayText = `/${num}`;
-    } else {
-      speakText = `plus ${clean}`;
-      displayText = `+${clean}`;
-    }
+    // 👉 ALWAYS say plus (even first number)
+   if (clean.startsWith('+')) {
+        const num = clean.substring(1);
+        speakText = `plus ${num}`;
+      }
+      else if (clean.startsWith('-')) {
+        const num = clean.substring(1);
+        speakText = `minus ${num}`;
+      }
+      else if (clean.startsWith('*')) {
+        const num = clean.substring(1);
+        speakText = `multiply by ${num}`;
+      }
+      else if (clean.startsWith('/')) {
+        const num = clean.substring(1);
+        speakText = `divide by ${num}`;
+      }
+      else {
+        // 👉 first number (no operator)
+        speakText = `${clean}`;
+      }
 
-    this.displayText = displayText;
+    // ❌ HIDE numbers on screen
+    this.displayText = '';
 
     await TextToSpeech.speak({
       text: speakText,
@@ -120,15 +124,21 @@ async speakQuestionWithTTS() {
       rate: 1.0
     });
 
-   
+    await new Promise(res => setTimeout(res, 300));
   }
 
-  // ✅ At the end, say “Answer is” and enable buttons
+  // ✅ ONLY THIS SHOW
   this.displayText = 'Answer is';
-  await TextToSpeech.speak({ text: 'Answer is', lang: 'en-US' });
 
-  this.isQuestionActive = false;   // TTS finished
-  this.isButtonsEnabled = true;    // buttons now enabled
+  await TextToSpeech.speak({
+    text: 'Answer is',
+    lang: 'en-US'
+  });
+
+  this.isQuestionActive = false;
+  this.isButtonsEnabled = true;
+  this.questionSeconds = 0;
+  this.startQuestionTimer();
 }
 
  setHeaderTitle(question: string) {
@@ -179,8 +189,11 @@ async speakQuestionWithTTS() {
     this.saveCurrentAnswer();
     if (this.currentIndex < this.quizData.length - 1) {
       this.currentIndex++;
+          // ✅ RESET UI TIME IMMEDIATELY
+    this.questionSeconds = 0;
+    this.updateQuestionTimeUI();
       this.answer = this.quizData[this.currentIndex].enterAnswer || '';
-      this.startQuestionTimer();
+     // this.startQuestionTimer();
       this.setHeaderTitle(this.quizData[this.currentIndex].question);
       setTimeout(() => {
       this.scrollToActiveStep();
@@ -194,8 +207,11 @@ async speakQuestionWithTTS() {
     this.saveCurrentAnswer();
     if (this.currentIndex > 0) {
       this.currentIndex--;
+          // ✅ RESET UI TIME IMMEDIATELY
+    this.questionSeconds = 0;
+    this.updateQuestionTimeUI();
       this.answer = this.quizData[this.currentIndex].enterAnswer || '';
-      this.startQuestionTimer();
+      //this.startQuestionTimer();
       this.setHeaderTitle(this.quizData[this.currentIndex].question);
       setTimeout(() => {
       this.scrollToActiveStep();
@@ -205,10 +221,14 @@ async speakQuestionWithTTS() {
   }
 
   goToQuestion(i: number) {
+     if (this.isQuestionActive) return; // prevent clicking during TTS
     this.saveCurrentAnswer();
     this.currentIndex = i;
+        // ✅ RESET UI TIME IMMEDIATELY
+    this.questionSeconds = 0;
+    this.updateQuestionTimeUI();
     this.answer = this.quizData[i].enterAnswer || '';
-    this.startQuestionTimer();
+    //this.startQuestionTimer();
     this.setHeaderTitle(this.quizData[i].question);
      setTimeout(() => {
     this.scrollToActiveStep();
@@ -226,15 +246,19 @@ async speakQuestionWithTTS() {
     }, 1000);
   }
 
-  startQuestionTimer() {
-    clearInterval(this.questionTimerInterval);
-    this.questionSeconds = this.quizData[this.currentIndex]?.timeTaken || 0;
-    this.updateQuestionTimeUI();
-    this.questionTimerInterval = setInterval(() => {
-      this.questionSeconds++;
-      this.updateQuestionTimeUI();
-    }, 1000);
-  }
+      startQuestionTimer() {
+        clearInterval(this.questionTimerInterval);
+
+        // ✅ load previous time if exists
+        this.questionSeconds = this.quizData[this.currentIndex]?.timeTaken || 0;
+
+        this.updateQuestionTimeUI();
+
+        this.questionTimerInterval = setInterval(() => {
+          this.questionSeconds++;
+          this.updateQuestionTimeUI();
+        }, 1000);
+      }
 
   updateQuestionTimeUI() {
     const mins = Math.floor(this.questionSeconds / 60);
@@ -284,6 +308,24 @@ async speakQuestionWithTTS() {
 }
 
 splitQuestion(q: string): string[] {
-  return (q.match(/[+-]?\d+|\d+/g) || []) as string[];
+  // 👉 split into numbers and operators separately
+  const tokens = q.match(/(\d+|[+\-*/])/g) || [];
+
+  const result: string[] = [];
+
+  for (let i = 0; i < tokens.length; i++) {
+    if (['+', '-', '*', '/'].includes(tokens[i])) {
+      // combine operator with next number
+      if (i + 1 < tokens.length) {
+        result.push(tokens[i] + tokens[i + 1]);
+        i++; // skip next number
+      }
+    } else {
+      // first number
+      result.push(tokens[i]);
+    }
+  }
+
+  return result;
 }
 }

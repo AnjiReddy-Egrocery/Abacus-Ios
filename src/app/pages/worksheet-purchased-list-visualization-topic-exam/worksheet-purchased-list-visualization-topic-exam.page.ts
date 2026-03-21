@@ -96,7 +96,7 @@ this.isAnswered = new Array(this.questions.length).fill(false);
 this.questionTimes = new Array(this.questions.length).fill(0);
 
 this.startTimer();
-this.startQuestionTimer();
+//this.startQuestionTimer();
 
  // 🔥 ADD THIS FOR FIRST QUESTION TTS
     setTimeout(() => {
@@ -231,6 +231,8 @@ handleQuestionDisplay() {
 
   this.isButtonsEnabled = true;
   this.isQuestionActive = false;
+   this.questionSeconds = 0;
+  this.startQuestionTimer();
   }
 
   delay(ms: number) {
@@ -247,9 +249,12 @@ nextQuestion() {
     this.questionTimes[this.currentIndex] = this.questionSeconds;
 
     if (this.currentIndex < this.questions.length - 1) {
+       clearInterval(this.questionTimerInterval);
+    this.questionSeconds = 0;
+     this.updateQuestionTimeUI();
       this.currentIndex++;
       this.answer = this.answers[this.currentIndex] || '';
-      this.startQuestionTimer();
+     // this.startQuestionTimer();
 
       setTimeout(() => {
         this.scrollToActiveStep();
@@ -268,8 +273,11 @@ nextQuestion() {
 
     if (this.currentIndex > 0) {
       this.currentIndex--;
+       clearInterval(this.questionTimerInterval);
+    this.questionSeconds = 0;
+     this.updateQuestionTimeUI();
       this.answer = this.answers[this.currentIndex] || '';
-      this.startQuestionTimer();
+     // this.startQuestionTimer();
 
       setTimeout(() => {
         this.scrollToActiveStep();
@@ -285,9 +293,10 @@ nextQuestion() {
     this.isAnswered[this.currentIndex] = this.answer.trim() !== '';
 
     this.currentIndex = i;
+    this.updateQuestionTimeUI();
     this.answer = this.answers[i] || '';
 
-    this.startQuestionTimer();
+   // this.startQuestionTimer();
 
     setTimeout(() => {
       this.scrollToActiveStep();
