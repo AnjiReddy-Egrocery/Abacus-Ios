@@ -243,6 +243,14 @@ async showWorksheetDialog(studentId: string, batchId: string) {
   this.selectedStudentId = this.studentId;
   }
 
+  goToProfile(){
+      this.menuCtrl.close(); // Close menu first
+      this.activeTab = 'profile';
+
+  // pass studentId to schedules component
+  this.selectedStudentId = this.studentId;
+  }
+
   goToRefoundPolicy(){
     this.menuCtrl.close('mainMenu'); // Close menu first
     this.router.navigateByUrl('/refoundpolicy');
@@ -252,10 +260,6 @@ async showWorksheetDialog(studentId: string, batchId: string) {
     this.menuCtrl.close('mainMenu'); // Close menu first
     this.router.navigateByUrl('/app-progress');
   }
-
-  goToProfile(){
-  this.router.navigate(['/profile']);
-    }
 
    goToAboutUs() {
     this.menuCtrl.close('mainMenu'); // Close menu first

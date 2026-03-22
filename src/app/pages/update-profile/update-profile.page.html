@@ -1,0 +1,45 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Update Profile</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+
+  <div class="container">
+
+    <!-- ✅ Profile Image -->
+    <div class="image-wrapper">
+     
+    <div class="image-preview" (click)="pickImage()">
+  <img [src]="imagePreview || 'assets/profile.png'" />
+</div>
+    </div>
+
+    <!-- ✅ Form Fields -->
+    <ion-input label="First Name" labelPlacement="floating" [(ngModel)]="firstName"></ion-input>
+    <ion-input label="Middle Name" labelPlacement="floating" [(ngModel)]="middleName"></ion-input>
+    <ion-input label="Last Name" labelPlacement="floating" [(ngModel)]="lastName"></ion-input>
+
+    <!-- ✅ Date -->
+    <ion-input 
+      label="Date of Birth" 
+      labelPlacement="floating"
+      [value]="dateOfBirth"
+      (click)="openDatePicker()"
+      readonly>
+    </ion-input>
+
+    <ion-input label="Gender" labelPlacement="floating" [(ngModel)]="gender"></ion-input>
+    <ion-input label="Mother Tongue" labelPlacement="floating" [(ngModel)]="motherTongue"></ion-input>
+    <ion-input label="Father Name" labelPlacement="floating" [(ngModel)]="fatherName"></ion-input>
+    <ion-input label="Mother Name" labelPlacement="floating" [(ngModel)]="motherName"></ion-input>
+
+    <!-- ✅ Update -->
+    <ion-button expand="block" (click)="updateProfile()">
+      Update Profile
+    </ion-button>
+
+  </div>
+
+</ion-content>

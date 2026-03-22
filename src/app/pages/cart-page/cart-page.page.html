@@ -1,0 +1,33 @@
+<ion-header>
+  <ion-toolbar style=" --background:#4e148c;">
+    <ion-title style="color: white;">Cart</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <ion-list>
+    <ion-item *ngFor="let item of cartItems">
+      <ion-label>
+        <h2>{{ item.courseLevel }}</h2>
+        <p>₹ {{ item.courseLevelPrice }}</p>
+      </ion-label>
+      <ion-button fill="clear" color="danger" (click)="removeCartItem(item.cartId)">
+        <ion-icon slot="icon-only" name="trash-outline"></ion-icon>
+      </ion-button>
+    </ion-item>
+  </ion-list>
+
+  <ion-item>
+    <ion-label><b>Total Amount:</b></ion-label>
+    <ion-text>₹ {{ totalAmount }}/-</ion-text>
+  </ion-item>
+
+  <ion-footer class="ion-padding">
+    <ion-button  (click)="continueShopping()">
+      Continue to Purchase
+    </ion-button>
+    <ion-button (click)="checkout()">
+      Checkout
+    </ion-button>
+  </ion-footer>
+</ion-content>

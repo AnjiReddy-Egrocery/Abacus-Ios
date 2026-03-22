@@ -37,7 +37,7 @@
         <ion-item button (click)="goToPrivacyPolicy()"> Privacy Policy</ion-item>
         <ion-item button (click)="goToHelp()">Help & Support</ion-item>
         <ion-item button (click)="gotoTermsConditions()">Terms & Conditions</ion-item>
-        <ion-item>Profile</ion-item>
+        <ion-item buttton (click)="goToProfile()">Profile</ion-item>
         <ion-item button (click)="logout()">Logout</ion-item>
       </ion-list>
     </ion-content>
@@ -187,7 +187,7 @@
   <app-class *ngIf="activeTab === 'class'"></app-class>
   <app-ai-generation *ngIf="activeTab === 'ai'"></app-ai-generation>
   <app-schedules *ngIf="activeTab === 'schedules'" [studentId]="selectedStudentId"></app-schedules>
-  <app-profile *ngIf="activeTab === 'profile'"></app-profile>
+  <app-profile *ngIf="activeTab === 'profile'" [studentId]="selectedStudentId"></app-profile>
 </ion-content>
 
     <!-- FOOTER WITH TABS -->

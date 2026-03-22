@@ -5,6 +5,8 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { AlertController, IonicModule } from '@ionic/angular';
 import { BaseChartDirective } from 'ng2-charts';
 import { CourseLevel, DurationResult } from 'src/app/model/course-detail.model';
+import { CartApiService } from 'src/app/services/cart-api-service';
+import { CartMangerSewrvice } from 'src/app/services/cart-manger-sewrvice';
 import { WorksheetCourseDetailResponse } from 'src/app/services/worksheet-course-detail-response';
 
 @Component({
@@ -17,6 +19,7 @@ import { WorksheetCourseDetailResponse } from 'src/app/services/worksheet-course
 })
 export class WorkSheetSubscriptionCoursesDetailsPage implements OnInit {
 courseTypeId = '';
+studentId = '';
 
   durations: DurationResult[] = [];
   levels: CourseLevel[] = [];
@@ -31,6 +34,8 @@ courseTypeId = '';
     private route: ActivatedRoute,
     private service: WorksheetCourseDetailResponse,
     private router: Router,
+    private api: CartApiService,
+    private cartManager: CartMangerSewrvice,
   private alertController: AlertController
   ) {}
 
@@ -39,8 +44,10 @@ courseTypeId = '';
     this.route.queryParams.subscribe(params => {
 
       this.courseTypeId = params['courseTypeId'];
+      this.studentId = params['studentId']
 
       console.log('Course Type ID:', this.courseTypeId);
+      console.log('Student Type ID:', this.studentId);
 
       this.loadDurations();
       this.loadLevels();
@@ -83,12 +90,53 @@ courseTypeId = '';
           price: 0
         }));
 
+        this.restoreSelections();
+
       }
 
     } catch (error) {
       console.error('Levels API Error:', error);
     }
 
+  }
+
+   restoreSelections() {
+
+    // 🔹 Restore Duration
+    const savedDuration = localStorage.getItem(`duration_${this.courseTypeId}`);
+
+    if (savedDuration) {
+      this.selectedDurationId = savedDuration;
+
+      // 🔥 reload prices also
+      this.selectDuration(savedDuration);
+    }
+
+    // 🔹 Restore Levels
+    const savedLevels = JSON.parse(
+      localStorage.getItem(`levels_${this.courseTypeId}`) || '[]'
+    );
+
+    if (savedLevels.length > 0) {
+      this.levels.forEach(level => {
+        if (savedLevels.includes(level.courseLevelId)) {
+          level.selected = true;
+        }
+      });
+
+      this.calculateTotal();
+    }
+  }
+
+   goBack() {
+
+    this.router.navigate(['/work-sheet-subscription-courses'], {
+      queryParams: {
+        studentId: this.studentId,
+        coursetypeId: this.courseTypeId
+        
+      }
+    });
   }
 
 async selectDuration(durationId: string) {
@@ -141,49 +189,84 @@ calculateTotal() {
   console.log('Total Amount:', this.totalAmount);
   console.log('Levels Selected:', this.selectedLevelsCount);
 }
-addToCart() {
+  async addToCart() {
+ if (!this.selectedDurationId) {
+    this.showAlert('Please select a duration first');
+    return;
+  }
+
+  this.cartLevels = this.levels.filter(l => l.selected);
+
+  if (this.cartLevels.length === 0) {
+    this.showAlert('Please select level(s) first');
+    return;
+  }
+
+  const worksheetRnm = this.cartManager.getWorksheetRnm();
+
+  try {
+    // 🔥 SAME AS ANDROID LOOP
+    for (const level of this.cartLevels) {
+      await this.api.addToCart(
+        worksheetRnm,
+        this.courseTypeId,
+        level.courseLevelId,
+        this.selectedDurationId
+      );
+    }
+
+    // ✅ Navigate after success
+     this.router.navigate(['/cart-page'], {
+      queryParams: {
+        worksheetRnm: worksheetRnm,
+        studentId: this.studentId
+      }
+    });
+
+  } catch (err) {
+    console.error(err);
+    this.showAlert('Failed to add cart');
+  }
+}
+  async viewCart() {
   if (!this.selectedDurationId) {
     this.showAlert('Please select a duration first');
     return;
   }
 
-  const levelsToAdd = this.levels.filter(l => l.selected);
-  if (levelsToAdd.length === 0) {
-    this.showAlert('Please select at least one level');
+  this.cartLevels = this.levels.filter(l => l.selected);
+
+  if (this.cartLevels.length === 0) {
+    this.showAlert('Please select level(s) first');
     return;
   }
 
-  // Add selected levels to cart
-  levelsToAdd.forEach(level => {
-    if (!this.cartLevels.includes(level)) {
-      this.cartLevels.push(level);
+  const worksheetRnm = this.cartManager.getWorksheetRnm();
+
+  try {
+    // 🔥 SAME AS ANDROID LOOP
+    for (const level of this.cartLevels) {
+      await this.api.addToCart(
+        worksheetRnm,
+        this.courseTypeId,
+        level.courseLevelId,
+        this.selectedDurationId
+      );
     }
-  });
 
-  console.log('Added to Cart:', this.cartLevels);
-  this.showAlert('Selected levels added to cart!');
+    // ✅ Navigate after success
+     this.router.navigate(['/cart-page'], {
+      queryParams: {
+        worksheetRnm: worksheetRnm,
+        studentId: this.studentId
+      }
+    });
+
+  } catch (err) {
+    console.error(err);
+    this.showAlert('Failed to add cart');
+  }
 }
-// viewCart() {
-//   if (!this.selectedDurationId) {
-//     this.showAlert('Please select a duration first');
-//     return;
-//   }
-
-//   const levelsInCart = this.cartLevels.length;
-//   if (levelsInCart === 0) {
-//     this.showAlert('Cart is empty');
-//     return;
-//   }
-
-//   // Navigate to cart page and pass data
-//   const navigationExtras = {
-//     queryParams: {
-//       durationId: this.selectedDurationId,
-//       levels: JSON.stringify(this.cartLevels),
-//     }
-//   };
-//   this.router.navigate(['/cart'], navigationExtras);
-// }
 async showAlert(msg: string) {
   const alert = await this.alertController.create({
     header: 'Info',

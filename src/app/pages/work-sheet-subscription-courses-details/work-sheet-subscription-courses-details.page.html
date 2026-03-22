@@ -1,6 +1,11 @@
 <ion-header>
-  <ion-toolbar color="primary">
-    <ion-title>Course Details</ion-title>
+  <ion-toolbar style=" --background:#4e148c;">
+     <ion-buttons slot="start">
+      <ion-button (click)="goBack()">
+        <ion-icon style="color: white;" name="arrow-back-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+    <ion-title style="color: white;"> Course Details</ion-title>
      <ion-buttons slot="end">
       <ion-button class="cart-button" >
         <ion-icon slot="icon-only" name="cart-outline"></ion-icon>
@@ -68,11 +73,11 @@
 
 <div class="buttons">
 
-  <ion-button expand="block" color="warning" (click)="addToCart()">
+  <ion-button  (click)="addToCart()">
     Add To Cart
   </ion-button>
 
-  <ion-button expand="block" color="primary">
+  <ion-button (click)="viewCart()">
     View Cart
   </ion-button>
 

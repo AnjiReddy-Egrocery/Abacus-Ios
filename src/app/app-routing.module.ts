@@ -268,6 +268,14 @@ export const routes: Routes = [
     path: 'visualization-quiz-exam-result',
     loadChildren: () => import('./pages/visualization-quiz-exam-result/visualization-quiz-exam-result.module').then( m => m.VisualizationQuizExamResultPageModule)
   },
+  {
+    path: 'cart-page',
+    loadChildren: () => import('./pages/cart-page/cart-page.module').then( m => m.CartPagePageModule)
+  },
+  {
+    path: 'check-out-page',
+    loadChildren: () => import('./pages/check-out-page/check-out-page.module').then( m => m.CheckOutPagePageModule)
+  },
   
 
 ];

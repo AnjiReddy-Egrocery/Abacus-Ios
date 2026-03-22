@@ -1,6 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { Component, CUSTOM_ELEMENTS_SCHEMA, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { Router } from '@angular/router';
 import { IonicModule } from '@ionic/angular';
 import { User } from 'src/app/model/user.model';
 import { Auth } from 'src/app/services/auth';
@@ -18,7 +19,7 @@ export class ProfilePage implements OnInit {
     user: any = {};
   imageBaseUrl = "https://www.abacustrainer.com/assets/student_images/";
 
-  constructor(private authService: Auth) {}
+  constructor(private authService: Auth,private router: Router) {}
 
   async ngOnInit() {
     await this.loadUser();
@@ -32,6 +33,7 @@ export class ProfilePage implements OnInit {
 
       this.user.firstName = userData.name;
       this.user.lastName = '';
+      this.user.studentId = userData.studentId; 
 
       this.user.profilePic = userData.image
         ? this.imageBaseUrl + userData.image
@@ -57,6 +59,10 @@ export class ProfilePage implements OnInit {
   }
 
   editProfile(){
-
+    this.router.navigate(['/update-profile'], {
+    queryParams: {
+      studentId: this.user.studentId   // 🔴 IMPORTANT
+    }
+  });
   }
 }

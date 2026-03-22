@@ -15,6 +15,18 @@
 
 .buttons{
   padding:16px;
+   display: flex;
+  gap: 10px; /* space between buttons */
+}
+.buttons ion-button {
+  flex: 1; /* equal width */
+}
+.buttons ion-button:first-child {
+  --background: #ff6b35;
+}
+
+.buttons ion-button:last-child {
+  --background: #3f51b5;
 }
 
 .cart-button {

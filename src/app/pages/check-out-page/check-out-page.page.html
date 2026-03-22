@@ -1,0 +1,45 @@
+<ion-header>
+  <ion-toolbar style=" --background:#4e148c;">
+   
+
+     <ion-buttons slot="start">
+      <ion-button (click)="goBack()">
+        <ion-icon style="color: white;" name="arrow-back-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+
+
+    <ion-title style="color: white;">Payment</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+
+  <div class="container">
+
+    <!-- Selected Levels -->
+    <h3>Selected Levels</h3>
+
+    <div class="levels">
+
+      <div class="level-card" *ngFor="let name of levelNames; let i = index">
+        <div>{{name}}</div>
+        <div>₹{{levelPrices[i]}}</div>
+      </div>
+
+    </div>
+
+    <!-- Total -->
+    <div class="total-card">
+      <span>Total Amount</span>
+      <span>₹{{totalAmount}}</span>
+    </div>
+
+    <!-- Pay Button -->
+    <ion-button expand="block" class="pay-btn" (click)="payNow()">
+      Pay Now
+    </ion-button>
+
+  </div>
+
+</ion-content>
