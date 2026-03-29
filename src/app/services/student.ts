@@ -10,38 +10,39 @@ import { HttpClient } from '@angular/common/http';
 export class Student {
   constructor(private http: HttpClient) {}
 
- async updateProfile(data: any, imageFile: File) {
+  async updateProfile(data: any, imageFile: File): Promise<StudentTotalDetails> {
 
-  const formData = new FormData();
+    const formData = new FormData();
 
-  formData.append('studentId', data.studentId);
-  formData.append('firstName', data.firstName);
-  formData.append('middleName', data.middleName || '');
-  formData.append('lastName', data.lastName);
-  formData.append('dateOfBirth', data.dateOfBirth);
-  formData.append('gender', data.gender);
-  formData.append('motherTongue', data.motherTongue);
-  formData.append('fatherName', data.fatherName || '');
-  formData.append('motherName', data.motherName || '');
+    formData.append('studentId', data.studentId);
+    formData.append('firstName', data.firstName);
+    formData.append('middleName', data.middleName || '');
+    formData.append('lastName', data.lastName);
+    formData.append('dateOfBirth', data.dateOfBirth);
+    formData.append('gender', data.gender);
+    formData.append('motherTongue', data.motherTongue);
+    formData.append('fatherName', data.fatherName || '');
+    formData.append('motherName', data.motherName || '');
+    formData.append('profilePic', imageFile);
 
-  // ✅ IMPORTANT FIX
-  formData.append('profilePic', imageFile);
+    const response = await fetch(
+      'https://www.abacustrainer.com/apicalls/Index/updateStudentProfile',
+      {
+        method: 'POST',
+        body: formData
+      }
+    );
 
-  console.log("Uploading with FETCH...");
+    let dataRes: any = await response.json();
 
-  const response = await fetch(
-    'https://www.abacustrainer.com/apicalls/Index/updateStudentProfile',
-    {
-      method: 'POST',
-      body: formData
+    if (typeof dataRes === 'string') {
+      dataRes = JSON.parse(dataRes);
     }
-  );
 
-  const result = await response.json();
+    return dataRes as StudentTotalDetails;
+  }
 
-  return result;
-}
-
+  // 🔥 GET DETAILS
   async getStudentDetails(studentId: string): Promise<StudentTotalDetails> {
 
     const body = new URLSearchParams();
@@ -56,21 +57,16 @@ export class Student {
       data: body.toString()
     });
 
-    let data = response.data;
+    let data: any = response.data;
 
-    // ✅ Handle string response (same as your service)
     if (typeof data === 'string') {
       data = JSON.parse(data);
     }
 
-    if (typeof data.data === 'string') {
+    if (data?.data && typeof data.data === 'string') {
       data = JSON.parse(data.data);
     }
 
-    return data;
+    return data as StudentTotalDetails;
   }
-
-  
-
- 
 }

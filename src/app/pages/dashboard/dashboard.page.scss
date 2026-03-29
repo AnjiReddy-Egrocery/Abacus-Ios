@@ -21,6 +21,7 @@
   flex: 1;
   margin-left: 10px;
   font-size: 16px;
+  color: #fff;
 }
 
 .toolbar-logo {
@@ -54,10 +55,16 @@
   background: #4e148c;
   color: white;
 }
-
+.menu-header h4,
+.menu-header p {
+  color: #ffffff !important;
+  margin: 0;
+}
 .profile-img {
-  width: 60px;
+ width: 50px;
+  height: 50px;
   border-radius: 50%;
+  object-fit: cover;
   margin-right: 10px;
 }
 .example-content {

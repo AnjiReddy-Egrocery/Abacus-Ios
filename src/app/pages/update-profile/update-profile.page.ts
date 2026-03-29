@@ -5,10 +5,11 @@ import { Camera, CameraResultType, CameraSource } from '@capacitor/camera';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { Student } from 'src/app/services/student';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Route, Router } from '@angular/router';
 import { Capacitor, CapacitorHttp } from '@capacitor/core';
 import { Filesystem } from '@capacitor/filesystem';
 import { StudentUpdateProfile } from 'src/app/model/student-update.model';
+import { Auth } from 'src/app/services/auth';
 
 @Component({
   selector: 'app-update-profile',
@@ -24,7 +25,7 @@ studentId: any;
   firstName = '';
   middleName = '';
   lastName = '';
-  dateOfBirth = '';
+  dateOfBirth  = '';
   gender = '';
   motherTongue = '';
   fatherName = '';
@@ -36,7 +37,9 @@ studentId: any;
   constructor(
     private alertCtrl: AlertController,
     private studentService: Student,
-    private route: ActivatedRoute
+    private route: ActivatedRoute,
+    private router: Router,
+     private authService: Auth 
   ) {}
 
   ngOnInit() {
@@ -52,43 +55,60 @@ studentId: any;
 
   // Load student details like Android
   async loadStudentDetails() {
-    try {
-      const res = await this.studentService.getStudentDetails(this.studentId);
-      const data = res.result;
+   try {
+    const res = await this.studentService.getStudentDetails(this.studentId);
+    const data = res.result;
 
-      this.firstName = data.firstName;
-      this.middleName = data.middleName;
-      this.lastName = data.lastName;
-      this.gender = data.gender;
-      this.motherTongue = data.motherTongue;
-      this.fatherName = data.fatherName;
-      this.motherName = data.motherName;
+    // ✅ SAFE VALUES (avoid null / undefined)
+    this.firstName = data.firstName || '';
+    this.middleName = data.middleName || '';
+    this.lastName = data.lastName || '';
+    this.gender = data.gender || '';
+    this.motherTongue = data.motherTongue || '';
+    this.fatherName = data.fatherName || '';
+    this.motherName = data.motherName || '';
 
-      if (data.dateOfBirth && /^\d+$/.test(data.dateOfBirth)) {
-        this.dateOfBirth = new Date(Number(data.dateOfBirth) * 1000)
-          .toISOString()
-          .split('T')[0];
-      } else {
-        this.dateOfBirth = data.dateOfBirth;
-      }
+    // ✅ DOB FIX
+    if (data.dateOfBirth && /^\d+$/.test(data.dateOfBirth)) {
+      const timestamp = Number(data.dateOfBirth) * 1000;
+      const date = new Date(timestamp);
 
-      this.imagePreview = res.imageUrl + data.profilePic;
-    } catch (err) {
-      console.error(err);
-      alert('API Failed ❌');
+      const month = (date.getMonth() + 1).toString().padStart(2, '0');
+      const day = date.getDate().toString().padStart(2, '0');
+      const year = date.getFullYear();
+
+      this.dateOfBirth = `${month}-${day}-${year}`;
+    } else {
+      this.dateOfBirth = data.dateOfBirth || '';
     }
-  }
 
-  // Date Picker like Android
+    // ✅ IMAGE SAFE
+    this.imagePreview = data.profilePic
+      ? res.imageUrl + data.profilePic
+      : 'assets/headerprofile.png';
+
+  } catch (err) {
+    console.error(err);
+    alert('API Failed ❌');
+  }
+ }
   async openDatePicker() {
     const alert = await this.alertCtrl.create({
       header: 'Select Date',
-      inputs: [{ name: 'dob', type: 'date', value: this.dateOfBirth }],
+      inputs: [
+        { name: 'dob', type: 'date', value: this.formatForInput(this.dateOfBirth) },
+      ],
       buttons: [
         {
           text: 'OK',
           handler: (data) => {
-            if (data.dob) this.dateOfBirth = data.dob;
+            if (data.dob) {
+              const selected = new Date(data.dob);
+              const month = (selected.getMonth() + 1).toString().padStart(2, '0');
+              const day = selected.getDate().toString().padStart(2, '0');
+              const year = selected.getFullYear();
+              this.dateOfBirth = `${month}-${day}-${year}`;
+            }
           },
         },
       ],
@@ -96,10 +116,17 @@ studentId: any;
     await alert.present();
   }
 
+  // Converts MM-dd-yyyy → yyyy-MM-dd for input type=date
+  formatForInput(dateOfBirth: string): string {
+    if (!dateOfBirth) return '';
+    const parts = dateOfBirth.split('-'); // MM-dd-yyyy
+    if (parts.length !== 3) return '';
+    return `${parts[2]}-${parts[0].padStart(2, '0')}-${parts[1].padStart(2, '0')}`;
+  }
+
+
   // Camera & Gallery image selection + resizing
-
-
-async pickImage() {
+  async pickImage() {
     try {
       const photo = await Camera.getPhoto({
         resultType: CameraResultType.Base64,
@@ -112,15 +139,15 @@ async pickImage() {
       // Resize the image
       const resizedBase64 = await this.resizeBase64(photo.base64String);
 
-      // Convert to File for FormData
+      // Convert to File for upload
       this.imageFile = this.base64ToFile(resizedBase64, 'profile.jpg');
 
-      // Preview in UI
+      // Preview
       this.imagePreview = resizedBase64;
 
-      console.log('✅ Resized image ready:', this.imageFile);
     } catch (err) {
       console.error('❌ Image pick failed', err);
+      alert('Image selection failed ❌');
     }
   }
 
@@ -173,41 +200,107 @@ async pickImage() {
   }
 
   // -----------------------------
-  // UPDATE PROFILE
+  // UPDATE PROFILE (CapacitorHttp)
   // -----------------------------
-  async updateProfile() {
-    if (!this.imageFile) {
-      alert('⚠️ Please select an image');
-      return;
-    }
+async updateProfile() {
+ if (!this.imageFile) {
+    alert('⚠️ Please select an image');
+    return;
+  }
 
-    const formData = new FormData();
-    formData.append('studentId', this.studentId);
-    formData.append('firstName', this.firstName);
-    formData.append('middleName', this.middleName || '');
-    formData.append('lastName', this.lastName);
-    formData.append('dateOfBirth', this.dateOfBirth);
-    formData.append('gender', this.gender);
-    formData.append('motherTongue', this.motherTongue);
-    formData.append('fatherName', this.fatherName || '');
-    formData.append('motherName', this.motherName || '');
-    formData.append('profilePic', this.imageFile, this.imageFile.name);
+  const boundary = '----WebKitFormBoundary' + new Date().getTime();
+  const multipartBody = await this.buildMultipartBody(boundary);
 
-    console.log('✅ Uploading profile for studentId:', this.studentId);
+  try {
+    const response = await CapacitorHttp.request({
+      method: 'POST',
+      url: 'https://www.abacustrainer.com/apicalls/Index/updateStudentProfile',
+      headers: {
+        'Content-Type': `multipart/form-data; boundary=${boundary}`
+      },
+      data: multipartBody
+    });
 
-    try {
-      const response = await CapacitorHttp.request({
-        method: 'POST',
-        url: 'https://www.abacustrainer.com/apicalls/Index/updateStudentProfile',
-        headers: { 'Content-Type': 'multipart/form-data' },
-        data: formData
-      });
+    console.log('✅ Upload response:', response);
 
-      console.log('✅ Upload response:', response);
-      alert('Profile updated successfully!');
-    } catch (error) {
-      console.error('❌ Upload failed', error);
-      alert('Profile update failed.');
+    const resData = JSON.parse(response.data);
+    const result = resData.result;
+    const imageBaseUrl = resData.imageUrl;
+
+    // ✅ 🔥 UPDATE STORAGE (IMPORTANT FIX)
+    let user = await this.authService.getUser();
+
+    user.name = this.firstName;
+    user.studentId = this.studentId;
+    user.image = result.profilePic;   // only filename
+
+    await this.authService.setLoginData(user);
+
+    alert('Profile updated successfully!');
+
+    // ✅ Navigate with refresh trigger
+    this.router.navigate(['/profile'], {
+      queryParams: { refresh: true }
+    });
+
+  } catch (error) {
+    console.error('❌ Upload failed', error);
+    alert('Profile update failed.');
+  }
+}
+
+// ----------------------------
+// Build multipart body manually
+// ----------------------------
+async buildMultipartBody(boundary: string): Promise<string> {
+  let body = '';
+
+   
+  const fields: { [key: string]: string | File } = {
+    studentId: this.studentId,
+    firstName: this.firstName,
+    middleName: this.middleName || '',
+    lastName: this.lastName,
+    dateOfBirth:this.dateOfBirth ,
+    gender: this.gender,
+    motherTongue: this.motherTongue,
+    fatherName: this.fatherName || '',
+    motherName: this.motherName || '',
+    profilePic: this.imageFile!
+  };
+
+  for (const key in fields) {
+    const value = fields[key];
+    if (value instanceof File) {
+      const base64Data = await this.fileToBase64(value);
+      body += `--${boundary}\r\n`;
+      body += `Content-Disposition: form-data; name="${key}"; filename="${value.name}"\r\n`;
+      body += `Content-Type: ${value.type}\r\n\r\n`;
+      body += base64Data + '\r\n';
+    } else {
+      body += `--${boundary}\r\n`;
+      body += `Content-Disposition: form-data; name="${key}"\r\n\r\n`;
+      body += value + '\r\n';
     }
   }
+
+  body += `--${boundary}--\r\n`;
+  return body;
+}
+
+// ----------------------------
+// Convert File → Base64
+// ----------------------------
+fileToBase64(file: File): Promise<string> {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => {
+      const result = reader.result as string;
+      // Strip the data URL prefix
+      resolve(result.split(',')[1]);
+    };
+    reader.onerror = (error) => reject(error);
+    reader.readAsDataURL(file);
+  });
+}
 }

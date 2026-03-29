@@ -37,3 +37,45 @@
 @import "@ionic/angular/css/palettes/dark.system.css";
 @import "swiper/css";
 @import "swiper/css/pagination";
+
+:root {
+  /* Light mode colors */
+  --ion-color-primary: #3880ff;
+  --ion-background-color: #ffffff;
+  --ion-text-color: #000000;
+  --ion-card-background: #f8f8f8;
+  --ion-toolbar-background: #ffffff;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    /* Dark mode colors */
+    --ion-color-primary: #5a94ff;
+    --ion-background-color: #121212;
+    --ion-text-color: #ffffff;
+    --ion-card-background: #1e1e1e;
+    --ion-toolbar-background: #1c1c1c;
+  }
+}
+
+/* Ensure full app background respects variables */
+ion-app, ion-content, .ion-page {
+  background-color: var(--ion-background-color) !important;
+  color: var(--ion-text-color) !important;
+}
+
+/* Fix any card or toolbar backgrounds */
+ion-card {
+  background-color: var(--ion-card-background) !important;
+  color: var(--ion-text-color) !important;
+}
+
+ion-toolbar {
+  background-color: var(--ion-toolbar-background) !important;
+  color: var(--ion-text-color) !important;
+}
+
+/* Optional: links and buttons */
+a, button {
+  color: var(--ion-color-primary);
+}

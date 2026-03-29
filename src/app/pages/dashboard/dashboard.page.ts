@@ -12,6 +12,7 @@ import { BatchDetailServices } from 'src/app/services/batch-detail-services';
 import { BachDetailsResponse } from 'src/app/model/batchdetail.model';
 
 
+
 @Component({
   selector: 'app-dashboard',
   standalone: true,
@@ -31,7 +32,8 @@ userImage: string = 'assets/headerprofile.png';
   batchId: string = '';
 
  
-
+  // ✅ Base URL (ONLY here we attach full path)
+  imageBaseUrl: string = 'https://www.abacustrainer.com/assets/student_images/';
   
    activeTab: string = 'home'; 
   constructor(private authService: Auth,private menuCtrl: MenuController,private router: Router, 
@@ -76,12 +78,32 @@ userImage: string = 'assets/headerprofile.png';
   
 async loadUser() {
   const user = await this.authService.getUser();
+
+  console.log("USER OBJECT:", user);
   if (user) {
     this.userName = user.name;
     this.studentId = user.studentId;
-    this.userImage = user.image
-      ? 'https://www.abacustrainer.com/assets/student_images/' + user.image
-      : 'assets/headerprofile.png';
+
+    const img = user.image;
+
+     console.log("User Image (raw):", user.image);
+      console.log("USER IMAGE:", img);
+  if (img) {
+
+      // ✅ Check if already full URL
+      
+      if (img.startsWith('http')) {
+        this.userImage = img + '?t=' + Date.now();
+      } else {
+        this.userImage = `${this.imageBaseUrl}${img}?t=${Date.now()}`;
+      }
+
+    } else {
+      this.userImage = 'assets/headerprofile.png';
+    }
+
+    console.log("Final Image URL:", this.userImage);
+
   } else {
     console.warn('User is null, redirecting to login');
     this.router.navigateByUrl('/login', { replaceUrl: true });
@@ -94,6 +116,11 @@ async loadUser() {
          this.menuCtrl.close('mainMenu'); // pass your menuId
 
   }
+
+   onImageError(event: any) {
+    event.target.src = 'assets/headerprofile.png';
+  }
+
 
     goToPlaywithNumbers(page: string) {
     this.menuCtrl.close('mainMenu'); // Close menu first
@@ -300,6 +327,11 @@ async showWorksheetDialog(studentId: string, batchId: string) {
    if (tab === 'schedule') {
       // Pass logged-in studentId to Schedule tab
       this.selectedStudentId = this.studentId;
+      console.log("Schedule tab using static studentId:", this.selectedStudentId);
+    }
+
+    if(tab == 'profile') {
+       this.selectedStudentId = this.studentId;
       console.log("Schedule tab using static studentId:", this.selectedStudentId);
     }
 }

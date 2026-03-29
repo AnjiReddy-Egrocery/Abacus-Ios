@@ -4,6 +4,9 @@ import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { IonicModule } from '@ionic/angular';
 import { PhonePayApi } from 'src/app/services/phone-pay-api';
+import { registerPlugin } from '@capacitor/core';
+
+const PhonePe = registerPlugin<any>('PhonePePlugin');
 
 @Component({
   selector: 'app-check-out-page',
@@ -23,10 +26,27 @@ export class CheckOutPagePage  {
   levelNames: string[] = [];
   levelPrices: string[] = [];
 
+  lastOrderId: string = ''; // ✅ ADD THIS
+  
+
+
    constructor(private route: ActivatedRoute,private router: Router,private paymentService: PhonePayApi) {}
 
-  ngOnInit() {
+  async ngOnInit() {
+      const flowId = 'FLOW_' + Date.now();
+      try {
+    const flowId = 'FLOW_' + Date.now();
 
+    await PhonePe.initSDK({
+      merchantId: 'M23EB6GY8RWOK',
+      flowId: flowId
+    });
+
+    console.log('✅ PhonePe INIT SUCCESS');
+
+  } catch (e) {
+    console.error('❌ PhonePe INIT FAILED', e);
+  }
     this.route.queryParams.subscribe(params => {
       this.studentId = params['StudentId'];
       this.workRnm = params['WorkRNM'];
@@ -50,77 +70,89 @@ export class CheckOutPagePage  {
   
 
     // 👉 Here integrate PhonePe / Razorpay later
-     async payNow() {
-    console.log('Pay Now Clicked');
+  async payNow() {
+    alert('STEP 1 CLICK WORKING');
 
-    try {
+  console.log('🔥 Pay Now Clicked');
+try {
+    // 1. Token
+    await this.paymentService.generateToken();
 
-      // ✅ STEP 1: TOKEN
-      const tokenRes: any = await this.paymentService.generateToken().toPromise();
-      const accessToken = tokenRes.access_token;
+    // 2. Create Order
+    const order = await this.paymentService.createOrder(Number(this.totalAmount));
 
-      console.log('Token:', accessToken);
+    console.log('ORDER:', order);
 
-      // ✅ STEP 2: CREATE ORDER
-      const amountInPaisa = Number(this.totalAmount) * 100;
-      const merchantOrderId = 'TX' + new Date().getTime();
+    // 3. Start SDK
+    await this.startPayment(order.orderId, order.token);
 
-      const request = {
-        merchantOrderId: merchantOrderId,
-        amount: amountInPaisa,
-        payableAmount: amountInPaisa,
-        metaInfo: {
-          udf1: 'Test1',
-          udf2: 'Test2'
-        },
-        paymentFlow: {
-          type: 'PG_CHECKOUT'
-        }
-      };
-
-      const orderRes: any = await this.paymentService
-        .createOrder(accessToken, request)
-        .toPromise();
-
-      console.log('Order Response:', orderRes);
-
-      const orderId = orderRes.orderId;
-      const token = orderRes.token;
-
-      // ✅ STEP 3: START PAYMENT
-      this.startPayment(orderId, token);
-
-    } catch (err) {
-      console.error('Payment Error:', err);
-    }
+  } catch (err) {
+    console.error('Payment Error:', err);
   }
+}
+async startPayment(orderId: string, token: string) {
 
+  try {
+    this.lastOrderId = orderId;
 
-  startPayment(orderId: String, token: any) {
-     const payload = {
+    const res = await PhonePe.startTransaction({
       orderId: orderId,
-      merchantId: 'M23EB6GY8RWOK',
       token: token,
-      paymentMode: {
-        type: 'PAY_PAGE'
-      }
-    };
+      appSchema: 'abacusapp123'
+    });
 
-    const request = JSON.stringify(payload);
+    console.log('✅ SDK RESPONSE:', res);
 
-    console.log('Payment Payload:', request);
+    // 👉 Wait before checking status (important)
+    setTimeout(() => {
+      this.checkPaymentStatus(orderId);
+    }, 3000);
 
-    // 🔥 Base64 Encode
-    const base64Request = btoa(request);
-
-    // 🔥 Payment URL
-    const paymentUrl = `https://api.phonepe.com/apis/hermes/pg/v1/pay?request=${base64Request}`;
-
-    console.log('Redirecting to:', paymentUrl);
-
-    // 👉 Open PhonePe Page
-    window.location.href = paymentUrl;
+  } catch (err) {
+    console.error('❌ SDK ERROR:', err);
+    alert('Payment initiation failed');
   }
+}
+async checkPaymentStatus(orderId: string, retry = 0) {
+
+  if (retry > 5) {
+    alert('❌ Payment Failed');
+    return;
   }
 
+  try {
 
+    const status = await this.paymentService.checkStatus(orderId);
+    const state = status.state?.toUpperCase();
+
+    console.log('STATUS:', state);
+
+    if (state === 'COMPLETED' || state === 'SUCCESS') {
+
+      alert('✅ Payment Success');
+      // 👉 next screen ki vellachu
+
+    } else if (state === 'FAILED') {
+
+      alert('❌ Payment Failed');
+
+    } else if (state === 'EXPIRED') {
+
+      alert('⛔ Session Expired. Try again');
+
+    } else {
+      // ⏳ pending → retry
+      setTimeout(() => {
+        this.checkPaymentStatus(orderId, retry + 1);
+      }, 3000);
+    }
+
+  } catch (err) {
+    console.error('Status Error:', err);
+
+    setTimeout(() => {
+      this.checkPaymentStatus(orderId, retry + 1);
+    }, 3000);
+  }
+}
+}

@@ -65,8 +65,15 @@
 <!-- Summary -->
 <div class="summary">
   <h3>Total for Selected Levels</h3>
-  <p>₹ {{ totalAmount }}/-</p>
-  <p>{{ selectedLevelsCount }} level{{ selectedLevelsCount > 1 ? 's' : '' }} selected</p>
+   <p *ngIf="totalAmount > 0">₹ {{ totalAmount }}/-</p>
+
+  <!-- Show "Cart is empty" if totalAmount is 0 -->
+  <p *ngIf="totalAmount === 0" style="color: gray; font-style: italic;">Cart is empty</p>
+
+  <!-- Show selected levels count only if there are selected levels -->
+  <p *ngIf="totalAmount > 0">
+    {{ selectedLevelsCount }} level{{ selectedLevelsCount > 1 ? 's' : '' }} selected
+  </p>
 </div>
 
 <!-- Buttons -->

@@ -4,14 +4,19 @@
 }
 
 .profile-card {
-  // border-radius: 25px;
-  // box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+  border-radius: 16px;
 }
 
-.profile-card ion-avatar {
-  width: 150px;
-  height: 150px;
-  margin: 0 auto;
+.profile-avatar {
+  margin: auto;
+  width: 100px;
+  height: 100px;
+}
+
+.progress-text {
+  text-align: center;
+  margin-top: 8px;
+  font-weight: bold;
 }
 
 .progress-text {

@@ -5,7 +5,7 @@
     <ion-header>
       <ion-toolbar style="--background:#4e148c; color:white; min-height: 60px;">
         <div class="menu-header">
-      <img [src]="userImage" class="profile-img">
+     <img [src]="userImage" (error)="onImageError($event)" class="profile-img">
       <div>
         <h4>Hello, Welcome</h4>
         <p>{{ userName }}</p>
@@ -53,7 +53,7 @@
           <ion-menu-button  style="color: white;"> </ion-menu-button>
         </ion-buttons>
          <div class="toolbar-content">
-          <img [src]="userImage" class="toolbar-profile"> <!-- dynamically set image -->
+         <img [src]="userImage" (error)="onImageError($event)" class="toolbar-profile">
 
         <div class="toolbar-text">
           <span>Hello,</span>
@@ -201,12 +201,19 @@
         <ion-label>Home</ion-label>
       </ion-tab-button>
 
-      <ion-tab-button (click)="selectTab('class')" [class.activated]="activeTab==='class'">
+      <!-- <ion-tab-button (click)="selectTab('class')" [class.activated]="activeTab==='class'">
+        <ion-icon name="book-outline"></ion-icon>
+        <ion-label>Class</ion-label>
+      </ion-tab-button> -->
+
+      <ion-tab-button>
         <ion-icon name="book-outline"></ion-icon>
         <ion-label>Class</ion-label>
       </ion-tab-button>
-
-     <ion-tab-button (click)="selectTab('ai')" [class.activated]="activeTab==='ai'">
+<!-- <ion-tab-button (click)="selectTab('ai')" [class.activated]="activeTab==='ai'">
+      <img src="../../../assets/iconsabacus.png" class="tab-icon" />
+    </ion-tab-button> -->
+     <ion-tab-button >
       <img src="../../../assets/iconsabacus.png" class="tab-icon" />
     </ion-tab-button>
 

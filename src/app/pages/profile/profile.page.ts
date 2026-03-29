@@ -1,10 +1,11 @@
 import { CommonModule } from '@angular/common';
 import { Component, CUSTOM_ELEMENTS_SCHEMA, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { Router } from '@angular/router';
+import { ActivatedRoute, NavigationEnd, Router } from '@angular/router';
 import { IonicModule } from '@ionic/angular';
 import { User } from 'src/app/model/user.model';
 import { Auth } from 'src/app/services/auth';
+import { filter } from 'rxjs/operators';
 
 @Component({
   selector: 'app-profile',
@@ -19,10 +20,23 @@ export class ProfilePage implements OnInit {
     user: any = {};
   imageBaseUrl = "https://www.abacustrainer.com/assets/student_images/";
 
-  constructor(private authService: Auth,private router: Router) {}
+  constructor(private authService: Auth,private router: Router, 
+  private route: ActivatedRoute) {}
 
   async ngOnInit() {
     await this.loadUser();
+   this.route.queryParams.subscribe(async (params) => {
+      if (params['studentId']) {
+        await this.loadUser();
+      }
+    });
+
+    // 🔥 reload on navigation back
+    this.router.events
+      .pipe(filter(event => event instanceof NavigationEnd))
+      .subscribe(async () => {
+        await this.loadUser();
+      });
   }
 
   async loadUser() {
@@ -35,9 +49,22 @@ export class ProfilePage implements OnInit {
       this.user.lastName = '';
       this.user.studentId = userData.studentId; 
 
-      this.user.profilePic = userData.image
-        ? this.imageBaseUrl + userData.image
-        : 'assets/headerprofile.png';
+    console.log("User Image (raw):", userData.image);
+
+      // 🔥 IMPORTANT FIX (handles both URL + filename)
+      if (userData.image) {
+
+        if (userData.image.startsWith('http')) {
+          this.user.profilePic = userData.image + '?t=' + Date.now();
+        } else {
+          this.user.profilePic = this.imageBaseUrl + userData.image + '?t=' + Date.now();
+        }
+
+      } else {
+        this.user.profilePic = 'assets/headerprofile.png';
+      }
+
+      console.log("Final Profile Image:", this.user.profilePic);
 
       this.user.level = userData.level || 'Senior Level-1 : Abacus';
 
@@ -57,7 +84,9 @@ export class ProfilePage implements OnInit {
     }
 
   }
-
+ onImageError(event: any) {
+    event.target.src = 'assets/headerprofile.png';
+  }
   editProfile(){
     this.router.navigate(['/update-profile'], {
     queryParams: {
