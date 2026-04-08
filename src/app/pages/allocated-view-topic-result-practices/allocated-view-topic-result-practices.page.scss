@@ -61,17 +61,18 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  
   gap: 40px;
   flex-wrap: wrap;
-  margin-top: 20px;
+  margin-top: 10px;
 }
 
 /* Chart Box */
 .chart-box {
-  width: 260px;
+  width: 200px;
 
   canvas {
-    max-width: 240px;
+    max-width: 200px;
   }
 }
 

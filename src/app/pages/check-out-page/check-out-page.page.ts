@@ -2,11 +2,15 @@ import { CommonModule } from '@angular/common';
 import { Component, CUSTOM_ELEMENTS_SCHEMA, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
+import { Capacitor } from '@capacitor/core';
 import { IonicModule } from '@ionic/angular';
+import { PhonePePaymentPlugin } from 'src/app/plugin/phonepe.plugin';
 import { PhonePayApi } from 'src/app/services/phone-pay-api';
-import { registerPlugin } from '@capacitor/core';
+import { Browser } from '@capacitor/browser';
+// ADD THIS:
 
-const PhonePe = registerPlugin<any>('PhonePePlugin');
+
+
 
 @Component({
   selector: 'app-check-out-page',
@@ -27,26 +31,18 @@ export class CheckOutPagePage  {
   levelPrices: string[] = [];
 
   lastOrderId: string = ''; // ✅ ADD THIS
+  orderToken: string = ''; // ✅ ADD THIS
+
+  request: string = '';
   
 
 
    constructor(private route: ActivatedRoute,private router: Router,private paymentService: PhonePayApi) {}
 
   async ngOnInit() {
-      const flowId = 'FLOW_' + Date.now();
-      try {
-    const flowId = 'FLOW_' + Date.now();
-
-    await PhonePe.initSDK({
-      merchantId: 'M23EB6GY8RWOK',
-      flowId: flowId
-    });
-
-    console.log('✅ PhonePe INIT SUCCESS');
-
-  } catch (e) {
-    console.error('❌ PhonePe INIT FAILED', e);
-  }
+    
+      
+     
     this.route.queryParams.subscribe(params => {
       this.studentId = params['StudentId'];
       this.workRnm = params['WorkRNM'];
@@ -61,7 +57,33 @@ export class CheckOutPagePage  {
 
     this.levelNames = cart.map((x: any) => x.courseLevel);
     this.levelPrices = cart.map((x: any) => x.courseLevelPrice);
+
+
+      // PhonePePaymentPlugin.init({
+      //     environment: 'SANDBOX', // or PRODUCTION
+      //     merchantId: 'M23EB6GY8RWOK',
+      //     flowId: 'user-12345-' + Date.now(),
+      //     enableLogging: true,
+      //   });
+
+      PhonePePaymentPlugin.init({
+        environment: 'SANDBOX',
+        merchantId: 'M23EB6GY8RWOK',
+        flowId: 'follw_123',
+        enableLogging: true
+      }).then(result => {
+        console.log('VS: ' + JSON.stringify(result));
+        postMessage("Message: SDK Initialisation ->" + JSON.stringify(result));
+      }).catch(error => {
+        console.log('VS: error:' + error.message);
+        postMessage("error:" + error.message);
+      })
+
+
+    
   }
+
+ 
 
   goBack(){
      this.router.navigate(['/work-sheet-subscription-courses-details']);
@@ -70,49 +92,118 @@ export class CheckOutPagePage  {
   
 
     // 👉 Here integrate PhonePe / Razorpay later
-  async payNow() {
-    alert('STEP 1 CLICK WORKING');
+//   async payNow() {
+//     alert('STEP 1 CLICK WORKING');
 
-  console.log('🔥 Pay Now Clicked');
-try {
-    // 1. Token
+//   console.log('🔥 Pay Now Clicked');
+// try {
+//     // 1. Token
+//     await this.paymentService.generateToken();
+
+//     // 2. Create Order
+//     const order = await this.paymentService.createOrder(Number(this.totalAmount));
+
+//     console.log('ORDER:', order);
+
+//     // 3. Start SDK
+//     await this.startPayment(order.orderId, order.token);
+
+
+    
+
+//   } catch (err) {
+//     console.error('Payment Error:', err);
+//   }
+// }
+
+// async startPayment(orderId: string, token: string) {
+
+//     const payload = {
+//       "orderId":orderId,
+//       "merchantId": 'M23EB6GY8RWOK',
+//       "token": token,
+//       "paymentMode": {
+//         "type": "PAY_PAGE"
+//       }
+//     };
+
+//    const request = JSON.stringify(payload);
+
+//    console.log("Payload",request);
+
+  
+//    try {
+//     // const res = await PhonePePaymentPlugin.startTransaction({
+//     //   request: request,
+//     //   appSchema: 'ionicDemoApp',
+//     //   showLoaderFlag: true
+//     // });
+
+//     PhonePePaymentPlugin.startTransaction({
+//       request: request,
+//       appSchema: 'ionicDemoApp',
+//       showLoaderFlag: true
+//     }).then(a => {
+//   console.log('VS: ' + JSON.stringify(a));
+//   postMessage(JSON.stringify(a));
+// }).catch(error => {
+//   console.log('VS: error:' + error.message);
+//   postMessage("error:" + error.message);
+// })
+
+//     console.log('SDK RESPONSE:');
+
+//     setTimeout(() => {
+//       this.checkPaymentStatus(orderId);
+//     }, 3000);
+
+//   } catch (error: any) {
+//     console.error("SDK ERROR:", error.message);
+//   }
+// }
+
+
+
+async payNow() {
+  try {
+    // 1️⃣ Generate sandbox token
     await this.paymentService.generateToken();
 
-    // 2. Create Order
+    // 2️⃣ Create order
     const order = await this.paymentService.createOrder(Number(this.totalAmount));
+    this.lastOrderId = order.orderId;
+    this.orderToken = order.token;
 
-    console.log('ORDER:', order);
+    console.log('✅ Order created:', order);
 
-    // 3. Start SDK
-    await this.startPayment(order.orderId, order.token);
+    const payload = {
+      orderId: this.lastOrderId,
+      merchantId: 'M23EB6GY8RWOK',
+      token: this.orderToken,
+      paymentMode: {
+        type: 'PAY_PAGE'
+      }
+    };
 
-  } catch (err) {
-    console.error('Payment Error:', err);
-  }
-}
-async startPayment(orderId: string, token: string) {
-
-  try {
-    this.lastOrderId = orderId;
-
-    const res = await PhonePe.startTransaction({
-      orderId: orderId,
-      token: token,
-      appSchema: 'abacusapp123'
+    const result = await PhonePePaymentPlugin.startTransaction({
+      request: JSON.stringify(payload),
+      appSchema: 'phonepe://',
+      showLoaderFlag: true,
     });
 
-    console.log('✅ SDK RESPONSE:', res);
+    console.log('✅ SDK Result:', result);
 
-    // 👉 Wait before checking status (important)
-    setTimeout(() => {
-      this.checkPaymentStatus(orderId);
-    }, 3000);
+    if (result.status === 'SUCCESS') {
+      this.checkPaymentStatus(this.lastOrderId);
+    } else {
+      alert('❌ Payment cancelled/failed');
+    }
 
   } catch (err) {
-    console.error('❌ SDK ERROR:', err);
-    alert('Payment initiation failed');
+    console.error('❌ Payment Error:', err);
   }
-}
+  }
+
 async checkPaymentStatus(orderId: string, retry = 0) {
 
   if (retry > 5) {
@@ -155,4 +246,5 @@ async checkPaymentStatus(orderId: string, retry = 0) {
     }, 3000);
   }
 }
+
 }

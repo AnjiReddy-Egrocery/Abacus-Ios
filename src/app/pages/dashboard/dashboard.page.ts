@@ -113,7 +113,7 @@ async loadUser() {
   
 
     closeMenu() {
-         this.menuCtrl.close('mainMenu'); // pass your menuId
+      this.menuCtrl.close(); // ✅ correct
 
   }
 
@@ -136,16 +136,16 @@ async loadUser() {
   }
 
    goToAllocatedCourses(){
-    //this.studentId = "2251"; // ✅ Temporary hardcode ID
-      console.log("Using Hardcoded Student ID:", this.studentId);
+        //this.studentId = "2251"; // ✅ Temporary hardcode ID
+          console.log("Using Hardcoded Student ID:", this.studentId);
 
-  this.menuCtrl.close('mainMenu');
+      this.menuCtrl.close('mainMenu');
 
-  this.router.navigate(['/allocatedcourses'], {
-    queryParams: {
-      studentId: this.studentId
-    }
-  });
+      this.router.navigate(['/allocatedcourses'], {
+        queryParams: {
+          studentId: this.studentId
+        }
+      });
   }
 
   goToOrders(){

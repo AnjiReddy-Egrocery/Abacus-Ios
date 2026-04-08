@@ -20,7 +20,7 @@ export class PhonePayApi {
     body.set('grant_type', 'client_credentials');
 
     const res: HttpResponse = await CapacitorHttp.post({
-      url: `${this.BASE_URL}apis/identity-manager/v1/oauth/token`,
+      url: `${this.BASE_URL}apis/pg-sandbox/v1/oauth/token`,
       headers: {
         'Content-Type': 'application/x-www-form-urlencoded'
       },
@@ -62,7 +62,7 @@ export class PhonePayApi {
     };
 
     const res: HttpResponse = await CapacitorHttp.post({
-      url: `${this.BASE_URL}apis/pg/checkout/v2/sdk/order`,
+      url: `${this.BASE_URL}apis/pg-sandbox/checkout/v2/sdk/order`,
       headers: {
         'Content-Type': 'application/json',
         Authorization: `O-Bearer ${this.accessToken}`
@@ -85,7 +85,7 @@ export class PhonePayApi {
     }
 
     const res: HttpResponse = await CapacitorHttp.get({
-      url: `${this.BASE_URL}apis/pg/checkout/v2/order/${orderId}/status?details=true&errorContext=true`,
+      url: `${this.BASE_URL}apis/pg-sandbox/checkout/v2/order/${orderId}/status`,
       headers: {
         Authorization: `O-Bearer ${this.accessToken}`
       }

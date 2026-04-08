@@ -111,4 +111,7 @@ Contact : 7799121321`;
     // Make Angular trust this HTML
     this.formattedAboutText = this.sanitizer.bypassSecurityTrustHtml(html);
   }
+
+  
+  
 }

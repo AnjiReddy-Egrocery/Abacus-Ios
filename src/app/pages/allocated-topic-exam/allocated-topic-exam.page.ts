@@ -255,17 +255,28 @@ this.scrollArea.nativeElement.scrollBy({left:80,behavior:'smooth'});
 
 scrollToActiveStep(){
 
-const stepArray=this.stepItems.toArray();
+const stepArray = this.stepItems.toArray();
 
-if(stepArray[this.currentIndex]){
+  if (stepArray[this.currentIndex]) {
+    const container = this.scrollArea.nativeElement;
+    const activeEl = stepArray[this.currentIndex].nativeElement;
 
-stepArray[this.currentIndex].nativeElement.scrollIntoView({
-behavior:'smooth',
-inline:'center',
-block:'nearest'
-});
+    const containerWidth = container.offsetWidth;
+    const elementLeft = activeEl.offsetLeft;
+    const elementWidth = activeEl.offsetWidth;
 
-}
+    // center position calculate
+    let scrollPosition = elementLeft - (containerWidth / 2) + (elementWidth / 2);
+
+    // boundary fix (last question left shift avvakunda)
+    const maxScroll = container.scrollWidth - containerWidth;
+    scrollPosition = Math.max(0, Math.min(scrollPosition, maxScroll));
+
+    container.scrollTo({
+      left: scrollPosition,
+      behavior: 'smooth'
+    });
+  }
 
 }
 

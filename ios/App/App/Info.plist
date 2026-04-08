@@ -8,21 +8,6 @@
 	<string>en</string>
 	<key>CFBundleDisplayName</key>
         <string>AbacusTrainer</string>
-		
-		  <key>NSCameraUsageDescription</key>
-<string>This app needs camera access to take profile photo</string>
-
-<key>NSPhotoLibraryUsageDescription</key>
-<string>This app needs photo library access to select images</string>
-
-<key>NSPhotoLibraryAddUsageDescription</key>
-<string>This app needs permission to save photos</string>
-
-<key>NSAppTransportSecurity</key>
-<dict>
-    <key>NSAllowsArbitraryLoads</key>
-    <true/>
-</dict>
 	<key>CFBundleExecutable</key>
 	<string>$(EXECUTABLE_NAME)</string>
 	<key>CFBundleIdentifier</key>
@@ -62,23 +47,21 @@
 	</array>
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<true/>
-	<key>LSApplicationQueriesSchemes</key>
-<array>
-   <string>ppemerchantsdkv1</string>
-   <string>ppemerchantsdkv2</string>
-   <string>ppemerchantsdkv3</string>
-   <string>paytmmp</string>
-   <string>gpay</string>
-</array>
+		<key>LSApplicationQueriesSchemes</key>
+		<array>
+		<string>phonepe</string>
+		<string>tez</string>
+		<string>paytm</string>
+		</array>
 
-<key>CFBundleURLTypes</key>
-<array>
-  <dict>
-    <key>CFBundleURLSchemes</key>
-    <array>
-      <string>abacustrainer</string>
-    </array>
-  </dict>
-</array>
+		<key>NSCameraUsageDescription</key>
+<string>We need camera access</string>
+
+<key>NSPhotoLibraryUsageDescription</key>
+<string>We need photo library access</string>
+
+<key>NSPhotoLibraryAddUsageDescription</key>
+<string>We need to save photos</string>
+	
 </dict>
 </plist>

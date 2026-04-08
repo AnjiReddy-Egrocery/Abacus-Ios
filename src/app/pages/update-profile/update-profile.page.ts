@@ -6,10 +6,11 @@ import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { Student } from 'src/app/services/student';
 import { ActivatedRoute, Route, Router } from '@angular/router';
-import { Capacitor, CapacitorHttp } from '@capacitor/core';
-import { Filesystem } from '@capacitor/filesystem';
+
+
 import { StudentUpdateProfile } from 'src/app/model/student-update.model';
 import { Auth } from 'src/app/services/auth';
+import { Filesystem } from '@capacitor/filesystem';
 
 @Component({
   selector: 'app-update-profile',
@@ -82,7 +83,6 @@ studentId: any;
       this.dateOfBirth = data.dateOfBirth || '';
     }
 
-    // ✅ IMAGE SAFE
     this.imagePreview = data.profilePic
       ? res.imageUrl + data.profilePic
       : 'assets/headerprofile.png';
@@ -125,31 +125,52 @@ studentId: any;
   }
 
 
-  // Camera & Gallery image selection + resizing
-  async pickImage() {
-    try {
-      const photo = await Camera.getPhoto({
-        resultType: CameraResultType.Base64,
-        source: CameraSource.Photos,
-        quality: 70
-      });
+async pickImage() {
+  try {
+    const photo = await Camera.getPhoto({
+      resultType: CameraResultType.Uri,
+      source: CameraSource.Photos,
+      quality: 70
+    });
 
-      if (!photo.base64String) return;
-
-      // Resize the image
-      const resizedBase64 = await this.resizeBase64(photo.base64String);
-
-      // Convert to File for upload
-      this.imageFile = this.base64ToFile(resizedBase64, 'profile.jpg');
-
-      // Preview
-      this.imagePreview = resizedBase64;
-
-    } catch (err) {
-      console.error('❌ Image pick failed', err);
-      alert('Image selection failed ❌');
+    if (!photo.path) {
+      alert('No file path ❌');
+      return;
     }
+
+    const fileData = await Filesystem.readFile({
+      path: photo.path
+    });
+
+    let base64 = fileData.data as string;
+
+    // 🔥🔥🔥 MAIN FIX
+    base64 = base64.replace(/\\/g, ''); // remove \
+
+    // remove prefix if exists
+    if (base64.indexOf(',') !== -1) {
+      base64 = base64.split(',')[1];
+    }
+
+    // convert to blob (safe)
+    const blob = await (await fetch(`data:image/jpeg;base64,${base64}`)).blob();
+
+    this.imageFile = new File(
+      [blob],
+      `profile_${Date.now()}.jpg`,
+      { type: 'image/jpeg' }
+    );
+
+    this.imagePreview = photo.webPath!;
+
+    console.log('✅ FILE READY:', this.imageFile);
+
+  } catch (err) {
+    console.error('❌ Image pick failed', err);
+    alert('Image selection failed ❌');
   }
+}
+
 
   // -----------------------------
   // RESIZE BASE64 IMAGE
@@ -201,54 +222,59 @@ studentId: any;
 
   // -----------------------------
   // UPDATE PROFILE (CapacitorHttp)
-  // -----------------------------
 async updateProfile() {
- if (!this.imageFile) {
+  if (!this.imageFile) {
     alert('⚠️ Please select an image');
     return;
   }
 
-  const boundary = '----WebKitFormBoundary' + new Date().getTime();
-  const multipartBody = await this.buildMultipartBody(boundary);
+  const formData = new FormData();
+
+  formData.append('studentId', this.studentId);
+  formData.append('firstName', this.firstName);
+  formData.append('middleName', this.middleName || '');
+  formData.append('lastName', this.lastName);
+  formData.append('dateOfBirth', this.dateOfBirth);
+  formData.append('gender', this.gender);
+  formData.append('motherTongue', this.motherTongue);
+  formData.append('fatherName', this.fatherName || '');
+  formData.append('motherName', this.motherName || '');
+
+  // 🔥 SAME AS ANDROID
+  formData.append('profilePic', this.imageFile);
 
   try {
-    const response = await CapacitorHttp.request({
-      method: 'POST',
-      url: 'https://www.abacustrainer.com/apicalls/Index/updateStudentProfile',
-      headers: {
-        'Content-Type': `multipart/form-data; boundary=${boundary}`
-      },
-      data: multipartBody
-    });
+    const response = await fetch(
+      'https://www.abacustrainer.com/apicalls/Index/updateStudentProfile',
+      {
+        method: 'POST',
+        body: formData
+      }
+    );
 
-    console.log('✅ Upload response:', response);
+    const resData = await response.json();
 
-    const resData = JSON.parse(response.data);
-    const result = resData.result;
-    const imageBaseUrl = resData.imageUrl;
+    console.log('✅ Upload response:', resData);
 
-    // ✅ 🔥 UPDATE STORAGE (IMPORTANT FIX)
-    let user = await this.authService.getUser();
+    if (resData.status === 'Success') {
+      alert('Profile updated successfully!');
 
-    user.name = this.firstName;
-    user.studentId = this.studentId;
-    user.image = result.profilePic;   // only filename
+      // optional UI update
+      this.imagePreview =
+        resData.imageUrl +
+        resData.result.profilePic +
+        '?t=' +
+        new Date().getTime();
 
-    await this.authService.setLoginData(user);
-
-    alert('Profile updated successfully!');
-
-    // ✅ Navigate with refresh trigger
-    this.router.navigate(['/profile'], {
-      queryParams: { refresh: true }
-    });
+    } else {
+      alert('Upload failed ❌');
+    }
 
   } catch (error) {
     console.error('❌ Upload failed', error);
     alert('Profile update failed.');
   }
 }
-
 // ----------------------------
 // Build multipart body manually
 // ----------------------------

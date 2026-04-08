@@ -46,15 +46,37 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  flex-direction: column;
   gap: 40px;
-  margin-top: 20px;
-  flex-wrap: wrap;
+  margin-top: 10px;
+  
 }
 
 .chart-box {
-  width: 260px;
+  width: 200px;
+}
+.result-footer {
+  background: #fff;
+  border-top: 1px solid #eee;
+  text-align: center;
 }
 
+.footer-content {
+  padding: 12px;
+}
+
+.footer-content h3 {
+  color: #4E148C;
+  font-weight: bold;
+  font-size: 16px;
+  margin: 0;
+}
+
+.footer-content p {
+  color: #4E148C;
+  font-size: 14px;
+  margin: 4px 0 0 0;
+}
 .legend-box {
   display: flex;
   justify-content: center;
@@ -132,4 +154,22 @@
   --border-radius: 8px;
   font-weight: 600;
   margin-top: 15px;
+}
+
+.correct-bg {
+  background-color: #d4edda;  /* light green */
+  color: #155724;
+  font-weight: 100;
+  text-align: center;
+  border-radius: 6px;
+  padding: 5px;
+}
+
+.incorrect-bg {
+  background-color: #f8d7da;  /* light red */
+  color: #721c24;
+  font-weight: 100;
+  text-align: center;
+  border-radius: 6px;
+  padding: 5px;
 }

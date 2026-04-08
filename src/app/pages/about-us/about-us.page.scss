@@ -1,25 +1,62 @@
-.signin-bg {
-  --background: #4e148c;
-  position: fixed;
-  overflow: hidden;
-  margin-top: 20px;
-
-  --padding-top: calc(env(safe-area-inset-top) + 0px);
+.custom-header{
+  --background:#4e148c;
 }
 
-/* Grey curve like Android */
-.curve-bg {
-  position: fixed;
-  top: 200px;
-  left: -70px;
-  right: -70px;
-  height: 100%;
-  background: #d9d9d9;
-  border-top-left-radius: 260px;
-  border-top-right-radius: 260px;
-  z-index: 0;
+.header-container{
+  display:flex;
+  align-items:center;
+  padding:10px;
 }
 
+.back-circle{
+  width:36px;
+  height:36px;
+  border-radius:50%;
+  background:white;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  margin-right:10px;
+}
+
+.custom-header ion-toolbar{
+  --background:#4e148c;
+  --color:#fff;
+  --min-height:0px;   /* header height control */
+  box-shadow:none;
+}
+
+.ios-header{
+  display:flex;
+  align-items:center;
+  padding-left:12px;
+  padding-right:12px;
+
+  padding-top:0px;   /* safe-area remove */
+  padding-bottom:12px;
+}
+
+
+.back-circle {
+  width: 34px;
+  height: 34px;
+  background: #ffffff;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.back-circle ion-icon{
+  font-size:18px;
+  color:#4e148c;
+}
+
+
+
+.main-container {
+  padding: 12px;
+}
 /* Header */
 .header {
   position: relative;

@@ -20,6 +20,27 @@
   margin-left: 16px;
 }
 
+.btn-custom {
+  width: 100px;       /* same width for all */
+  height: 50px;       /* same height */
+  font-size: 12px;
+  text-transform: none;
+  margin: 5px;
+}
+
+/* optional colors */
+.btn-practice {
+  --background: #4caf50;
+}
+
+.btn-visual {
+  --background: #2196f3;
+}
+
+.btn-view {
+  --background: #ff9800;
+}
+
 .header {
   position: relative;
   z-index: 2;

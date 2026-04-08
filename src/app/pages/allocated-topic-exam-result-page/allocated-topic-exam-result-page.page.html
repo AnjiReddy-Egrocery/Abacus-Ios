@@ -7,6 +7,10 @@
     <h2>{{ topicName }}</h2> 
   </div>
 
+  <div class="level-info ion-text-center">
+    <h2>{{ cufrrentDateTime }}</h2> 
+  </div>
+
   <div class="ion-text-center">
     <ion-button color="primary" fill="solid" (click)="backToDashboard()">Back to Dashboard</ion-button>
   </div>
@@ -29,6 +33,8 @@
  <!-- Pie Chart -->
 <!-- Chart + Legend Side by Side -->
 <div class="chart-legend-wrapper">
+
+  <h6 style="align-items: flex-start;"> Performance OverView</h6>
 
   <div class="chart-box">
     <canvas baseChart
@@ -73,13 +79,33 @@
     <ion-col>Time Spent (s)</ion-col>
   </ion-row>
 
-  <ion-row *ngFor="let q of questionData"
-    [ngClass]="{'correct': q.given && q.given === q.answer, 'incorrect': q.given && q.given !== q.answer}">
-    <ion-col [innerHTML]="q.question"></ion-col>
-    <ion-col>{{ q.answer }}</ion-col>        <!-- API correct answer -->
-    <ion-col>{{ q.given || '-' }}</ion-col>  <!-- student answer -->
-    <ion-col>{{ formatTime(q.time_taken) }}</ion-col>
-  </ion-row>
+  <ion-row *ngFor="let q of questionData">
+
+  <ion-col [innerHTML]="q.question"></ion-col>
+
+  <ion-col>{{ q.answer }}</ion-col>
+
+  <!-- ✅ ONLY THIS COLUMN COLOR -->
+  <ion-col 
+    [ngClass]="{
+      'correct-bg': q.given && q.given === q.answer,
+      'incorrect-bg': q.given && q.given !== q.answer
+    }">
+    {{ q.given || '-' }}
+  </ion-col>
+
+  <ion-col>{{ formatTime(q.time_taken) }}</ion-col>
+
+</ion-row>
 </ion-grid>
 
 </ion-content>
+<ion-footer class="result-footer">
+  <div class="footer-content">
+
+    <h3>Great job {{ topicName }}. Keep practicing!</h3>
+
+    <p>and you will improve even more</p>
+
+  </div>
+</ion-footer>
