@@ -15,8 +15,8 @@ import { IonicModule, ToastController } from '@ionic/angular';
 export class VisualizationPlaywithNumbersPage{
 levels = ['Level-1', 'Level-2', 'Level-3', 'Level-4', 'Level-5'];
   operations = ['Addition',  'Multiplication'];
-  operands = ['2', '3', '4', '5'];
-  totalQuestions = ['10', '15', '20', '25', '30'];
+   operands = ['1','2', '3', '4', '5','6','7','8','9','10'];
+  totalQuestions = ['10', '20', '30', '40', '50','60','70','80','90','100'];
 
   selectedLevel: string ='';
   selectedOperation: string = '';
@@ -25,11 +25,25 @@ levels = ['Level-1', 'Level-2', 'Level-3', 'Level-4', 'Level-5'];
 
  dynamicSpinners: any[] = [];
 
-  constructor(private router: Router,private toastCtrl: ToastController) {}
+  constructor(private router: Router,private toastCtrl: ToastController) {
+    this.resetForm();
+  }
 
   goHome() {
     this.router.navigate(['/dashboard']);
   }
+
+  ionViewWillEnter() {
+  this.resetForm(); // 🔥 same function reuse
+}
+
+  resetForm() {
+  this.selectedLevel = '';
+  this.selectedOperation = '';
+  this.selectedOperands = '';
+  this.selectedTotalQuestions = '';
+  this.dynamicSpinners = [];
+}
 
  async startNumberGame() {
 
@@ -46,6 +60,8 @@ levels = ['Level-1', 'Level-2', 'Level-3', 'Level-4', 'Level-5'];
     return;
   }
 
+  
+
   console.log('Start Game Level:', this.selectedLevel);
 
   const levelNumber = this.selectedLevel.replace('Level-', '');
@@ -56,8 +72,8 @@ levels = ['Level-1', 'Level-2', 'Level-3', 'Level-4', 'Level-5'];
   onOperationChange() {
     if (this.selectedOperation === 'Multiplication') {
       this.dynamicSpinners = [
-        { selected: null, options: Array.from({ length: 10 }, (_, i) => i + 1) },
-        { selected: null, options: Array.from({ length: 10 }, (_, i) => i + 1) },
+        { selected: null, options: Array.from({ length: 4 }, (_, i) => i + 1) },
+        { selected: null, options: Array.from({ length: 4 }, (_, i) => i + 1) },
       ];
     } else {
       this.dynamicSpinners = [];
@@ -74,7 +90,7 @@ levels = ['Level-1', 'Level-2', 'Level-3', 'Level-4', 'Level-5'];
 
       this.dynamicSpinners.push({
         selected: null,
-        options: Array.from({ length: 10 }, (_, j) => j + 1)
+        options: Array.from({ length: 4 }, (_, j) => j + 1)
       });
 
     }
@@ -160,7 +176,12 @@ async createNumberGame() {
   successToast.present();
 
   //👉 OPTIONAL navigate to quiz page
-  this.router.navigate(['/visualization-quiz-exam'], { state: { questions, answers } });
+  this.router.navigate(['/visualization-quiz-exam'], { state: 
+    {
+       questions, 
+       answers,
+      operation: this.selectedOperation 
+     } });
 
 }
 

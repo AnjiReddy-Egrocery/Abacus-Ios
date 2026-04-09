@@ -16,8 +16,8 @@ import { IonicModule, ToastController } from '@ionic/angular';
 export class PlaywithNumbersPage {
   levels = ['Level-1', 'Level-2', 'Level-3', 'Level-4', 'Level-5'];
   operations = ['Addition',  'Multiplication'];
-  operands = ['2', '3', '4', '5'];
-  totalQuestions = ['10', '15', '20', '25', '30'];
+  operands = ['1','2', '3', '4', '5','6','7','8','9','10'];
+  totalQuestions = ['10', '20', '30', '40', '50','60','70','80','90','100'];
 
   selectedLevel: string ='';
   selectedOperation: string = '';
@@ -57,8 +57,8 @@ export class PlaywithNumbersPage {
   onOperationChange() {
     if (this.selectedOperation === 'Multiplication') {
       this.dynamicSpinners = [
-        { selected: null, options: Array.from({ length: 10 }, (_, i) => i + 1) },
-        { selected: null, options: Array.from({ length: 10 }, (_, i) => i + 1) },
+        { selected: null, options: Array.from({ length: 4 }, (_, i) => i + 1) },
+        { selected: null, options: Array.from({ length: 4 }, (_, i) => i + 1) },
       ];
     } else {
       this.dynamicSpinners = [];
@@ -75,7 +75,7 @@ export class PlaywithNumbersPage {
 
       this.dynamicSpinners.push({
         selected: null,
-        options: Array.from({ length: 10 }, (_, j) => j + 1)
+        options: Array.from({ length: 4 }, (_, j) => j + 1)
       });
 
     }
@@ -159,9 +159,15 @@ async createNumberGame() {
   });
 
   successToast.present();
-
   //👉 OPTIONAL navigate to quiz page
-  this.router.navigate(['/quizexam'], { state: { questions, answers } });
+  this.router.navigate(['/quizexam'], 
+    { state: 
+      { 
+        questions,
+         answers,
+         operation: this.selectedOperation 
+        }
+       });
 
 }
 

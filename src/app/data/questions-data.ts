@@ -74,6 +74,7 @@ export const QUESTIONS = {
     "5 *6",
     "6 *7",
     "6 *9",
+    "6 *7",
     "7 *9",
     "5 *80",
     "4 *63",
@@ -90,6 +91,7 @@ export const QUESTIONS = {
     "88 *9",
     "87 *5",
     "37 *8"
+
   ],
 
   level5: [
@@ -113,6 +115,7 @@ export const QUESTIONS = {
    "8 *779",
    "6 *758",
     "8 *326"
+
   ]
 
 };

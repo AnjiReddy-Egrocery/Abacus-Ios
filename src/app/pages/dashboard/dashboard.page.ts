@@ -10,6 +10,7 @@ import { SchedulesPage } from '../schedules/schedules.page';
 import { Preferences } from '@capacitor/preferences';
 import { BatchDetailServices } from 'src/app/services/batch-detail-services';
 import { BachDetailsResponse } from 'src/app/model/batchdetail.model';
+import { Storageservices } from 'src/app/services/storageservices';
 
 
 
@@ -36,7 +37,7 @@ userImage: string = 'assets/headerprofile.png';
   imageBaseUrl: string = 'https://www.abacustrainer.com/assets/student_images/';
   
    activeTab: string = 'home'; 
-  constructor(private authService: Auth,private menuCtrl: MenuController,private router: Router, 
+  constructor(private authService: Auth,private menuCtrl: MenuController,private router: Router, private storage: Storageservices,
     private toastController: ToastController, private alertController: AlertController,
   private batchService: BatchDetailServices) {}
 
@@ -293,16 +294,22 @@ async showWorksheetDialog(studentId: string, batchId: string) {
     this.router.navigateByUrl('/about-us');
   }
 
-  logout() {
-  // 1️⃣ Clear user session
-  localStorage.clear(); // Or your auth service: this.authService.logout();
+  async logout() {
 
-  // 2️⃣ Close the side menu
+  // 1️⃣ Remove only session data
+  await this.storage.remove('isLoggedIn');
+  await this.storage.remove('student_list');
+  await this.storage.remove('image_url');
+
+  // ❌ DON'T REMOVE hasSeenWelcome
+
+  // 2️⃣ Close menu
   this.menuCtrl.close();
 
-  // 3️⃣ Navigate to login page
+  // 3️⃣ Go to login
   this.router.navigateByUrl('/login', { replaceUrl: true });
 }
+
 
     gotoDashBoard() {
     // Close the side menu first

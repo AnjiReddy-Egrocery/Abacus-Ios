@@ -50,17 +50,27 @@
     <div class="question-header">
       <div>Question {{currentIndex+1}}/20:</div>
       <div>Time Spent: {{questionTime}} sec</div>
+       
     </div>
+      <div 
+        *ngIf="displayText === 'Answer is'"
+        class="repeat-container"
+        [class.disabled]="isQuestionActive"
+        (click)="repeatQuestion()">
+        <span class="repeat-text">Repeat</span>
+        <ion-icon name="refresh-outline" class="repeat-icon"></ion-icon>
+       
 
-    <div class="question-box">
-        <div *ngFor="let part of splitQuestion(currentQuestion)">
-        {{ part }}
-  </div>
-    </div>
+      </div>
+        <div class="question-box">
+        {{ displayText }}
+      </div>
+  
 
     <div class="answer-section">
       <span>Ans :</span>
       <ion-input
+       #answerInput
           type="number"
           [(ngModel)]="answer"
 
@@ -75,29 +85,20 @@
 
   <!-- Buttons -->
    <div class="bottom-buttons">
-     <ion-button 
-      fill="solid" 
-      color="primary" 
-      [disabled]="!isButtonsEnabled" 
-      (click)="prevQuestion()">
-    <ion-icon slot="start" name="play-back-outline"></ion-icon> PREV
-  </ion-button>
+     <div class="prev-btn" (click)="prevQuestion()">
+      <ion-icon name="play-back-outline"></ion-icon>
+      PREV
+    </div>
 
-  <ion-button 
-      fill="solid" 
-      color="primary" 
-      [disabled]="!isButtonsEnabled" 
-      (click)="nextQuestion()">
-    SAVE & NEXT <ion-icon slot="end" name="play-forward-outline"></ion-icon>
-  </ion-button>
+    <div class="next-btn" (click)="nextQuestion()">
+      SAVE AND NEXT
+      <ion-icon name="play-forward-outline"></ion-icon>
+    </div>
+
   </div>
 
- <ion-button 
-    expand="block" 
-    color="success" 
-    [disabled]="!isButtonsEnabled" 
-    (click)="submitExam()">
-  Submit Quiz
-</ion-button>
+  <div class="submit-btn" (click)="submitExam()">
+    submit exam
+  </div>
 
 </ion-content>

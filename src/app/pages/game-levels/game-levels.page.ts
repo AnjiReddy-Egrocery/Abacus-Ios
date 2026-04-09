@@ -39,6 +39,7 @@ export class GameLevelsPage {
   constructor(private route: ActivatedRoute,private router: Router, private alertCtrl: AlertController) {}
 
   ngOnInit() {
+    //console.log(this.splitQuestion("5 *6"));
     const levelParam = this.route.snapshot.paramMap.get('level') || '1';
     this.levelNumber = levelParam.replace('Level-', '');
 
@@ -153,17 +154,33 @@ export class GameLevelsPage {
     this.scrollArea.nativeElement.scrollBy({ left: 80, behavior: 'smooth' });
   }
 
-  scrollToActiveStep() {
-     const stepArray = this.stepItems.toArray();
+ 
 
-  // Only scroll if NOT last question
-  if (stepArray[this.currentIndex] && this.currentIndex < this.questions.length - 1) {
-    stepArray[this.currentIndex].nativeElement.scrollIntoView({
-      behavior: 'smooth',
-      inline: 'center',
-      block: 'nearest'
+scrollToActiveStep(){
+
+const stepArray = this.stepItems.toArray();
+
+  if (stepArray[this.currentIndex]) {
+    const container = this.scrollArea.nativeElement;
+    const activeEl = stepArray[this.currentIndex].nativeElement;
+
+    const containerWidth = container.offsetWidth;
+    const elementLeft = activeEl.offsetLeft;
+    const elementWidth = activeEl.offsetWidth;
+
+    // center position calculate
+    let scrollPosition = elementLeft - (containerWidth / 2) + (elementWidth / 2);
+
+    // boundary fix (last question left shift avvakunda)
+    const maxScroll = container.scrollWidth - containerWidth;
+    scrollPosition = Math.max(0, Math.min(scrollPosition, maxScroll));
+
+    container.scrollTo({
+      left: scrollPosition,
+      behavior: 'smooth'
     });
   }
+
 }
 
 onAnswerChange(event: any) {
@@ -191,8 +208,11 @@ onAnswerChange(event: any) {
       {
         text: 'Cancel',
         role: 'cancel',
+      
         handler: () => {
           console.log('Submission cancelled');
+          this.startQuestionTimer();
+           this.startTimer(); // (optional – if total timer also stopped)
         }
       },
       {
@@ -279,5 +299,22 @@ generateOriginalAnswer(question: string): string {
 }
 
 
-  splitQuestion(question: string): string[] { return question.match(/[+-]?\d+|\d+/g) || []; }
+//  splitQuestion(question: string): string[] { 
+//   if (!question) return [];
+
+//   const parts = question.match(/\d+|[+\-*\/]/g);
+
+//   if (!parts) return [];
+
+//   if (parts.length >= ) {
+//     return [parts[0], parts.slice(1).join('')];
+//   }
+
+//   return parts;
+// }
+
+formatQuestion(question: string): string[] {
+  if (!question) return [];
+  return question.split(" ");
+}
 }

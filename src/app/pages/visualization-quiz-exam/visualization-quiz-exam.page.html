@@ -31,14 +31,25 @@
       <div>Question {{ currentIndex+1 }}/{{ quizData.length }}</div>
       <div>Time Spent: {{ questionTime }}</div>
     </div>
+  <div 
+        *ngIf="displayText === 'Answer is'"
+        class="repeat-container"
+        [class.disabled]="isQuestionActive"
+        (click)="repeatQuestion()">
+        <span class="repeat-text">Repeat</span>
+        <ion-icon name="refresh-outline" class="repeat-icon"></ion-icon>
+       
 
-    <div class="question-box">
-      <div *ngFor="let part of splitQuestion(currentQuestion)">{{ part }}</div>
-    </div>
+      </div>
+        <div class="question-box">
+        {{ displayText }}
+      </div>
 
     <div class="answer-section">
       <span>Ans :</span>
-      <ion-input type="number"
+      <ion-input 
+                   #answerInput
+                   type="number"
                  [(ngModel)]="answer"
                  (ionInput)="onAnswerChange($event)"
                  [disabled]="!isButtonsEnabled"

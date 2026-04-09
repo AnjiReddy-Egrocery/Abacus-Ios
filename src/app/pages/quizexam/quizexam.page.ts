@@ -35,6 +35,8 @@ export class QuizexamPage implements OnInit {
   questionTimerInterval: any;
   questionTime = '00:00';
 
+  selectedOperation: string = '';
+
   constructor(private router: Router, private route: ActivatedRoute, private alertCtrl: AlertController) {}
 
   ngOnInit() {
@@ -42,6 +44,8 @@ export class QuizexamPage implements OnInit {
    const state = history.state;
   this.questions = state.questions || [];
   this.correctAnswers = state.answers || [];
+
+  this.selectedOperation = state.operation || '';
 
   this.answers = new Array(this.questions.length).fill('');
   this.quizData = this.questions.map((q, i) => ({
@@ -53,7 +57,7 @@ export class QuizexamPage implements OnInit {
     timeTaken: 0
   }));
 
-  this.setHeaderTitle(this.questions[0]);
+  this.setHeaderTitle();
   this.startTotalTimer();
   this.startQuestionTimer();
   }
@@ -66,35 +70,36 @@ export class QuizexamPage implements OnInit {
     this.router.navigate(['/playwithnumbers']);
   }
 
- setHeaderTitle(question: string) {
-  // Split numbers from operators
-  const parts = question.split(/[\+\-\*\/]/).map(p => p.trim()); // array of numbers as strings
-  const operatorMatch = question.match(/[\+\-\*\/]/); // first operator only
+ setHeaderTitle() {
 
-  if (parts.length >= 2 && operatorMatch) {
-    const op = operatorMatch[0]; // '+', '-', '*', '/'
+  if (this.selectedOperation === 'Multiplication') {
+    this.headerTitle = 'Multiplication with Two Rows';
+    return;
+  }
 
-    // Map each number to its digit type
-    const digits = parts.map(n => {
-      const num = Number(n);
-      if (num < 10) return '1-digit';
-      if (num < 100) return '2-digit';
-      if (num < 1000) return '3-digit';
-      if (num < 10000) return '4-digit';
-      return 'number';
-    });
+  if (this.selectedOperation === 'Addition') {
 
-    const titleOp = {
-      '+': 'Add',
-      '-': 'Subtract',
-      '*': 'Multiply',
-      '/': 'Divide'
-    }[op] || 'Play with Numbers';
+    // current question ni use cheyyadam better
+    const question = this.currentQuestion;
 
-    // Join the digit labels with the operator symbol
-    this.headerTitle = `${titleOp} ${digits.join(` ${op} `)}`;
-  } else {
-    this.headerTitle = 'Play with Numbers';
+    const count = question.split('+').length;
+
+    const numberWords: any = {
+      1: 'One',
+      2: 'Two',
+      3: 'Three',
+      4: 'Four',
+      5: 'Five',
+      6: 'Six',
+      7: 'Seven',
+      8: 'Eight',
+      9: 'Nine',
+      10: 'Ten'
+    };
+
+    const word = numberWords[count] || count;
+
+    this.headerTitle = `Addition with ${word} Rows`;
   }
 }
 
@@ -115,7 +120,7 @@ export class QuizexamPage implements OnInit {
       this.currentIndex++;
       this.answer = this.quizData[this.currentIndex].enterAnswer || '';
       this.startQuestionTimer();
-      this.setHeaderTitle(this.quizData[this.currentIndex].question);
+      this.setHeaderTitle();
       setTimeout(() => this.scrollToActiveStep(), 50);
     } else this.submitQuiz();
   }
@@ -126,7 +131,7 @@ export class QuizexamPage implements OnInit {
       this.currentIndex--;
       this.answer = this.quizData[this.currentIndex].enterAnswer || '';
       this.startQuestionTimer();
-      this.setHeaderTitle(this.quizData[this.currentIndex].question);
+      this.setHeaderTitle();
       setTimeout(() => this.scrollToActiveStep(), 50);
     }
   }
@@ -136,7 +141,7 @@ export class QuizexamPage implements OnInit {
     this.currentIndex = i;
     this.answer = this.quizData[i].enterAnswer || '';
     this.startQuestionTimer();
-    this.setHeaderTitle(this.quizData[i].question);
+    this.setHeaderTitle();
     setTimeout(() => this.scrollToActiveStep(), 50);
   }
 
@@ -172,9 +177,29 @@ export class QuizexamPage implements OnInit {
   scrollRight() { this.scrollArea.nativeElement.scrollBy({ left: 80, behavior: 'smooth' }); }
 
   scrollToActiveStep() {
-    const stepArray = this.stepItems.toArray();
-    if (stepArray[this.currentIndex]) stepArray[this.currentIndex].nativeElement.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
+   const stepArray = this.stepItems.toArray();
+
+  if (stepArray[this.currentIndex]) {
+    const container = this.scrollArea.nativeElement;
+    const activeEl = stepArray[this.currentIndex].nativeElement;
+
+    const containerWidth = container.offsetWidth;
+    const elementLeft = activeEl.offsetLeft;
+    const elementWidth = activeEl.offsetWidth;
+
+    // center position calculate
+    let scrollPosition = elementLeft - (containerWidth / 2) + (elementWidth / 2);
+
+    // boundary fix (last question left shift avvakunda)
+    const maxScroll = container.scrollWidth - containerWidth;
+    scrollPosition = Math.max(0, Math.min(scrollPosition, maxScroll));
+
+    container.scrollTo({
+      left: scrollPosition,
+      behavior: 'smooth'
+    });
   }
+}
 
   async submitQuiz() {
     this.saveCurrentAnswer();
@@ -185,7 +210,15 @@ export class QuizexamPage implements OnInit {
       header: 'Quiz Completed',
       message: 'Do you want to submit your answers?',
       buttons: [
-        { text: 'Cancel', role: 'cancel' },
+        { 
+          text: 'Cancel', 
+          role: 'cancel' ,
+           handler: () => {
+          console.log('Submission cancelled');
+           this.startTotalTimer();
+          this.startQuestionTimer();
+        }
+        },
         { text: 'Submit', handler: () => this.showReport() }
       ],
       backdropDismiss: false
@@ -201,12 +234,30 @@ export class QuizexamPage implements OnInit {
     state: {
       quizData: this.quizData,   // all questions
       totalTime: this.totalTime, // total timer
+       headerTitle: this.headerTitle 
                        // optional, current level
     }
   });
 }
 
 splitQuestion(q: string): string[] {
-  return (q.match(/[+-]?\d+|\d+/g) || []) as string[];
+  const parts = q.split(/(\+|\-|\*|\/)/).map(x => x.trim()).filter(x => x);
+
+  const result: string[] = [];
+
+  for (let i = 0; i < parts.length; i++) {
+
+    if (i === 0) {
+      // first number
+      result.push(parts[i]);
+    } else if (['+', '-', '*', '/'].includes(parts[i])) {
+      // combine operator + next number
+      const combined = parts[i] + parts[i + 1];
+      result.push(combined);
+      i++; // skip next number (already used)
+    }
+  }
+
+  return result;
 }
 }

@@ -17,6 +17,7 @@ import { TextToSpeech } from '@capacitor-community/text-to-speech';
 export class VisualizationGameLevelsPage implements OnInit {
  @ViewChild('scrollArea') scrollArea!: ElementRef;
   @ViewChildren('stepItem') stepItems!: QueryList<ElementRef>;
+  @ViewChild('answerInput', { static: false }) answerInput!: any;
 
   questions: string[] = [];
   currentIndex = 0;
@@ -69,49 +70,53 @@ isQuestionActive: boolean = false; // TTS running
     return this.questions[this.currentIndex];
   }
 
-  async speakQuestionWithTTS() {
+async speakQuestionWithTTS() {
   const question = this.currentQuestion;
   if (!question) return;
 
   this.isQuestionActive = true;
   this.isButtonsEnabled = false;
 
-  clearInterval(this.questionTimerInterval);
 
-  this.displayText = ''; // initially empty
 
   const elements = this.splitQuestion(question);
+
+  this.displayText = ''; // reset
 
   for (let i = 0; i < elements.length; i++) {
     let clean = elements[i].trim();
     if (!clean) continue;
 
     let speakText = '';
+    let displayPart = '';
 
-    // 👉 ALWAYS say plus (even first number)
-   if (clean.startsWith('+')) {
-        const num = clean.substring(1);
-        speakText = `plus ${num}`;
-      }
-      else if (clean.startsWith('-')) {
-        const num = clean.substring(1);
-        speakText = `minus ${num}`;
-      }
-      else if (clean.startsWith('*')) {
-        const num = clean.substring(1);
-        speakText = `multiply by ${num}`;
-      }
-      else if (clean.startsWith('/')) {
-        const num = clean.substring(1);
-        speakText = `divide by ${num}`;
-      }
-      else {
-        // 👉 first number (no operator)
-        speakText = `${clean}`;
-      }
+    if (clean.startsWith('+')) {
+      const num = clean.substring(1);
+      speakText = `plus ${num}`;
+      displayPart = `+${num}`;
+    }
+    else if (clean.startsWith('-')) {
+      const num = clean.substring(1);
+      speakText = `minus ${num}`;
+      displayPart = `-${num}`;
+    }
+    else if (clean.startsWith('*')) {
+      const num = clean.substring(1);
+      speakText = `multiply by ${num}`;
+      displayPart = `*${num}`;
+    }
+    else if (clean.startsWith('/')) {
+      const num = clean.substring(1);
+      speakText = `divide by ${num}`;
+      displayPart = `/${num}`;
+    }
+    else {
+      speakText = clean;
+      displayPart = clean;
+    }
 
-    // ❌ HIDE numbers on screen
-    this.displayText = '';
+    // ✅ SHOW each step (Android la)
+    this.displayText = displayPart;
 
     await TextToSpeech.speak({
       text: speakText,
@@ -119,10 +124,10 @@ isQuestionActive: boolean = false; // TTS running
       rate: 1.0
     });
 
-    await new Promise(res => setTimeout(res, 300));
+    await new Promise(res => setTimeout(res, 500));
   }
 
-  // ✅ ONLY THIS SHOW
+  // ✅ 🔥 LAST STEP → Replace with "Answer is"
   this.displayText = 'Answer is';
 
   await TextToSpeech.speak({
@@ -130,37 +135,63 @@ isQuestionActive: boolean = false; // TTS running
     lang: 'en-US'
   });
 
+    
+
+  // ✅ Enable input
   this.isQuestionActive = false;
   this.isButtonsEnabled = true;
-  this.questionSeconds = 0;
+
+  this.focusAnswerInput();
+
   this.startQuestionTimer();
+
+  
+}
+
+repeatQuestion() {
+  // ❌ TTS running unte repeat allow cheyyakudadhu
+  if (this.isQuestionActive) return;
+
+  
+
+  // 🔄 Reset timer
+
+
+  // 🧹 Clear display
+  this.displayText = '';
+
+  // 🔁 Re-play same question (TTS + UI flow)
+  this.speakQuestionWithTTS();
 }
 
   nextQuestion() {
-     if (this.isQuestionActive) return; // prevent clicking during TTS
-    // Save current answer
-      // Save current answer
-  this.answers[this.currentIndex] = this.answer;
-  this.isAnswered[this.currentIndex] = this.answer.trim() !== '';
+     if (this.isQuestionActive) return;
+
+  // 🔥 SAVE current state
   this.questionTimes[this.currentIndex] = this.questionSeconds;
 
-  // Check if there is a next question
-  if (this.currentIndex < this.questions.length - 1) {
-    // Move to next question
-    this.currentIndex++;
-    this.questionSeconds = 0;
-    this.updateQuestionTimeUI();
-    this.answer = this.answers[this.currentIndex] || '';
-   setTimeout(() => {
-      this.scrollToActiveStep();
-      this.speakQuestionWithTTS(); // 🔹 speak question automatically
-    }, 50);
-  } else {
-    // Last question reached → navigate to another page
-    
-    
-   console.log('Last question reached');
+  this.answers[this.currentIndex] = this.answer;
+  this.isAnswered[this.currentIndex] = this.answer.trim() !== '';
 
+  if (this.currentIndex < this.questions.length - 1) {
+
+    clearInterval(this.questionTimerInterval);
+
+    // move next
+    this.currentIndex++;
+
+    // 🔥 RESTORE previous saved time (IMPORTANT)
+    this.questionSeconds = this.questionTimes[this.currentIndex] || 0;
+    this.updateQuestionTimeUI();
+
+    this.answer = this.answers[this.currentIndex] || '';
+
+    setTimeout(() => {
+      this.scrollToActiveStep();
+      this.speakQuestionWithTTS(); // timer starts after "Answer is"
+    }, 50);
+
+  } else {
     clearInterval(this.questionTimerInterval);
     this.showCompletionPopup();
   }
@@ -175,8 +206,9 @@ isQuestionActive: boolean = false; // TTS running
     this.questionTimes[this.currentIndex] = this.questionSeconds;
 
     if (this.currentIndex > 0) {
+      clearInterval(this.questionTimerInterval);
       this.currentIndex--;
-      this.questionSeconds = 0;
+       this.questionSeconds = this.questionTimes[this.currentIndex] || 0;
     this.updateQuestionTimeUI();
       this.answer = this.answers[this.currentIndex] || '';
       //this.startQuestionTimer();
@@ -222,7 +254,6 @@ isQuestionActive: boolean = false; // TTS running
   startQuestionTimer() {
     clearInterval(this.questionTimerInterval);
 
-    this.questionSeconds = this.questionTimes[this.currentIndex] || 0;
     this.updateQuestionTimeUI();
 
     this.questionTimerInterval = setInterval(() => {
@@ -262,6 +293,14 @@ isQuestionActive: boolean = false; // TTS running
   }
 }
 
+focusAnswerInput() {
+  setTimeout(() => {
+    if (this.answerInput) {
+      this.answerInput.setFocus(); // ✅ focus
+    }
+  }, 300);
+}
+
 onAnswerChange(event: any) {
   this.answer = event.target.value ? event.target.value.toString() : '';
 }
@@ -292,6 +331,8 @@ goHome(){
         role: 'cancel',
         handler: () => {
           console.log('Submission cancelled');
+           this.startQuestionTimer();
+           this.startTimer(); // (optional – if total timer also stopped)
         }
       },
       {

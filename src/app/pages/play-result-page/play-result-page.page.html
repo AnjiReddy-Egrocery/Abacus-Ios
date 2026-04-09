@@ -5,7 +5,7 @@
   <!-- Level & Date -->
   <div class="level-info ion-text-center">
     <h2>Level Play with number game level {{ levelValue }}</h2>
-    <p>{{ currentDateTime }}</p>
+    <p style="font-size: 16px;">{{ currentDateTime }}</p>
   </div>
 
   <!-- Back Button -->
@@ -74,12 +74,14 @@
       <ion-col>Time Spent</ion-col>
     </ion-row>
 
-    <ion-row *ngFor="let q of questions; let i = index"
-             [ngClass]="{'correct': enteredAnswers[i] === originalAnswers[i] && enteredAnswers[i], 
-                         'incorrect': enteredAnswers[i] && enteredAnswers[i] !== originalAnswers[i]}">
+    <ion-row *ngFor="let q of questions; let i = index">
       <ion-col [innerHTML]="formatQuestion(q)"></ion-col>
       <ion-col>{{ originalAnswers[i] }}</ion-col>
-      <ion-col>{{ enteredAnswers[i] || '-' }}</ion-col>
+      <ion-col 
+             [ngClass]="{'correct': enteredAnswers[i] === originalAnswers[i] && enteredAnswers[i], 
+                         'incorrect': enteredAnswers[i] && enteredAnswers[i] !== originalAnswers[i]}">
+            {{ enteredAnswers[i] || '-' }}
+      </ion-col>
      <ion-col>{{ formatTime(questionTimes[i]) }}</ion-col>
     </ion-row>
   </ion-grid>
@@ -90,10 +92,5 @@
     <p>and you will improve even more</p>
   </div>
 
-  <!-- Action Buttons -->
- <div class="ion-text-center ion-margin-top">
-  <ion-button class="next-btn" (click)="nextLevel()" [disabled]="levelValue === 5">
-    Next Level
-  </ion-button>
-</div>
+
 </ion-content>

@@ -3,8 +3,51 @@ import { Component, CUSTOM_ELEMENTS_SCHEMA, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { IonicModule, ToastController } from '@ionic/angular';
-import { ChartConfiguration } from 'chart.js';
+
+
+import { Chart,ChartConfiguration, Plugin } from 'chart.js';
 import { BaseChartDirective } from 'ng2-charts';
+import ChartDataLabels from 'chartjs-plugin-datalabels';
+
+const connectorLinePlugin: Plugin<'doughnut'> = {
+  id: 'connectorLinePlugin',
+
+  afterDatasetsDraw(chart) {
+    const { ctx } = chart;
+    const meta = chart.getDatasetMeta(0);
+
+    (meta.data as any[]).forEach((arc, index) => {
+
+      const props = arc.getProps(
+        ['x', 'y', 'startAngle', 'endAngle', 'outerRadius'],
+        true
+      );
+
+      const angle = (props.startAngle + props.endAngle) / 2;
+
+      const x1 = props.x + Math.cos(angle) * props.outerRadius;
+      const y1 = props.y + Math.sin(angle) * props.outerRadius;
+
+      const x2 = props.x + Math.cos(angle) * (props.outerRadius + 30);
+      const y2 = props.y + Math.sin(angle) * (props.outerRadius + 30);
+
+      ctx.beginPath();
+      ctx.moveTo(x1, y1);
+      ctx.lineTo(x2, y2);
+
+      const dataset = chart.data.datasets[0];
+      const color = (dataset.backgroundColor as string[])[index];
+
+      ctx.strokeStyle = color; // ✅ same as slice
+      ctx.lineWidth = 0.5;
+      ctx.stroke();
+    });
+  }
+};
+
+
+// ✅ REGISTER PLUGINS
+Chart.register(ChartDataLabels);
 
 interface QuizDataItem {
   question: string;
@@ -14,6 +57,7 @@ interface QuizDataItem {
   isCorrect: boolean;
   status: string;
 }
+
 
 @Component({
   selector: 'app-visualization-quiz-exam-result',
@@ -34,6 +78,9 @@ quizData: QuizDataItem[] = [];
   correctCount = 0;
   wrongCount = 0;
 
+   currentDateTime: string = '';
+  headerTitle: string = '';
+
  pieChartType: 'doughnut' = 'doughnut';
 
 pieChartData: ChartConfiguration<'doughnut'>['data'] = {
@@ -47,15 +94,32 @@ pieChartData: ChartConfiguration<'doughnut'>['data'] = {
 };
 
 pieChartOptions: ChartConfiguration<'doughnut'>['options'] = {
-  responsive: true,
-  plugins: {
-    title: { display: false },
-    legend: {
-       display: false   // ✅ hide square legend
-     
+    responsive: true,
+    layout: {
+      padding: 0
+    },
+    plugins: {
+      legend: {
+        display: false
+      },
+      datalabels: {
+          display: true,
+          color: '#000',
+          anchor: 'center',
+          align: 'center',
+
+          formatter: (value: any) => {
+          const total = this.totalQuestions;
+          return total ? Math.round((value / total) * 100) + '%' : '0%';
+        },
+
+        font: {
+          size: 12,
+          weight: 'bold'
+        }
+      }
     }
-  }
-};
+  };
 
 
   constructor(private router: Router, private toastCtrl: ToastController) {}
@@ -74,6 +138,8 @@ pieChartOptions: ChartConfiguration<'doughnut'>['options'] = {
 
       this.totalTime = state.totalTime || '00:00:00';
       this.levelValue = Number(state.level) || 1;
+
+       this.headerTitle = state.headerTitle || ''; // ✅ ADD THIS
 
       // stats
       this.totalQuestions = this.quizData.length;
@@ -98,7 +164,10 @@ pieChartOptions: ChartConfiguration<'doughnut'>['options'] = {
     }
   ]
 };
+
+this.currentDateTime = new Date().toLocaleString();
     }
+    
   }
 
   backToDashboard() { this.router.navigate(['/dashboard']); }
@@ -111,5 +180,5 @@ pieChartOptions: ChartConfiguration<'doughnut'>['options'] = {
 
   pad(num: number) { return num < 10 ? '0'+num : num.toString(); }
 
-  formatQuestion(q: string) { return q.replace(/([+-])/g,'<br>$1'); }
+  formatQuestion(q: string) { return q.replace(/([+\-*\/])/g, '<br>$1'); }
 }

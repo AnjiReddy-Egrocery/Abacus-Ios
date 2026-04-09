@@ -2,6 +2,11 @@
   <div class="exam-title ion-text-center">
     <h1>Exam Report</h1>
   </div>
+
+  <div class="level-info ion-text-center">
+    <h2>{{ headerTitle }}</h2>
+    <p style="font-size: 16px;">{{ currentDateTime }}</p>
+  </div>
     <div class="ion-text-center">
     <ion-button color="primary" fill="solid" (click)="backToDashboard()">back to dashboard</ion-button>
   </div>
@@ -67,10 +72,10 @@
     </ion-row>
 
     <ion-row *ngFor="let q of quizData" 
-             [ngClass]="{'correct': q.isCorrect, 'incorrect': !q.isCorrect && q.enterAnswer}">
+             >
       <ion-col [innerHTML]="formatQuestion(q.question)"></ion-col>
       <ion-col>{{ q.correctAnswer }}</ion-col>
-      <ion-col>{{ q.enterAnswer || '-' }}</ion-col>
+      <ion-col [ngClass]="{'correct': q.isCorrect, 'incorrect': !q.isCorrect && q.enterAnswer}">{{ q.enterAnswer || '-' }}</ion-col>
       <ion-col>{{ formatTime(q.timeTaken) }}</ion-col>
     </ion-row>
   </ion-grid>

@@ -20,6 +20,17 @@
   z-index: 0;
 }
 
+.repeat-icon {
+  font-size: 22px;
+  color: #4e148c;
+  cursor: pointer;
+}
+
+.repeat-icon.disabled {
+  opacity: 0.4;
+  pointer-events: none;
+}
+
 .ionic-header {
   display: flex;
   align-items: center;
@@ -141,6 +152,58 @@
   border-radius: 10px;
   font-size: 18px;
   
+}
+
+.repeat-container {
+  background: #55535b;
+  margin: 20px auto;
+  width: 120px;
+  padding: 10px 15px;
+  border-radius: 10px;
+  font-size: 18px;
+
+  display: flex;              // 🔥 IMPORTANT
+  align-items: center;        // center vertically
+  justify-content: center;    // center horizontally
+  gap: 6px;
+}
+
+.repeat-text{
+  font-size: 14px;
+  color: #FFF;
+}
+.repeat-icon {
+  font-size: 18px;
+  color: #fff;
+}
+
+.prev-btn {
+  border: 2px solid #5b1fa6;
+  border-radius: 25px;
+  padding: 10px 20px;
+  color: #5b1fa6;
+  font-weight: bold;
+}
+
+.next-btn {
+  background: orange;
+  border-radius: 25px;
+  padding: 10px 20px;
+  color: white;
+  font-weight: bold;
+}
+
+.submit-btn {
+  background: #5b1fa6;
+  margin: 30px auto;
+  width: 200px;
+  text-align: center;
+  padding: 12px;
+  border-radius: 12px;
+  color: white;
+  font-size: 20px;
+  position: relative;
+  z-index: 3;
 }
 
 .answer-section {

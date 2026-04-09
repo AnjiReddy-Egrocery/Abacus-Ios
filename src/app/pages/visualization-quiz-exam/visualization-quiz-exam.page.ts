@@ -16,10 +16,12 @@ import { TextToSpeech } from '@capacitor-community/text-to-speech';
 export class VisualizationQuizExamPage implements OnInit {
 @ViewChild('scrollArea') scrollArea!: ElementRef;
   @ViewChildren('stepItem') stepItems!: QueryList<ElementRef>;
+   @ViewChild('answerInput', { static: false }) answerInput!: any;
 
   questions: string[] = [];
   correctAnswers: string[] = [];
   answers: string[] = [];
+
   quizData: QuizData[] = [];
 
   currentIndex = 0;
@@ -34,7 +36,8 @@ export class VisualizationQuizExamPage implements OnInit {
   questionTimerInterval: any;
   questionTime = '00:00';
 
-  displayText: string = '';          // For showing each number/operator
+  displayText: string = ''; 
+  selectedOperation: string = '';         // For showing each number/operator
 
 
 isButtonsEnabled: boolean = false; // buttons start disabled during TTS
@@ -47,6 +50,8 @@ isQuestionActive: boolean = false; // TTS running
    const state = history.state;
   this.questions = state.questions || [];
   this.correctAnswers = state.answers || [];
+
+  this.selectedOperation = state.operation || '';
 
   this.answers = new Array(this.questions.length).fill('');
   this.quizData = this.questions.map((q, i) => ({
@@ -62,7 +67,7 @@ isQuestionActive: boolean = false; // TTS running
   this.speakQuestionWithTTS();
 }, 300);
 
-  this.setHeaderTitle(this.questions[0]);
+  this.setHeaderTitle();
   this.startTotalTimer();
  // this.startQuestionTimer();
   }
@@ -81,42 +86,46 @@ async speakQuestionWithTTS() {
   this.isQuestionActive = true;
   this.isButtonsEnabled = false;
 
-  clearInterval(this.questionTimerInterval);
 
-  this.displayText = ''; // initially empty
 
   const elements = this.splitQuestion(question);
+
+  this.displayText = ''; // reset
 
   for (let i = 0; i < elements.length; i++) {
     let clean = elements[i].trim();
     if (!clean) continue;
 
     let speakText = '';
+    let displayPart = '';
 
-    // 👉 ALWAYS say plus (even first number)
-   if (clean.startsWith('+')) {
-        const num = clean.substring(1);
-        speakText = `plus ${num}`;
-      }
-      else if (clean.startsWith('-')) {
-        const num = clean.substring(1);
-        speakText = `minus ${num}`;
-      }
-      else if (clean.startsWith('*')) {
-        const num = clean.substring(1);
-        speakText = `multiply by ${num}`;
-      }
-      else if (clean.startsWith('/')) {
-        const num = clean.substring(1);
-        speakText = `divide by ${num}`;
-      }
-      else {
-        // 👉 first number (no operator)
-        speakText = `${clean}`;
-      }
+    if (clean.startsWith('+')) {
+      const num = clean.substring(1);
+      speakText = `plus ${num}`;
+      displayPart = `+${num}`;
+    }
+    else if (clean.startsWith('-')) {
+      const num = clean.substring(1);
+      speakText = `minus ${num}`;
+      displayPart = `-${num}`;
+    }
+    else if (clean.startsWith('*')) {
+      const num = clean.substring(1);
+      speakText = `multiply by ${num}`;
+      displayPart = `*${num}`;
+    }
+    else if (clean.startsWith('/')) {
+      const num = clean.substring(1);
+      speakText = `divide by ${num}`;
+      displayPart = `/${num}`;
+    }
+    else {
+      speakText = clean;
+      displayPart = clean;
+    }
 
-    // ❌ HIDE numbers on screen
-    this.displayText = '';
+    // ✅ SHOW each step (Android la)
+    this.displayText = displayPart;
 
     await TextToSpeech.speak({
       text: speakText,
@@ -124,10 +133,10 @@ async speakQuestionWithTTS() {
       rate: 1.0
     });
 
-    await new Promise(res => setTimeout(res, 300));
+    await new Promise(res => setTimeout(res, 500));
   }
 
-  // ✅ ONLY THIS SHOW
+  // ✅ 🔥 LAST STEP → Replace with "Answer is"
   this.displayText = 'Answer is';
 
   await TextToSpeech.speak({
@@ -135,66 +144,109 @@ async speakQuestionWithTTS() {
     lang: 'en-US'
   });
 
+    
+
+  // ✅ Enable input
   this.isQuestionActive = false;
   this.isButtonsEnabled = true;
-  this.questionSeconds = 0;
+
+  this.focusAnswerInput();
+
   this.startQuestionTimer();
+
+  
 }
 
- setHeaderTitle(question: string) {
-  // Split numbers from operators
-  const parts = question.split(/[\+\-\*\/]/).map(p => p.trim()); // array of numbers as strings
-  const operatorMatch = question.match(/[\+\-\*\/]/); // first operator only
+repeatQuestion() {
+  // ❌ TTS running unte repeat allow cheyyakudadhu
+  if (this.isQuestionActive) return;
 
-  if (parts.length >= 2 && operatorMatch) {
-    const op = operatorMatch[0]; // '+', '-', '*', '/'
+  
 
-    // Map each number to its digit type
-    const digits = parts.map(n => {
-      const num = Number(n);
-      if (num < 10) return '1-digit';
-      if (num < 100) return '2-digit';
-      if (num < 1000) return '3-digit';
-      if (num < 10000) return '4-digit';
-      return 'number';
-    });
+  // 🔄 Reset timer
 
-    const titleOp = {
-      '+': 'Add',
-      '-': 'Subtract',
-      '*': 'Multiply',
-      '/': 'Divide'
-    }[op] || 'Play with Numbers';
 
-    // Join the digit labels with the operator symbol
-    this.headerTitle = `${titleOp} ${digits.join(` ${op} `)}`;
-  } else {
-    this.headerTitle = 'Play with Numbers';
+  // 🧹 Clear display
+  this.displayText = '';
+
+  // 🔁 Re-play same question (TTS + UI flow)
+  this.speakQuestionWithTTS();
+}
+
+focusAnswerInput() {
+  setTimeout(() => {
+    if (this.answerInput) {
+      this.answerInput.setFocus(); // ✅ focus
+    }
+  }, 300);
+}
+
+setHeaderTitle() {
+
+  if (this.selectedOperation === 'Multiplication') {
+    this.headerTitle = 'Multiplication with Two Rows';
+    return;
+  }
+
+  if (this.selectedOperation === 'Addition') {
+
+    // current question ni use cheyyadam better
+    const question = this.currentQuestion;
+
+    const count = question.split('+').length;
+
+    const numberWords: any = {
+      1: 'One',
+      2: 'Two',
+      3: 'Three',
+      4: 'Four',
+      5: 'Five',
+      6: 'Six',
+      7: 'Seven',
+      8: 'Eight',
+      9: 'Nine',
+      10: 'Ten'
+    };
+
+    const word = numberWords[count] || count;
+
+    this.headerTitle = `Addition with ${word} Rows`;
   }
 }
 
   onAnswerChange(event: any) { this.answer = event.target.value ? event.target.value.toString() : ''; }
 
   saveCurrentAnswer() {
-    const cur = this.quizData[this.currentIndex];
-    cur.enterAnswer = this.answer;
-    cur.timeTaken = this.questionSeconds;
-    cur.isCorrect = Number(this.answer) === Number(cur.correctAnswer);
-    cur.status = cur.isCorrect ? 'correct' : 'wrong';
-    this.questionSeconds = 0;
+        const cur = this.quizData[this.currentIndex];
+
+        if (!cur) return;
+
+        cur.enterAnswer = this.answer || '';
+        cur.timeTaken = this.questionSeconds || 0;
+
+        cur.isCorrect =
+          this.answer !== '' &&
+          Number(this.answer) === Number(cur.correctAnswer);
+
+        cur.status = cur.isCorrect ? 'correct' : 'wrong';
+          
   }
 
   nextQuestion() {
     if (this.isQuestionActive) return; // prevent clicking during TTS
     this.saveCurrentAnswer();
+    clearInterval(this.questionTimerInterval);
     if (this.currentIndex < this.quizData.length - 1) {
       this.currentIndex++;
           // ✅ RESET UI TIME IMMEDIATELY
-    this.questionSeconds = 0;
+    const cur = this.quizData[this.currentIndex];
+    this.questionSeconds = cur.timeTaken || 0;
     this.updateQuestionTimeUI();
-      this.answer = this.quizData[this.currentIndex].enterAnswer || '';
+
+    // 4️⃣ RESTORE ANSWER
+    this.answer = cur.enterAnswer || '';
      // this.startQuestionTimer();
-      this.setHeaderTitle(this.quizData[this.currentIndex].question);
+      this.setHeaderTitle();
       setTimeout(() => {
       this.scrollToActiveStep();
       this.speakQuestionWithTTS(); // 🔹 speak question automatically
@@ -205,14 +257,21 @@ async speakQuestionWithTTS() {
   previousQuestion() {
      if (this.isQuestionActive) return;
     this.saveCurrentAnswer();
+
+     clearInterval(this.questionTimerInterval);
+    
     if (this.currentIndex > 0) {
       this.currentIndex--;
           // ✅ RESET UI TIME IMMEDIATELY
-    this.questionSeconds = 0;
+   
+      const cur = this.quizData[this.currentIndex];
+    this.questionSeconds = cur.timeTaken || 0;
     this.updateQuestionTimeUI();
-      this.answer = this.quizData[this.currentIndex].enterAnswer || '';
+
+    // 4️⃣ RESTORE ANSWER
+    this.answer = cur.enterAnswer || '';
       //this.startQuestionTimer();
-      this.setHeaderTitle(this.quizData[this.currentIndex].question);
+      this.setHeaderTitle();
       setTimeout(() => {
       this.scrollToActiveStep();
       this.speakQuestionWithTTS(); // 🔹 speak question automatically
@@ -222,14 +281,20 @@ async speakQuestionWithTTS() {
 
   goToQuestion(i: number) {
      if (this.isQuestionActive) return; // prevent clicking during TTS
+     
     this.saveCurrentAnswer();
+     clearInterval(this.questionTimerInterval);
     this.currentIndex = i;
         // ✅ RESET UI TIME IMMEDIATELY
-    this.questionSeconds = 0;
-    this.updateQuestionTimeUI();
-    this.answer = this.quizData[i].enterAnswer || '';
+  
+        const cur = this.quizData[i];
+
+      this.answer = cur.enterAnswer || '';
+
+      this.questionSeconds = cur.timeTaken || 0;
+      this.updateQuestionTimeUI();
     //this.startQuestionTimer();
-    this.setHeaderTitle(this.quizData[i].question);
+    this.setHeaderTitle();
      setTimeout(() => {
     this.scrollToActiveStep();
     this.speakQuestionWithTTS();
@@ -250,8 +315,7 @@ async speakQuestionWithTTS() {
         clearInterval(this.questionTimerInterval);
 
         // ✅ load previous time if exists
-        this.questionSeconds = this.quizData[this.currentIndex]?.timeTaken || 0;
-
+      
         this.updateQuestionTimeUI();
 
         this.questionTimerInterval = setInterval(() => {
@@ -273,7 +337,15 @@ async speakQuestionWithTTS() {
 
   scrollToActiveStep() {
     const stepArray = this.stepItems.toArray();
-    if (stepArray[this.currentIndex]) stepArray[this.currentIndex].nativeElement.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
+
+  // Only scroll if NOT last question
+  if (stepArray[this.currentIndex] && this.currentIndex < this.questions.length - 1) {
+    stepArray[this.currentIndex].nativeElement.scrollIntoView({
+      behavior: 'smooth',
+      inline: 'center',
+      block: 'nearest'
+    });
+  }
   }
 
   async submitQuiz() {
@@ -301,7 +373,8 @@ async speakQuestionWithTTS() {
   this.router.navigate(['/visualization-quiz-exam-result'], {
     state: {
       quizData: this.quizData,   // all questions
-      totalTime: this.totalTime, // total timer
+      totalTime: this.totalTime, 
+       headerTitle: this.headerTitle // total timer
                        // optional, current level
     }
   });

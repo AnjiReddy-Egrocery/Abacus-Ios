@@ -6,8 +6,49 @@ import { IonicModule, ToastController } from '@ionic/angular';
 
 // ✅ Chart imports
 
-import { ChartConfiguration, ChartType } from 'chart.js';
+import { Chart,ChartConfiguration, Plugin } from 'chart.js';
 import { BaseChartDirective } from 'ng2-charts';
+import ChartDataLabels from 'chartjs-plugin-datalabels';
+
+const connectorLinePlugin: Plugin<'doughnut'> = {
+  id: 'connectorLinePlugin',
+
+  afterDatasetsDraw(chart) {
+    const { ctx } = chart;
+    const meta = chart.getDatasetMeta(0);
+
+    (meta.data as any[]).forEach((arc, index) => {
+
+      const props = arc.getProps(
+        ['x', 'y', 'startAngle', 'endAngle', 'outerRadius'],
+        true
+      );
+
+      const angle = (props.startAngle + props.endAngle) / 2;
+
+      const x1 = props.x + Math.cos(angle) * props.outerRadius;
+      const y1 = props.y + Math.sin(angle) * props.outerRadius;
+
+      const x2 = props.x + Math.cos(angle) * (props.outerRadius + 30);
+      const y2 = props.y + Math.sin(angle) * (props.outerRadius + 30);
+
+      ctx.beginPath();
+      ctx.moveTo(x1, y1);
+      ctx.lineTo(x2, y2);
+
+      const dataset = chart.data.datasets[0];
+      const color = (dataset.backgroundColor as string[])[index];
+
+      ctx.strokeStyle = color; // ✅ same as slice
+      ctx.lineWidth = 0.5;
+      ctx.stroke();
+    });
+  }
+};
+
+
+// ✅ REGISTER PLUGINS
+Chart.register(ChartDataLabels);
 
 
 @Component({
@@ -18,6 +59,7 @@ import { BaseChartDirective } from 'ng2-charts';
    
   templateUrl: './play-result-page.page.html',
   styleUrls: ['./play-result-page.page.scss'],
+
 })
 export class PlayResultPagePage {
     questions: string[] = [];
@@ -35,6 +77,7 @@ export class PlayResultPagePage {
   correctCount: number = 0;
   wrongCount: number = 0;
   currentDateTime: string = '';
+  maxLevels = 5;
 
 pieChartType: 'doughnut' = 'doughnut';
 
@@ -49,16 +92,32 @@ pieChartData: ChartConfiguration<'doughnut'>['data'] = {
 };
 
 pieChartOptions: ChartConfiguration<'doughnut'>['options'] = {
-  responsive: true,
-  plugins: {
-    title: { display: false },
-    legend: {
-       display: false   // ✅ hide square legend
-     
-    }
-  }
-};
+    responsive: true,
+    layout: {
+      padding: 0
+    },
+    plugins: {
+      legend: {
+        display: false
+      },
+      datalabels: {
+          display: true,
+          color: '#000',
+          anchor: 'center',
+          align: 'center',
 
+          formatter: (value: any) => {
+          const total = this.totalQuestions;
+          return total ? Math.round((value / total) * 100) + '%' : '0%';
+        },
+
+        font: {
+          size: 12,
+          weight: 'bold'
+        }
+      }
+    }
+  };
   constructor(private router: Router, private toastCtrl: ToastController) {}
 
   ngOnInit() {
@@ -113,11 +172,17 @@ this.pieChartData = {
 
 
   // ✅ NEXT LEVEL
-  nextLevel() {
-    const next = this.levelValue + 1;
-    console.log('Next level:', next);
-    this.router.navigate(['/gamelevels', next]);
-  }
+
+
+async showNoLevelsToast() {
+  const toast = await this.toastCtrl.create({
+    message: 'No more levels available',
+    duration: 2000,
+    color: 'danger',
+    position: 'bottom'
+  });
+  toast.present();
+}
 
   backToDashboard() {
     this.router.navigate(['/dashboard']);
@@ -135,8 +200,9 @@ pad(num: number) {
   return num < 10 ? '0' + num : num.toString();
 }
 
-  formatQuestion(question: string) {
-    return question.replace(/([+-])/g, '<br>$1');
-  }
+  formatQuestion(question: string): string {
+  if (!question) return '';
+  return question.replace(/\s+/g, '<br>');
+}
 
 }
