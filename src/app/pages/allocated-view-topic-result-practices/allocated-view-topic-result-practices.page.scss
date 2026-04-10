@@ -61,10 +61,15 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  
+  flex-direction: column; /* title top lo */
   gap: 40px;
   flex-wrap: wrap;
   margin-top: 10px;
+}
+
+.chart-legend-wrapper h6 {
+  text-align: left;
+  margin-bottom: 10px;
 }
 
 /* Chart Box */

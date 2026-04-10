@@ -7,6 +7,12 @@
     <h2>{{ topicName }}</h2> 
   </div>
 
+
+   <div class="level-info ion-text-center">
+    <h2>{{ cufrrentDateTime }}</h2> 
+  </div>
+
+
   <div class="ion-text-center">
     <ion-button color="primary" (click)="backToDashboard()">Back to Dashboard</ion-button>
   </div>
@@ -27,7 +33,7 @@
 
 <!-- Chart + Legend Side by Side -->
 <div class="chart-legend-wrapper">
-
+   <h6 style="align-items: flex-start;"> Performance OverView</h6>
   <div class="chart-box">
     <canvas baseChart
       [data]="pieChartData"
@@ -72,7 +78,7 @@
     </ion-row>
 
     <ion-row *ngFor="let q of questionData">
-      <ion-col [innerHTML]="q.question"></ion-col>
+      <ion-col [innerHTML]="fixImagePath(q.question)"></ion-col>
       <ion-col class="center-text">{{ q.answer }}</ion-col>
       <ion-col [ngClass]="getGivenClass(q)">
         {{ q.given || '-' }}

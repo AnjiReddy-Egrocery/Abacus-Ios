@@ -105,7 +105,6 @@ cufrrentDateTime: string = '';
   attemptedCount = 0;
   correctCount = 0;
   wrongCount = 0;
-
     pieChartType: 'doughnut' = 'doughnut';
 
  pieChartData: ChartConfiguration<'doughnut'>['data'] = {

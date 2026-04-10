@@ -64,7 +64,6 @@ export class AllocatedTopicExamResultPagePage implements OnInit {
   answers: string[] = [];
   questionTimes: number[] = [];
   questionData: any[] = [];
-
   totalQuestions: number = 0;
   attemptedCount: number = 0;
   correctCount: number = 0;

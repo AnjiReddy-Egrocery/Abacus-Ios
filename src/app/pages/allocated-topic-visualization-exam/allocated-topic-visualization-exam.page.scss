@@ -20,12 +20,35 @@
   z-index: 0;
 }
 
+.repeat-container {
+  background: #55535b;
+  margin: 20px auto;
+  width: 120px;
+  padding: 10px 15px;
+  border-radius: 10px;
+  font-size: 18px;
+
+  display: flex;              // 🔥 IMPORTANT
+  align-items: center;        // center vertically
+  justify-content: center;    // center horizontally
+  gap: 6px;
+}
+
+.repeat-text{
+  font-size: 14px;
+  color: #FFF;
+}
+.repeat-icon {
+  font-size: 18px;
+  color: #fff;
+}
+
 /* HEADER */
 .ionic-header{
   display:flex;
   align-items:center;
   margin:12px;
-  margin-top:25px;
+  margin-top:30px;
 }
 
 .back-circle {

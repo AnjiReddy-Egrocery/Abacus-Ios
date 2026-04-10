@@ -43,11 +43,29 @@ export class ViewTopicServices {
       data: body.toString()
     });
 
+     console.log('FULL RESPONSE:', response);
+
     let data: any = response.data;
 
-    if (typeof data === 'string') data = JSON.parse(data);
-    if (typeof data.data === 'string') data = JSON.parse(data.data);
+     console.log('RAW DATA:', data);
 
-    return data as AllocatedTopicResponse;
+     try {
+    if (typeof data === 'string') {
+      data = JSON.parse(data);
+    }
+
+    console.log('PARSED DATA:', data);
+
+    if (typeof data.data === 'string') {
+      data.data = JSON.parse(data.data);
+    }
+
+    console.log('FINAL DATA:', data);
+
+  } catch (e) {
+    console.error('JSON PARSE ERROR:', e);
+  }
+
+  return data;
   }
 }

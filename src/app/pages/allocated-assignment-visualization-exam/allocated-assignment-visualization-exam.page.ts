@@ -17,6 +17,7 @@ import { TextToSpeech } from '@capacitor-community/text-to-speech';
 export class AllocatedAssignmentVisualizationExamPage implements OnInit {
 @ViewChild('scrollArea') scrollArea!: ElementRef;
 @ViewChildren('stepItem') stepItems!: QueryList<ElementRef>;
+ @ViewChild('answerInput', { static: false }) answerInput!: any;
 
 studentId:any;
 topicId:any;
@@ -42,6 +43,8 @@ questionTime='00:00';
 questionTimerInterval:any;
 
 questionTimes:number[]=[];
+
+stopTTS = false;
 
  displayText: string = '';
   isQuestionActive = false;
@@ -134,12 +137,18 @@ handleQuestionDisplay() {
     // if image → skip TTS
     if (/<img[^>]+src="([^">]+)"/.test(question)) {
 
-    
+    this.displayText = 'Beads question not available for visualization practice.';
 
-    this.showImageAlert();
+    this.isQuestionActive = false;
+    this.isButtonsEnabled = false;
 
-    // 3 sec delay → auto back
-  
+      TextToSpeech.stop();
+
+    // ⏳ 3 seconds taruvata back vellali
+    setTimeout(() => {
+      this.goBack();
+    }, 3000);
+
 
     return; // 🔥 stop further execution
   }
@@ -148,7 +157,7 @@ handleQuestionDisplay() {
     const text = this.getQuestionText(question);
     const elements = text.split(/\s+/);
 
-    this.speakAndDisplayOneByOne(elements);
+    this.speakAndDisplayOneByOne();
   }
 
   async showImageAlert() {
@@ -172,33 +181,44 @@ handleQuestionDisplay() {
   this.goBack();
 }
 
-  async speakAndDisplayOneByOne(elements: string[]) {
+  async speakAndDisplayOneByOne() {
+
+     const question = this.currentQuestion;
+  if (!question) return;
+ this.stopTTS = false; // ✅ RESET FLAG
 
   this.isQuestionActive = true;
   this.isButtonsEnabled = false;
+    const elements = this.splitQuestion(question);
   this.displayText = '';
 
   for (let i = 0; i < elements.length; i++) {
 
-    let clean = elements[i].trim();
+     let clean = elements[i].trim();
     if (!clean) continue;
 
     let speakText = '';
     let displayText = '';
 
-    if (clean.startsWith('+')) {
+   if (i === 0) {
+      speakText = clean;
+      displayText = clean;
+    }
+    else if (clean.startsWith('+')) {
       const num = clean.substring(1);
       speakText = `plus ${num}`;
       displayText = `+${num}`;
-    } else if (clean.startsWith('-')) {
+    }
+    else if (clean.startsWith('-')) {
       const num = clean.substring(1);
       speakText = `minus ${num}`;
       displayText = `-${num}`;
-    } else {
+    }
+    else {
+      // default case
       speakText = `plus ${clean}`;
       displayText = `+${clean}`;
     }
-
     // ✅ SHOW
     this.displayText = displayText;
 
@@ -227,13 +247,22 @@ handleQuestionDisplay() {
 
   this.isButtonsEnabled = true;
   this.isQuestionActive = false;
-   this.questionSeconds = 0;
+    this.focusAnswerInput();
   this.startQuestionTimer();
   }
 
   delay(ms: number) {
     return new Promise(resolve => setTimeout(resolve, ms));
   }
+
+  focusAnswerInput() {
+  setTimeout(() => {
+    if (this.answerInput) {
+      this.answerInput.setFocus(); // ✅ focus
+    }
+  }, 300);
+}
+
 nextQuestion() {
    if (this.isQuestionActive) return;
   // Save current answer
@@ -485,21 +514,40 @@ await alert.present();
     });
   }
 
+repeatQuestion() {
+  // ❌ TTS running unte repeat allow cheyyakudadhu
+  if (this.isQuestionActive) return;
 
-splitQuestion(question: string): string[] {
+  
 
-  if (!question) return [];
+  // 🔄 Reset timer
 
-  let cleaned = question.replace(/<img[^>]+>/g, '');
-  cleaned = cleaned.replace(/<br\s*\/?>/gi, '\n');
 
-  const div = document.createElement('div');
-  div.innerHTML = cleaned;
+  // 🧹 Clear display
+  this.displayText = '';
 
-  return (div.textContent || '')
-    .replace(/\u00A0/g, '')
-    .split('\n')
-    .map(v => v.trim())
-    .filter(v => v.length > 0);
+  // 🔁 Re-play same question (TTS + UI flow)
+  this.speakAndDisplayOneByOne();
+}
+
+splitQuestion(q: string): string[] {
+const tokens = q.match(/[+-]?\d+/g) || [];
+
+  const result: string[] = [];
+
+  for (let i = 0; i < tokens.length; i++) {
+    if (['+', '-', '*', '/'].includes(tokens[i])) {
+      // combine operator with next number
+      if (i + 1 < tokens.length) {
+        result.push(tokens[i] + tokens[i + 1]);
+        i++; // skip next number
+      }
+    } else {
+      // first number
+      result.push(tokens[i]);
+    }
+  }
+
+  return result;
 }
 }

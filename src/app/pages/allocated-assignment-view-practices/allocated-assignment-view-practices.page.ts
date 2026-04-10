@@ -20,6 +20,7 @@ studentId: string='';
   topicId: string = '';
   practices: AllocatedPractice[] = [];
   loading = true;
+  topicName: string = '';
 
   constructor(
     private route: ActivatedRoute,
@@ -31,54 +32,73 @@ studentId: string='';
 
   ngOnInit() {
     this.route.queryParams.subscribe(params => {
+       console.log('PARAMS:', params);
       this.studentId = params['studentId'];
       this.topicId = params['topicId'];
+
+    console.log('studentId:', this.studentId);
+    console.log('topicId:', this.topicId);
       this.loadPractices();
     });
   }
 
   async loadPractices() {
     try {
-      const res = await this.topicService.getAllocatedAssignmentPractices(this.studentId, this.topicId);
-      this.loading = false;
+    const res: any = await this.topicService.getAllocatedAssignmentPractices(this.studentId, this.topicId);
 
-      if (res.errorCode === '200' && res.result?.practicesList?.length) {
-        this.practices = res.result.practicesList;
-      } else if (res.errorCode === '202') {
-        this.practices = [];
-        const toast = await this.toastCtrl.create({
-          message: 'No data found for your request',
-          duration: 2000,
-          color: 'warning'
-        });
-        toast.present();
+    console.log('FULL RESPONSE 👉', res);
+
+    this.loading = false;
+
+    if (res?.errorCode === '200') {
+
+      const list = res?.result?.practicesList;
+       this.topicName = res?.result?.topicName; // ✅ get topicName
+
+      // ✅ Ensure it's actually an array of practices (not questions)
+      if (Array.isArray(list) && list.length > 0 && list[0].examRnm) {
+
+         this.practices = list.map((p: any) => ({
+          ...p,
+          topicName: this.topicName
+        })).reverse(); 
+
+        console.log('✅ PRACTICE LIST 👉', this.practices);
+
       } else {
+
+        console.log('⚠️ INVALID PRACTICE LIST STRUCTURE');
         this.practices = [];
-        const toast = await this.toastCtrl.create({
-          message: 'Data Error',
-          duration: 2000,
-          color: 'danger'
-        });
-        toast.present();
+
       }
 
-    } catch (err) {
-      this.loading = false;
-      const toast = await this.toastCtrl.create({
-        message: 'Network Error',
-        duration: 2000,
-        color: 'danger'
-      });
-      toast.present();
-      console.error(err);
+    } else if (res?.errorCode === '202') {
+
+      console.log('⚠️ NO DATA');
+      this.practices = [];
+
+    } else {
+
+      console.log('❌ ERROR RESPONSE');
+      this.practices = [];
+
     }
+
+  } catch (err) {
+
+    this.loading = false;
+    console.error('🔥 API ERROR 👉', err);
+    this.practices = [];
+
+  }
+
   }
 
   openViewResult(practice: AllocatedPractice) {
     this.router.navigate(['/allocated-assignment-view-result-practices'], {
       queryParams: {
         examRnm: practice.examRnm,
-        topicName: practice.topicName,
+        topicName: this.topicName,
         startedOn: practice.startedOn,
         submitedOn: practice.submitedOn,
         practiceStatus: practice.practiceStatus

@@ -3,7 +3,7 @@ import { Component, CUSTOM_ELEMENTS_SCHEMA, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { IonicModule, MenuController } from '@ionic/angular';
-import { ChartConfiguration, ChartType } from 'chart.js';
+import {  Chart,ChartConfiguration, ChartType, Plugin } from 'chart.js';
 import { BaseChartDirective } from 'ng2-charts';
 import { ViewTopicResultServices } from 'src/app/services/view-topic-result-services';
 
@@ -17,7 +17,6 @@ interface QuestionItem {
   time_taken?: number;   // seconds spent
   status?: number;       // optional image URL
 }
-
 // API result interface
 interface AllocatedResult {
   practiceId: string;
@@ -42,6 +41,42 @@ interface AllocatedResultResponse {
   result?: AllocatedResult;
 }
 
+const connectorLinePlugin: Plugin<'doughnut'> = {
+  id: 'connectorLinePlugin',
+
+  afterDatasetsDraw(chart) {
+    const { ctx } = chart;
+    const meta = chart.getDatasetMeta(0);
+
+    (meta.data as any[]).forEach((arc, index) => {
+
+      const props = arc.getProps(
+        ['x', 'y', 'startAngle', 'endAngle', 'outerRadius'],
+        true
+      );
+
+      const angle = (props.startAngle + props.endAngle) / 2;
+
+      const x1 = props.x + Math.cos(angle) * props.outerRadius;
+      const y1 = props.y + Math.sin(angle) * props.outerRadius;
+
+      const x2 = props.x + Math.cos(angle) * (props.outerRadius + 30);
+      const y2 = props.y + Math.sin(angle) * (props.outerRadius + 30);
+
+      ctx.beginPath();
+      ctx.moveTo(x1, y1);
+      ctx.lineTo(x2, y2);
+
+      const dataset = chart.data.datasets[0];
+      const color = (dataset.backgroundColor as string[])[index];
+
+      ctx.strokeStyle = color; // ✅ same as slice
+      ctx.lineWidth = 0.2;
+      ctx.stroke();
+    });
+  }
+};
+
 @Component({
   selector: 'app-allocated-assignment-view-result-practices',
   standalone: true,
@@ -54,7 +89,7 @@ export class AllocatedAssignmentViewResultPracticesPage implements OnInit {
 topicName: string = '';
   totalTime: string = '';
   questionData: QuestionItem[] = [];
-
+cufrrentDateTime: string = '';  
   totalQuestions = 0;
   attemptedCount = 0;
   correctCount = 0;
@@ -72,11 +107,34 @@ topicName: string = '';
     ],
   };
 
-  pieChartOptions: ChartConfiguration<'doughnut'>['options'] = {
+ pieChartOptions: ChartConfiguration<'doughnut'>['options'] = {
     responsive: true,
-    plugins: {
-      legend: { display: false },
+    layout: {
+      padding: 0
     },
+    plugins: {
+      legend: {
+        display: false
+      },
+      datalabels: {
+         display: true,
+          color: '#000',
+          anchor: 'center',
+          align: 'center',
+    
+
+       formatter: (value: any) => {
+          const total = this.totalQuestions;
+          return total ? Math.round((value / total) * 100) + '%' : '0%';
+        },
+
+
+        font: {
+          size: 12,
+          weight: 'bold'
+        }
+      }
+    }
   };
 
   constructor(private resultService: ViewTopicResultServices,
@@ -84,7 +142,7 @@ topicName: string = '';
   private menuCtrl: MenuController,
   private route: ActivatedRoute) {}
 ngOnInit() {
-
+this.cufrrentDateTime = this.getCurrentDateTime();
   this.route.queryParams.subscribe(params => {
 
     const examRnm = params['examRnm'];
@@ -105,14 +163,14 @@ async loadResult(examRnm: any) {
 
     const res = await this.resultService.getAllocatedAssignmentResult(examRnm);
 
-    console.log("RESULT API:", res);
+     console.log("RESULT API:", res);
 
     if (res.status === 'Success' && res.result) {
 
       const result = res.result;
 
       // 🔹 questionsList parse
-       if (result.questionsList) {
+    if (result.questionsList) {
           try {
             this.questionData =
               typeof result.questionsList === 'string'
@@ -130,7 +188,7 @@ async loadResult(examRnm: any) {
       let correct = 0;
       let totalSeconds = 0;
 
-      this.questionData.forEach(q => {
+     this.questionData.forEach(q => {
 
           totalSeconds += q.time_taken ?? 0;
 
@@ -147,7 +205,6 @@ async loadResult(examRnm: any) {
             q.is_correct = false;
           }
         });
-
 
       this.totalQuestions = this.questionData.length;
       this.attemptedCount = attempted;
@@ -183,6 +240,16 @@ async loadResult(examRnm: any) {
 
 }
 
+fixImagePath(html: string): string {
+  if (!html) return '';
+
+  return html.replace(
+    /src="(\.\.\/)+assets\/uploads\//g,
+    'src="https://www.abacustrainer.com/assets/uploads/'
+  );
+}
+
+
  getRowClass(q: any) {
     if (!q.given || q.given === '') {
       return 'not-attempted'; // white
@@ -215,5 +282,22 @@ async loadResult(examRnm: any) {
   }
 
   return 'incorrect';         // red
+}
+ getCurrentDateTime(): string {
+  const now = new Date();
+
+  const options: Intl.DateTimeFormatOptions = {
+    month: 'short',
+    day: '2-digit',
+    year: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
+    hour12: true
+  };
+
+  const formatted = now.toLocaleString('en-US', options);
+
+  // replace comma format to match Android style
+  return formatted.replace(',', ' |');
 }
 }

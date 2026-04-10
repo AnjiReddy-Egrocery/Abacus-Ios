@@ -66,6 +66,16 @@
       </div>
     </div>
 
+ <div 
+        *ngIf="displayText === 'Answer is'"
+        class="repeat-container"
+        [class.disabled]="isQuestionActive"
+        (click)="repeatQuestion()">
+        <span class="repeat-text">Repeat</span>
+        <ion-icon name="refresh-outline" class="repeat-icon"></ion-icon>
+       
+
+      </div>
 
     <!-- QUESTION -->
    <div class="question-box">
@@ -73,11 +83,7 @@
  
 
   <!-- TEXT -->
-  <div *ngIf="getQuestionText(currentQuestion)" class="question-text">
-    <div *ngFor="let part of splitQuestion(currentQuestion)">
-      {{ part }}
-    </div>
-  </div>
+   {{ displayText }}
 
 </div>
 
@@ -88,6 +94,7 @@
       <span>Ans :</span>
 
       <ion-input
+      #answerInput
         type="number"
         [(ngModel)]="answer"
         (ionInput)="onAnswerChange($event)"

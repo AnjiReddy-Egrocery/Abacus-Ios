@@ -87,11 +87,14 @@
 
   <!-- ✅ ONLY THIS COLUMN COLOR -->
   <ion-col 
-    [ngClass]="{
+    >
+    <span [ngClass]="{
       'correct-bg': q.given && q.given === q.answer,
       'incorrect-bg': q.given && q.given !== q.answer
     }">
-    {{ q.given || '-' }}
+       {{ q.given || '-' }}
+    </span>
+   
   </ion-col>
 
   <ion-col>{{ formatTime(q.time_taken) }}</ion-col>

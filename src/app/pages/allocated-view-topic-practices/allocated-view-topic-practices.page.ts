@@ -73,7 +73,6 @@ export class AllocatedViewTopicPracticesPage implements OnInit {
       console.error(err);
     }
   }
-
   openViewResult(practice: AllocatedPractice) {
     this.router.navigate(['/allocated-view-topic-result-practices'], {
       queryParams: {

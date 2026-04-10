@@ -3,8 +3,51 @@ import { Component, CUSTOM_ELEMENTS_SCHEMA, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { IonicModule, MenuController } from '@ionic/angular';
-import { ChartConfiguration } from 'chart.js';
+import { Chart,ChartConfiguration, Plugin } from 'chart.js';
+
 import { BaseChartDirective } from 'ng2-charts';
+import ChartDataLabels from 'chartjs-plugin-datalabels';
+
+const connectorLinePlugin: Plugin<'doughnut'> = {
+  id: 'connectorLinePlugin',
+
+  afterDatasetsDraw(chart) {
+    const { ctx } = chart;
+    const meta = chart.getDatasetMeta(0);
+
+    (meta.data as any[]).forEach((arc, index) => {
+
+      const props = arc.getProps(
+        ['x', 'y', 'startAngle', 'endAngle', 'outerRadius'],
+        true
+      );
+
+      const angle = (props.startAngle + props.endAngle) / 2;
+
+      const x1 = props.x + Math.cos(angle) * props.outerRadius;
+      const y1 = props.y + Math.sin(angle) * props.outerRadius;
+
+      const x2 = props.x + Math.cos(angle) * (props.outerRadius + 30);
+      const y2 = props.y + Math.sin(angle) * (props.outerRadius + 30);
+
+      ctx.beginPath();
+      ctx.moveTo(x1, y1);
+      ctx.lineTo(x2, y2);
+
+      const dataset = chart.data.datasets[0];
+      const color = (dataset.backgroundColor as string[])[index];
+
+      ctx.strokeStyle = color; // ✅ same as slice
+      ctx.lineWidth = 0.5;
+      ctx.stroke();
+    });
+  }
+};
+
+
+// ✅ REGISTER PLUGINS
+Chart.register(ChartDataLabels);
+
 
 @Component({
   selector: 'app-allocated-assignment-exam-result-page',
@@ -17,6 +60,7 @@ import { BaseChartDirective } from 'ng2-charts';
 export class AllocatedAssignmentExamResultPagePage implements OnInit {
 
  topicName: string = '';
+ cufrrentDateTime: string = '';
   totalTime: string = '';
   questions: any[] = [];
   answers: string[] = [];
@@ -39,18 +83,38 @@ export class AllocatedAssignmentExamResultPagePage implements OnInit {
       }
     ]
   };
-
   pieChartOptions: ChartConfiguration<'doughnut'>['options'] = {
     responsive: true,
+    layout: {
+      padding: 0
+    },
     plugins: {
-      title: { display: false },
-      legend: { display: false }
+      legend: {
+        display: false
+      },
+      datalabels: {
+          display: true,
+          color: '#000',
+          anchor: 'center',
+          align: 'center',
+
+          formatter: (value: any) => {
+          const total = this.totalQuestions;
+          return total ? Math.round((value / total) * 100) + '%' : '0%';
+        },
+
+        font: {
+          size: 12,
+          weight: 'bold'
+        }
+      }
     }
   };
-
   constructor(private router: Router, private menu: MenuController) {}
 
  ngOnInit() {
+
+  this.cufrrentDateTime = this.getCurrentDateTime();
  const state = history.state;
   if (state?.questionData) {
     this.topicName = state.topicName || '';
@@ -59,8 +123,13 @@ export class AllocatedAssignmentExamResultPagePage implements OnInit {
 
     this.totalQuestions = this.questionData.length;
     this.attemptedCount = this.questionData.filter(q => q.given).length;
-    this.correctCount = this.questionData.filter(q => q.is_correct).length;
-    this.wrongCount = this.attemptedCount - this.correctCount;
+   this.correctCount = this.questionData.filter(q =>
+      q.given && q.given === q.answer
+    ).length;
+
+    this.wrongCount = this.questionData.filter(q =>
+      q.given && q.given !== q.answer
+    ).length;
     const notAttempted = this.totalQuestions - this.attemptedCount;
 
     this.pieChartData = {
@@ -75,6 +144,15 @@ export class AllocatedAssignmentExamResultPagePage implements OnInit {
   }
 }
 
+fixImagePath(html: string): string {
+  if (!html) return '';
+
+  return html.replace(
+    /src="(\.\.\/)+assets\/uploads\//g,
+    'src="https://www.abacustrainer.com/assets/uploads/'
+  );
+}
+
   async backToDashboard() {
     await this.menu.close();
     this.router.navigate(['/dashboard']);
@@ -86,6 +164,23 @@ formatTime(seconds: number) {
   formatQuestion(q: string) {
     return q.replace(/<br\s*\/?>/gi, '<br>');
   }
+    getCurrentDateTime(): string {
+  const now = new Date();
+
+  const options: Intl.DateTimeFormatOptions = {
+    month: 'short',
+    day: '2-digit',
+    year: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
+    hour12: true
+  };
+
+  const formatted = now.toLocaleString('en-US', options);
+
+  // replace comma format to match Android style
+  return formatted.replace(',', ' |');
+}
 }
 
 

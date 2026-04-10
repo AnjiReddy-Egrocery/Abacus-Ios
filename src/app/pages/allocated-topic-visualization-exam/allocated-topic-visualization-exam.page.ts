@@ -18,6 +18,7 @@ export class AllocatedTopicVisualizationExamPage implements OnInit {
 
  @ViewChild('scrollArea') scrollArea!: ElementRef;
 @ViewChildren('stepItem') stepItems!: QueryList<ElementRef>;
+ @ViewChild('answerInput', { static: false }) answerInput!: any;
 
 studentId:any;
 topicId:any;
@@ -43,6 +44,8 @@ questionTime='00:00';
 questionTimerInterval:any;
 
 questionTimes:number[]=[];
+
+stopTTS = false;
 
  // 🔥 NEW
   displayText: string = '';
@@ -138,19 +141,24 @@ handleQuestionDisplay() {
     // if image → skip TTS
       if (/<img[^>]+src="([^">]+)"/.test(question)) {
 
-    
+     this.displayText = 'Beads question not available for visualization practice.';
 
-    this.showImageAlert();
+    this.isQuestionActive = false;
+    this.isButtonsEnabled = false;
 
-    // 3 sec delay → auto back
-  
+      TextToSpeech.stop();
 
-    return; // 🔥 stop further execution
+    // ⏳ 3 seconds taruvata back vellali
+    setTimeout(() => {
+      this.goBack();
+    }, 3000);
+
+    return; // stop
   }
     const text = this.getQuestionText(question);
     const elements = text.split(/\s+/);
 
-    this.speakAndDisplayOneByOne(elements);
+    this.speakAndDisplayOneByOne();
   }
 
     async showImageAlert() {
@@ -174,13 +182,30 @@ handleQuestionDisplay() {
   this.goBack();
 }
 
-  async speakAndDisplayOneByOne(elements: string[]) {
+focusAnswerInput() {
+  setTimeout(() => {
+    if (this.answerInput) {
+      this.answerInput.setFocus(); // ✅ focus
+    }
+  }, 300);
+}
+
+
+  async speakAndDisplayOneByOne() {
+
+     const question = this.currentQuestion;
+  if (!question) return;
+
+    this.stopTTS = false; // ✅ RESET FLAG
 
   this.isQuestionActive = true;
   this.isButtonsEnabled = false;
+  const elements = this.splitQuestion(question);
   this.displayText = '';
 
   for (let i = 0; i < elements.length; i++) {
+
+     if (this.stopTTS) return; // 🛑 STOP IMMEDIATELY
 
     let clean = elements[i].trim();
     if (!clean) continue;
@@ -188,19 +213,25 @@ handleQuestionDisplay() {
     let speakText = '';
     let displayText = '';
 
-    if (clean.startsWith('+')) {
+   if (i === 0) {
+      speakText = clean;
+      displayText = clean;
+    }
+    else if (clean.startsWith('+')) {
       const num = clean.substring(1);
       speakText = `plus ${num}`;
       displayText = `+${num}`;
-    } else if (clean.startsWith('-')) {
+    }
+    else if (clean.startsWith('-')) {
       const num = clean.substring(1);
       speakText = `minus ${num}`;
       displayText = `-${num}`;
-    } else {
+    }
+    else {
+      // default case
       speakText = `plus ${clean}`;
       displayText = `+${clean}`;
     }
-
     // ✅ SHOW
     this.displayText = displayText;
 
@@ -214,9 +245,7 @@ handleQuestionDisplay() {
     await this.delay(1000);
 
     // ❌ CLEAR (this is the key fix)
-    this.displayText = '';
 
-    await this.delay(300); // small gap before next number
   }
 
   // ✅ FINAL
@@ -229,7 +258,7 @@ handleQuestionDisplay() {
 
   this.isButtonsEnabled = true;
   this.isQuestionActive = false;
-  this.questionSeconds = 0;
+   this.focusAnswerInput();
   this.startQuestionTimer();
   }
 
@@ -290,7 +319,20 @@ nextQuestion() {
 await alert.present();
   }
 
-goBack() {
+  async goBack() {
+   this.stopTTS = true; // ✅ STOP LOOP
+
+  try {
+    await TextToSpeech.stop();
+  } catch (e) {
+    console.log('TTS stop error:', e);
+  }
+
+  clearInterval(this.timerInterval);
+  clearInterval(this.questionTimerInterval);
+
+  this.isQuestionActive = false;
+
   window.history.back();
 }
 
@@ -468,7 +510,6 @@ await alert.present();
   }
   }
   navigateToResultPage(questionData: any){
-
     console.log("Navigating to result page with:");
   console.log("topicName:", this.topicName);
  
@@ -487,23 +528,42 @@ await alert.present();
       }
     });
   }
+repeatQuestion() {
+  // ❌ TTS running unte repeat allow cheyyakudadhu
+  if (this.isQuestionActive) return;
+
+  
+
+  // 🔄 Reset timer
 
 
-splitQuestion(question: string): string[] {
+  // 🧹 Clear display
+  this.displayText = '';
 
-  if (!question) return [];
+  // 🔁 Re-play same question (TTS + UI flow)
+  this.speakAndDisplayOneByOne();
+}
 
-  let cleaned = question.replace(/<img[^>]+>/g, '');
-  cleaned = cleaned.replace(/<br\s*\/?>/gi, '\n');
+splitQuestion(q: string): string[] {
+  // 👉 split into numbers and operators separately
+  const tokens = q.match(/[+-]?\d+/g) || [];
 
-  const div = document.createElement('div');
-  div.innerHTML = cleaned;
+  const result: string[] = [];
 
-  return (div.textContent || '')
-    .replace(/\u00A0/g, '')
-    .split('\n')
-    .map(v => v.trim())
-    .filter(v => v.length > 0);
+  for (let i = 0; i < tokens.length; i++) {
+    if (['+', '-', '*', '/'].includes(tokens[i])) {
+      // combine operator with next number
+      if (i + 1 < tokens.length) {
+        result.push(tokens[i] + tokens[i + 1]);
+        i++; // skip next number
+      }
+    } else {
+      // first number
+      result.push(tokens[i]);
+    }
+  }
+
+  return result;
 }
 }
 
