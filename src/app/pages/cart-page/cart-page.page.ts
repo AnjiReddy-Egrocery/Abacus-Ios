@@ -40,13 +40,13 @@ export class CartPagePage implements OnInit {
     console.log('Worksheet RNM:', this.workSheetRnm);
     console.log('Student ID:', this.studentId);
     console.log('Total Amount:', this.totalAmount);
-       this.loadCartList(this.workSheetRnm,this.studentId);
+       this.loadCartList(this.workSheetRnm);
     });
   }
 
- async loadCartList(workSheetRnm: string, studentId: string) {
+ async loadCartList(workSheetRnm: string) {
   try {
-    const res: any = await this.api.getCartList(workSheetRnm,studentId);
+    const res: any = await this.api.getCartList(workSheetRnm);
     if (res && res.errorCode === '200') {
       this.cartItems = res.result.courseLevels.map((l: any) => ({
         cartId: l.cartId,

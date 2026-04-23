@@ -7,6 +7,44 @@
   border-radius: 16px;
 }
 
+.top-card {
+  background-color: #D2D1D8; /* same as top_card_view */
+  border-top-left-radius: 20px;
+  border-top-right-radius: 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 8px;
+  padding: 10px 16px;
+}
+
+.subscription-card {
+   display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border: 1px solid #f2e3e3;
+  padding: 15px;
+  border-radius: 8px;
+  background: #fff;
+}
+.left-content h3{
+  margin: 0;
+  font-size: 18px;
+}
+
+.view-details{
+  display: block;
+  margin-top: 6px;
+  color: blue;
+  text-decoration: none;
+  font-size: 14px;
+}
+
+.right-image img{
+  width: 80px;
+  height: auto;
+}
+
 .profile-avatar {
   margin: auto;
   width: 100px;

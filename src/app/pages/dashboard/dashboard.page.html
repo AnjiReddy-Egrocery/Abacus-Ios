@@ -27,7 +27,7 @@
         <!-- <ion-item>Video Tutorials</ion-item> -->
         <ion-item button (click)="goToPlaywithNumbers('play')">Play with Numbers</ion-item>
         <ion-item button (click)="goToPlaywithVisualizationNumbers('play')">Visualization</ion-item>
-        <ion-item button (click)="goToSchedules()">Schedules</ion-item>
+        <ion-item button (click)="goToSchedules()">Batches</ion-item>
         <ion-item button (click)="goToAllocatedCourses()">Allocated Courses</ion-item>
         <ion-item button (click)="goToOrders()">Orders</ion-item>
         <ion-item button (click)="goToProgress()">Progress Tracker</ion-item>
@@ -78,7 +78,7 @@
 
     <div class="top-card">
       <div class="next-class-text">Next Class</div>
-      <div class="join-now">Join Now</div>
+      <!-- <div class="join-now">Join Now</div> -->
     </div>
 
     <div class="bottom-card">
@@ -89,7 +89,7 @@
 
       <div class="hw-section">
         <span>H/W (Last Class)</span> : 
-        <span id="txt_clcik_schedule" class="click-hw">Click Here</span>
+        <span id="txt_clcik_schedule" class="click-hw"  (click)="goToSchedules()">Click Here</span>
       </div>
 
       <div class="total-classes">
@@ -219,7 +219,7 @@
 
       <ion-tab-button (click)="selectTab('schedules')" [class.activated]="activeTab==='schedules'">
         <ion-icon name="calendar-outline"></ion-icon>
-        <ion-label>Schedule</ion-label>
+        <ion-label>Batches</ion-label>
       </ion-tab-button>
       <ion-tab-button (click)="selectTab('profile')" [class.activated]="activeTab==='profile'">
         <ion-icon name="person-outline"></ion-icon>

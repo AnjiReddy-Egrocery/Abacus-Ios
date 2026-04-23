@@ -170,7 +170,16 @@ async createNumberGame() {
        });
 
 }
-
+  ionViewWillEnter() {
+  this.resetForm(); // 🔥 same function reuse
+}
+ resetForm() {
+  this.selectedLevel = '';
+  this.selectedOperation = '';
+  this.selectedOperands = '';
+  this.selectedTotalQuestions = '';
+  this.dynamicSpinners = [];
+}
 async showToast(msg: string) {
   const toast = await this.toastCtrl.create({
     message: msg,

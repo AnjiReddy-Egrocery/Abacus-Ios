@@ -18,6 +18,11 @@
 
 <div class="container">
 
+    <!-- ❌ NO TOPICS MESSAGE -->
+  <div *ngIf="displayList.length === 0" class="no-data">
+    {{ noTopicsMessage }}
+  </div>
+
   <ng-container *ngFor="let item of displayList">
 
     <!-- HEADER -->

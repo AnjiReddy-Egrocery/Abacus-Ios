@@ -19,6 +19,10 @@ export class AllocatedCourseLevelsPage implements OnInit {
   courseLevelId:string='';
 
   displayList:any[]=[];
+ 
+
+// ✅ ADD THIS
+noTopicsMessage: string = '';
 
   constructor(
     private route: ActivatedRoute,
@@ -48,59 +52,95 @@ export class AllocatedCourseLevelsPage implements OnInit {
   });
   }
 
-  async loadTopics(){
+async loadTopics(){
 
-    const res=await this.courseService.getCourseTopics(
-      this.studentId,
-      this.courseLevelId
-    );
+  // ✅ Reset before API
+  this.displayList = [];
+  this.noTopicsMessage = '';
 
-    console.log("API RESULT:",res);
+  const res = await this.courseService.getCourseTopics(
+    this.studentId,
+    this.courseLevelId
+  );
 
-    if(res.errorCode==='200'){
+  console.log("API RESULT:", res);
+  console.log("ErrorCode:", res.errorCode);
+  console.log("Type:", typeof res.errorCode);
 
-      const levels=res.result;
+  if (res.errorCode == '200') {
 
-      levels.forEach((level:any)=>{
+    const levels = res.result;
 
-        // HEADER
-        this.displayList.push({
-          type:'HEADER',
-          title:'Topic'
-        });
+    levels.forEach((level:any)=>{
 
-        // TOPICS
-        level.courseLevelTopics?.forEach((topic:any)=>{
-          this.displayList.push({
-            type:'TOPIC',
-            title:topic.topic,
-            topicId:topic.topicId
-          });
-        });
+      // ❗ Skip if both empty
+      if (
+        (!level.courseLevelTopics || level.courseLevelTopics.length === 0) &&
+        (!level.courseLevelAssignmentTopics || level.courseLevelAssignmentTopics.length === 0)
+      ) {
+        return;
+      }
 
-        // ASSIGNMENT HEADER
-        if(level.courseLevelAssignmentTopics?.length){
-
-          this.displayList.push({
-            type:'ASSIGNMENT_HEADER',
-            title:'Assignment Topics'
-          });
-
-          level.courseLevelAssignmentTopics.forEach((a:any)=>{
-            this.displayList.push({
-              type:'ASSIGNMENT_TOPIC',
-              title:a.topic,
-              topicId:a.topicId
-            });
-          });
-
-        }
-
+      // ✅ HEADER
+      this.displayList.push({
+        type:'HEADER',
+        title:'Topic'
       });
 
+      // ✅ TOPICS
+      level.courseLevelTopics?.forEach((topic:any)=>{
+        this.displayList.push({
+          type:'TOPIC',
+          title:topic.topic,
+          topicId:topic.topicId
+        });
+      });
+
+      // ✅ ASSIGNMENT HEADER
+      if(level.courseLevelAssignmentTopics?.length){
+
+        this.displayList.push({
+          type:'ASSIGNMENT_HEADER',
+          title:'Assignment Topics'
+        });
+
+        level.courseLevelAssignmentTopics.forEach((a:any)=>{
+          this.displayList.push({
+            type:'ASSIGNMENT_TOPIC',
+            title:a.topic,
+            topicId:a.topicId
+          });
+        });
+
+      }
+
+    });
+
+    // ❗ If no data after loop
+    if (this.displayList.length === 0) {
+      this.noTopicsMessage = "No Topics Available";
     }
 
+  } 
+  else if (res.errorCode == '202') {
+
+    // ❌ No courses allocated
+    this.displayList = [];
+    this.noTopicsMessage = res.errorMessage;
+
+  } 
+  else {
+
+    // ⚠️ Other errors
+    this.displayList = [];
+    this.noTopicsMessage = "Something went wrong";
+
   }
+
+  // 🔍 Debug
+  console.log("Final displayList:", this.displayList);
+  console.log("Final message:", this.noTopicsMessage);
+}
 
   openPractice(item:any){
 

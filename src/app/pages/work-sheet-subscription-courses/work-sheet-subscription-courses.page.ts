@@ -73,9 +73,9 @@ studentId: string = '';
 
   const name = type.toLowerCase();
 
-  if (name.includes('junior')) return 'assets/abacusjunior.png';
-  if (name.includes('senior')) return 'assets/abacussenior.png';
-  if (name.includes('vedic')) return 'assets/vedicmaths.png';
+  if (name.includes('junior')) return 'assets/abacusjunior.jpg';
+  if (name.includes('senior')) return 'assets/abacussenior.jpg';
+  if (name.includes('vedic')) return 'assets/vedicmaths.jpg';
 
   return 'assets/abacus_logo.png';
 }

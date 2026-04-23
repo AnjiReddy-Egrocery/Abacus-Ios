@@ -43,7 +43,7 @@ export class WorksheetPurchasedListViewPracticesPage implements OnInit {
       this.loading = false;
 
       if (res.errorCode === '200' && res.result?.practicesList?.length) {
-        this.practices = res.result.practicesList;
+        this.practices = res.result.practicesList.reverse();
       } else if (res.errorCode === '202') {
         this.practices = [];
         const toast = await this.toastCtrl.create({

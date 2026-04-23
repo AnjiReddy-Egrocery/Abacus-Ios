@@ -48,7 +48,7 @@
   <ion-checkbox
     slot="start"
     [(ngModel)]="level.selected"
-    (ionChange)="calculateTotal()">
+    (ionChange)="onLevelChange(level, $event)">
   </ion-checkbox>
     <ion-label>
       {{ level.courseLevel }}

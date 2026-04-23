@@ -12,36 +12,58 @@ export class CartApiService {
   constructor() {}
 
   async addToCart(
-    worksheetRnm: string,
-    courseTypeId: string,
-    courseLevelId: string,
-    durationId: string
-  ) {
-    const body = new URLSearchParams();
-    body.append('worksheetRnm', worksheetRnm);
-    body.append('courseTypeId', courseTypeId);
-    body.append('courseLevelId', courseLevelId);
-    body.append('durationId', durationId);
+  worksheetRnm: string,
+  courseTypeId: string,
+  courseLevelId: string,
+  durationId: string
+) {
 
+  console.log('Sending to API:', {
+    worksheetRnm,
+    courseTypeId,
+    courseLevelId,
+    durationId
+  });
+
+  try {
     const response = await CapacitorHttp.request({
       method: 'POST',
       url: this.baseUrl + 'worksheetAddToCart',
-      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-      data: body.toString(),
+
+      // 🔥 IMPORTANT CHANGE
+      headers: {
+        'Content-Type': 'application/json'
+      },
+
+      data: {
+        worksheetRnm: worksheetRnm,
+        courseTypeId: courseTypeId,
+        courseLevelId: courseLevelId,
+        durationId: durationId
+      }
     });
 
+    console.log('RAW RESPONSE:', response);
+
     let data: any = response.data;
+
     if (typeof data === 'string') data = JSON.parse(data);
     if (typeof data.data === 'string') data = JSON.parse(data.data);
 
     console.log('ADD CART RESPONSE:', data);
-    return data;
-  }
 
-  async getCartList(workSheetRnm: string, studentId: string) {
+    return data;
+
+  } catch (error) {
+    console.error('ADD CART ERROR:', error);
+    throw error;
+  }
+}
+
+  async getCartList(workSheetRnm: string) {
     const body = new URLSearchParams();
     body.append('worksheetRnm', workSheetRnm);
-    body.append('studentId', studentId);
+   
 
     try {
       const response = await CapacitorHttp.request({

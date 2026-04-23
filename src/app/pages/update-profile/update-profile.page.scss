@@ -2,6 +2,11 @@
   padding: 16px;
 }
 
+.custom-header{
+  --background:#4e148c;
+}
+
+
 .image-wrapper {
   display: flex;
   justify-content: center;
@@ -12,6 +17,76 @@
   width: 200px;
   height: 200px;
   border-radius: 50%;
+}
+
+.ios-header{
+  display:flex;
+  align-items:center;
+  padding-left:12px;
+  padding-right:12px;
+
+  padding-top:0px;   /* safe-area remove */
+  padding-bottom:12px;
+}
+
+
+.back-circle {
+  width: 34px;
+  height: 34px;
+  background: #ffffff;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.back-circle ion-icon{
+  font-size:18px;
+  color:#4e148c;
+}
+
+
+
+.main-container {
+  padding: 12px;
+}
+
+/* Header */
+.header {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  padding: 20px;
+  color: #fff;
+ 
+}
+
+.back-circle {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 10px;
+ 
+}
+
+.header h1 {
+  font-size: 26px;
+  font-weight: bold;
+  
+}
+.ionic-header {
+  display: flex;
+  align-items: center;
+  margin-left: 12px;
+  margin-right: 12px;
+  
+  
+  
 }
 
 ion-input {

@@ -14,74 +14,57 @@ import { WorksheetListServices } from 'src/app/services/worksheet-list-services'
   styleUrls: ['./worksheet-purchased-list.page.scss'],
 })
 export class WorksheetPurchasedListPage implements OnInit {
-studentId:any;
- 
-
-  levels:any[]=[];
-  emptyMessage="";
+studentId: any;
+  levels: any[] = [];
+  headerName = "";
+  orderId = "";
 
   constructor(
-    private route:ActivatedRoute,
-    private router:Router,
-    private service:WorksheetListServices,
-     private menu: MenuController,
-  ){}
+    private route: ActivatedRoute,
+    private router: Router,
+    private menu: MenuController
+  ) {}
 
-ngOnInit(){
+  ngOnInit() {
 
-  this.route.queryParams.subscribe(params=>{
+    this.route.queryParams.subscribe(params => {
 
-    this.studentId = params['studentId'];
+      this.studentId = params['studentId'];
+      this.headerName = params['headerName'];
+      this.orderId = params['orderId'];
 
-    console.log("Received StudentId:",this.studentId);
+      const levelsData = params['levels'];
 
-    this.loadCourses(this.studentId);
+      console.log("Received Params:", params);
 
-  });
+      if (levelsData) {
+        this.levels = JSON.parse(levelsData); // ✅ like Gson parsing
+      }
 
-}
-async loadCourses(studentId:any){
-
-  try{
-
-    const res = await this.service.getCoursesList(studentId);
-
-    console.log("COURSE RESPONSE",res);
-
-    if(res.errorCode=="200"){
-
-      this.levels = res.result.courseLevels;
-
-      console.log("TOTAL LEVELS:",this.levels.length);
-
-    }else{
-
-      this.emptyMessage = res.message;
-
-    }
-
-  }catch(e){
-
-    console.log(e);
-    this.emptyMessage="Server error";
+    });
 
   }
 
-}
- async goHome() {
-       await this.menu.close();
-    this.router.navigate(['/worksheet-list']);
-  }
+  openLevel(item: any) {
 
-  openLevel(levelId:any){
-
-    this.router.navigate(['/worksheet-purchased-list-topic'],{
-      queryParams:{
-        studentId:this.studentId,
-        levelId:levelId
+    this.router.navigate(['/worksheet-purchased-list-topic'], {
+      queryParams: {
+        studentId: this.studentId,
+        levelId: item.courseLevelId,
+        levelName: item.courseLevel,
+        orderId: this.orderId
       }
     });
 
   }
 
+ async goHome() {
+  await this.menu.close();
+  this.router.navigate(['/worksheet-list'], {
+    queryParams: {
+      studentId: this.studentId,
+     
+    }
+  });
+}
 }

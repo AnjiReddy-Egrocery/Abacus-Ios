@@ -77,6 +77,7 @@
       <ion-col class="center-text">{{ q.answer }}</ion-col>
       <ion-col [ngClass]="getGivenClass(q)">
         {{ q.given || '-' }}
+        
       </ion-col>
       <ion-col class="center-text">{{ formatTime(q.time_taken ?? 0) }}</ion-col>
     </ion-row>

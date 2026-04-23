@@ -27,7 +27,7 @@
 
 <!-- Chart + Legend Side by Side -->
 <div class="chart-legend-wrapper">
-
+<h6 style="align-items: flex-start;"> Performance OverView</h6>
   <div class="chart-box">
     <canvas baseChart
       [data]="pieChartData"
@@ -72,10 +72,10 @@
     </ion-row>
 
     <ion-row *ngFor="let q of questionData">
-      <ion-col [innerHTML]="q.question"></ion-col>
+     <ion-col [innerHTML]="fixImagePath(q.question)"></ion-col>
       <ion-col class="center-text">{{ q.answer }}</ion-col>
        <!-- Given Answer with Color -->
-      <ion-col [ngClass]="getGivenClass(q)">
+      <ion-col  [ngClass]="getGivenClass(q)">
         {{ q.given || '-' }}
       </ion-col>
       <ion-col class="center-text">{{ formatTime(q.time_taken ?? 0) }}</ion-col>

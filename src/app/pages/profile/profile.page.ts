@@ -2,15 +2,17 @@ import { CommonModule } from '@angular/common';
 import { Component, CUSTOM_ELEMENTS_SCHEMA, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, NavigationEnd, Router } from '@angular/router';
-import { IonicModule } from '@ionic/angular';
+import { IonicModule, MenuController } from '@ionic/angular';
 import { User } from 'src/app/model/user.model';
 import { Auth } from 'src/app/services/auth';
 import { filter } from 'rxjs/operators';
+import { SchedulesPageModule } from '../schedules/schedules.module';
+import { SchedulesPage } from '../schedules/schedules.page';
 
 @Component({
   selector: 'app-profile',
    standalone: true,
-    imports: [IonicModule, FormsModule, CommonModule],
+    imports: [IonicModule, FormsModule, CommonModule, SchedulesPage ] ,
       schemas: [CUSTOM_ELEMENTS_SCHEMA],// ✅ ADD THIS LINE
   templateUrl: './profile.page.html',
   styleUrls: ['./profile.page.scss'],
@@ -18,10 +20,17 @@ import { filter } from 'rxjs/operators';
 export class ProfilePage implements OnInit {
 
     user: any = {};
+
+    studentId: string = '';
+
+selectedStudentId: string = '';
+
+
+
   imageBaseUrl = "https://www.abacustrainer.com/assets/student_images/";
 
   constructor(private authService: Auth,private router: Router, 
-  private route: ActivatedRoute) {}
+  private route: ActivatedRoute,private menuCtrl: MenuController ) {}
 
   async ngOnInit() {
     await this.loadUser();
@@ -47,7 +56,11 @@ export class ProfilePage implements OnInit {
 
       this.user.firstName = userData.name;
       this.user.lastName = '';
-      this.user.studentId = userData.studentId; 
+       this.user.studentId = userData.studentId;
+
+    // ✅ FIX: assign to main variable
+    this.studentId = userData.studentId;
+      this.selectedStudentId = this.studentId; // default value
 
     console.log("User Image (raw):", userData.image);
 
@@ -94,4 +107,43 @@ export class ProfilePage implements OnInit {
     }
   });
   }
+
+  ViewMoreAllocatedCourses(){
+   console.log("Using Hardcoded Student ID:", this.studentId);
+
+  this.menuCtrl.close('mainMenu');
+
+  this.router.navigate(['/allocatedcourses'], {
+    queryParams: {
+      studentId: this.studentId
+    }
+  });
+}
+
+ ViewMoreDetails(){
+    // this.studentId = "2251"; // ✅ Temporary hardcode ID
+      console.log("Using Hardcoded Student ID:", this.studentId);
+
+  this.menuCtrl.close('mainMenu');
+
+  this.router.navigate(['/worksheet-list'], {
+    queryParams: {
+      studentId: this.studentId
+    }
+  });
+  }
+
+  ViewMoreBatches() {
+    this.menuCtrl.close();
+
+  // 🔥 tell Dashboard to switch tab
+  this.router.navigate(['/dashboard'], {
+    queryParams: {
+      tab: 'schedules',
+      studentId: this.studentId
+    }
+  });
+  }
+
+    
 }

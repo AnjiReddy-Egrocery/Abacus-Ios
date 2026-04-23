@@ -17,6 +17,8 @@ export class WorksheetPurchasedListTopicPage implements OnInit {
 
   studentId:any;
   levelId:any;
+  orderId:any
+  levelName: any;
 
   topics:any[] = [];
   emptyMessage='';
@@ -33,23 +35,26 @@ constructor(
 
       this.studentId = params['studentId'];
       this.levelId = params['levelId'];
+      this.orderId = params['orderId'];
+      this.levelName = params['levelName'];   // ✅ ADD THIS
 
       console.log("StudentId:",this.studentId);
       console.log("LevelId:",this.levelId);
+      console.log("Orders", this.orderId)
 
-      this.loadTopics(this.studentId,this.levelId);
+      this.loadTopics(this.studentId,this.levelId,this.orderId);
 
     });
 
   }
 
-async loadTopics(studentId: any, levelId: any){
+async loadTopics(studentId: any, levelId: any, orderId: any){
 
   try{
 
    
 
-    const res:any = await this.service.getCourseLevelTopic(studentId,levelId);
+    const res:any = await this.service.getCourseLevelTopic(studentId,levelId,orderId);
 
     console.log("TOPIC RESPONSE",res);
 
@@ -114,7 +119,12 @@ visualization(topic:any){
 
   async goHome(){
     await this.menu.close();
-    this.router.navigate(['/worksheet-purchased-list']);
+  this.router.navigate(['/worksheet-list'], {
+    queryParams: {
+      studentId: this.studentId,
+     
+    }
+  });
 }
 
 }

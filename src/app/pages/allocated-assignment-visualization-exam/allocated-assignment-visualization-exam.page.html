@@ -66,7 +66,7 @@
       </div>
     </div>
 
- <div 
+   <div 
         *ngIf="displayText === 'Answer is'"
         class="repeat-container"
         [class.disabled]="isQuestionActive"
@@ -76,14 +76,29 @@
        
 
       </div>
-
     <!-- QUESTION -->
    <div class="question-box">
 
- 
+  <!-- IMAGE -->
+  <!-- <img
+    *ngIf="getQuestionImage(currentQuestion)"
+    [src]="getQuestionImage(currentQuestion)"
+    class="question-image"
+  />
 
+   TEXT -->
+  <!-- <div *ngIf="getQuestionText(currentQuestion)" class="question-text">
+    <div *ngFor="let part of splitQuestion(currentQuestion)">
+      {{ part }}
+    </div>
+
+
+  </div> --> 
+
+
+   
   <!-- TEXT -->
-   {{ displayText }}
+    {{ displayText }}
 
 </div>
 
@@ -94,12 +109,12 @@
       <span>Ans :</span>
 
       <ion-input
-      #answerInput
+       #answerInput
         type="number"
         [(ngModel)]="answer"
         (ionInput)="onAnswerChange($event)"
         class="answer-input"
-         [disabled]="!isButtonsEnabled">
+        [disabled]="!isButtonsEnabled">
       </ion-input>
 
     </div>
@@ -113,6 +128,7 @@
    <div class="bottom-buttons">
 
   <div class="prev-btn" (click)="prevQuestion()">
+    
     <ion-icon name="play-back-outline"></ion-icon>
     PREV
   </div>
@@ -127,5 +143,6 @@
 <div class="submit-btn" (click)="submitExam()">
   Submit Exam
 </div>
+
 
 </ion-content>

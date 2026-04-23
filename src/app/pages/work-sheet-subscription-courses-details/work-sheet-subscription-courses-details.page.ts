@@ -142,9 +142,8 @@ studentId = '';
 async selectDuration(durationId: string) {
   this.selectedDurationId = durationId;
 
-  // Reset selections whenever duration changes
-  this.levels.forEach(level => level.selected = false);
-
+ 
+localStorage.setItem(`duration_${this.courseTypeId}`, durationId);
   // Fetch prices for all levels in parallel
   await Promise.all(
     this.levels.map(async (level) => {
@@ -173,6 +172,36 @@ toggleLevel(level: CourseLevel) {
 
   // Recalculate total
   this.calculateTotal();
+}
+
+onLevelChange(level: CourseLevel, event: any) {
+
+  // ❌ Duration not selected
+  if (!this.selectedDurationId) {
+
+    // 🔁 revert checkbox
+    event.target.checked = false;
+
+    // 🔔 show alert (same like Android Toast)
+    this.showAlert('Please Select Subscription Duration');
+
+    return;
+  }
+
+  // ✅ allow selection
+  level.selected = event.detail.checked;
+
+  this.calculateTotal();
+
+   // ✅ SAVE selected levels
+  const selectedIds = this.levels
+    .filter(l => l.selected)
+    .map(l => l.courseLevelId);
+
+  localStorage.setItem(
+    `levels_${this.courseTypeId}`,
+    JSON.stringify(selectedIds)
+  );
 }
 
 calculateTotal() {

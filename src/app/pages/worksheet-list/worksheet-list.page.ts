@@ -39,15 +39,15 @@ async loadOrdersList(studentId: any) {
 
   try {
 
-    const res = await this.worksheetService.getWorkSheet(studentId);
+    const res = await this.worksheetService.getCoursesList(studentId);
 
     console.log("API RESPONSE:", res);
 
     if (res && res.errorCode === "200") {
 
-      if (res.result && res.result.courseTypes && res.result.courseTypes.length > 0) {
+      if (res.result && res.result.length > 0) {
 
-        this.levels = res.result.courseTypes;
+        this.levels = res.result;   // ✅ SAME AS ANDROID
         this.emptyMessage = "";
 
       } else {
@@ -82,16 +82,23 @@ async loadOrdersList(studentId: any) {
   }
 
 }
-  openPurchasedPage(){
 
-    this.navCtrl.navigateForward('/worksheet-purchased-list',{
-      queryParams:
-      { 
-        studentId:this.studentId 
-      }
-    });
+getLevelsText(levels: any[]): string {
+  if (!levels || levels.length === 0) return '';
+  return levels.map(l => l.courseLevel).join(', ');
+}
+  openPurchasedPage(item: any) {
 
-  }
+  this.navCtrl.navigateForward('/worksheet-purchased-list', {
+    queryParams: {
+      studentId: this.studentId,
+      headerName: item.courseType,
+      orderId: item.orderId,
+      levels: JSON.stringify(item.courseLevels)
+    }
+  });
+
+}
 
 
    async goHome() {

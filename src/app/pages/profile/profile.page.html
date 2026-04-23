@@ -1,67 +1,71 @@
 <ion-content class="ion-padding">
 
-  <!-- Edit Profile -->
-  <ion-button expand="block" fill="outline" color="primary" (click)="editProfile()">
-    Edit Profile
-  </ion-button>
+      <ion-button expand="block" fill="outline" color="primary" (click)="editProfile()">
+      Edit Profile
+    </ion-button>
 
-  <!-- Profile Card -->
-  <ion-card class="profile-card">
+    <div class="profile-container">
 
-    <ion-card-header class="ion-text-center">
+      <div class="profile-header ion-text-center">
+        <ion-avatar class="profile-avatar">
+          <img [src]="user.profilePic" (error)="onImageError($event)" />
+        </ion-avatar>
 
-      <!-- Profile Image -->
-      <ion-avatar class="profile-avatar">
-         <img 
-          [src]="user.profilePic" 
-          (error)="onImageError($event)" />
-      </ion-avatar>
+        <h2>
+          {{ user.firstName }} {{ user.lastName }}
+        </h2>
+      </div>
 
-      <!-- Name -->
-      <ion-card-title>
-        {{ user.firstName }} {{ user.lastName }}
-      </ion-card-title>
+      <div class="profile-content">
 
-      <ion-card-subtitle>
-        {{ user.level }}
-      </ion-card-subtitle>
+        <!-- Schedules -->
+        <div class="top-card">
+          <div class="next-class-text1">Schedules</div>
+        </div>
 
-    </ion-card-header>
+        <div class="subscription-card">
+          <div class="right-image">
+            <img src="../../../assets/users.png">
+          </div>
+          <div class="left-content">
+            <h3>Enrolled</h3>
+            <h4>Batches</h4>
+            <ion-button (click)="ViewMoreBatches()">View More Details</ion-button>
+          </div>
+        </div>
 
-    <ion-card-content>
+        <!-- Worksheets -->
+        <div class="top-card">
+          <div class="next-class-text1">Purchased WorkSheet Subscription List</div>
+        </div>
 
-      <!-- Progress -->
-      <ion-item lines="none">
-        <ion-label><h2>Progress Overview</h2></ion-label>
-      </ion-item>
+        <div class="subscription-card">
+          <div class="right-image">
+            <img src="../../../assets/book.png">
+          </div>
+          <div class="left-content">
+            <h3>Subscribed</h3>
+            <h4>Worksheets</h4>
+            <ion-button (click)="ViewMoreDetails()">View More Details</ion-button>
+          </div>
+        </div>
 
-      <ion-progress-bar [value]="user.progress/100"></ion-progress-bar>
-      <p class="progress-text">{{ user.progress }}%</p>
+        <!-- Courses -->
+        <div class="top-card">
+          <div class="next-class-text1">Courses</div>
+        </div>
 
-      <!-- Achievements -->
-      <ion-item lines="none">
-        <ion-label><h2>Achievements</h2></ion-label>
-      </ion-item>
+        <div class="subscription-card">
+          <div class="right-image">
+            <img src="../../../assets/list.png">
+          </div>
+          <div class="left-content">
+            <h3>Allocated</h3>
+            <h4>Courses</h4>
+            <ion-button (click)="ViewMoreAllocatedCourses()">View More Details</ion-button>
+          </div>
+        </div>
 
-      <ion-chip *ngFor="let ach of user.achievements">
-        <ion-label>{{ ach }}</ion-label>
-      </ion-chip>
-
-      <!-- Activity -->
-      <ion-item lines="none">
-        <ion-label><h2>Recent Activity</h2></ion-label>
-      </ion-item>
-
-      <ion-list>
-        <ion-item *ngFor="let act of user.recentActivity">
-          <ion-label>
-            <strong>{{ act.label }}:</strong> {{ act.value }}
-          </ion-label>
-        </ion-item>
-      </ion-list>
-
-    </ion-card-content>
-
-  </ion-card>
-
-</ion-content>
+      </div>
+    </div>
+  </ion-content>

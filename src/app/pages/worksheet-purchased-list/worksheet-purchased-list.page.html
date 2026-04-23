@@ -6,8 +6,8 @@
       <ion-icon name="arrow-back-outline"></ion-icon>
     </div>
 
-    <div class="header-title" style="padding-left: 12px;">
-       Courses Levels
+    <div class="header-title" style="padding-left: 12px; color: white;">
+      <ion-title>{{ headerName }}</ion-title>
     </div>
 
   </div>
@@ -18,8 +18,7 @@
 <ion-content>
 
   <ion-card *ngFor="let item of levels"
-  (click)="openLevel(item.courseLevelId)">
-
+            (click)="openLevel(item)">
     <div class="level-card">
 
       <h2>{{item.courseLevel}}</h2>
@@ -31,7 +30,7 @@
 
   <div *ngIf="levels.length==0">
 
-    <p class="empty">{{emptyMessage}}</p>
+      <p class="empty">No Levels Available</p>
 
   </div>
 

@@ -64,6 +64,7 @@ async loginUser(email: string, password: string) {
  
 async register(
   firstName: string,
+  middleName: string,
   lastName: string,
   gender: string,
   dateOfBirth: string,
@@ -75,7 +76,7 @@ async register(
   const body = new URLSearchParams();
 
   body.append('firstName', firstName);
-  body.append('middleName', '');
+  body.append('middleName', middleName);
   body.append('lastName', lastName);
   body.append('emailId', email);
   body.append('mobileNumber', mobile);

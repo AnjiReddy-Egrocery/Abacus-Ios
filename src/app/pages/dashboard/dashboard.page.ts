@@ -1,7 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { Component, CUSTOM_ELEMENTS_SCHEMA, OnInit, ViewChild } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { AlertController, IonicModule, IonMenu, MenuController, ToastController } from '@ionic/angular';
 import { User } from 'src/app/model/user.model';
 import { Auth } from 'src/app/services/auth';
@@ -38,13 +38,25 @@ userImage: string = 'assets/headerprofile.png';
   
    activeTab: string = 'home'; 
   constructor(private authService: Auth,private menuCtrl: MenuController,private router: Router, private storage: Storageservices,
-    private toastController: ToastController, private alertController: AlertController,
+    private toastController: ToastController, private alertController: AlertController, private route: ActivatedRoute,
   private batchService: BatchDetailServices) {}
 
   
   async ionViewWillEnter() {
   await this.loadUser();
-  this.selectedStudentId = this.studentId; // default value
+  this.route.queryParams.subscribe(params => {
+
+    if (params['tab']) {
+      this.activeTab = params['tab'];   // 🔥 profile tab activate
+    }
+
+    if (params['studentId']) {
+      this.selectedStudentId = params['studentId'];
+    } else {
+      this.selectedStudentId = this.studentId;
+    }
+
+  });
    this.loadBatchDetails(this.studentId); 
 }
 

@@ -16,6 +16,7 @@
   </div>
 
 
+
   <!-- QUESTION STEPS -->
   <div class="step-container">
 
@@ -67,12 +68,21 @@
     </div>
 
 
+   <div 
+        *ngIf="displayText === 'Answer is'"
+        class="repeat-container"
+        [class.disabled]="isQuestionActive"
+        (click)="repeatQuestion()">
+        <span class="repeat-text">Repeat</span>
+        <ion-icon name="refresh-outline" class="repeat-icon"></ion-icon>
+       
+
+      </div>
     <!-- QUESTION -->
     <div class="question-box">
 
-    
+<!--     
 
-  <!-- TEXT QUESTION -->
   <div
     *ngIf="!getQuestionImage(currentQuestion)"
     class="question-text"
@@ -80,7 +90,9 @@
     <div *ngFor="let part of splitQuestion(currentQuestion)">
     {{ part }}
   </div>
-  </div>
+  </div> -->
+
+   {{ displayText }}
 
     </div>
 
@@ -91,6 +103,7 @@
       <span>Ans :</span>
 
       <ion-input
+       #answerInput
         type="number"
         [(ngModel)]="answer"
         (ionInput)="onAnswerChange($event)"

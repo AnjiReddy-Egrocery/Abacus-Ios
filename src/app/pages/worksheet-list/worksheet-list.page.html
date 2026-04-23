@@ -6,8 +6,8 @@
       <ion-icon name="arrow-back-outline"></ion-icon>
     </div>
 
-    <div class="header-title" style="padding-left: 12px;">
-       Orders
+    <div class="header-title" style="padding-left: 12px; color: white;">
+       WorkSheet Subscriptions
     </div>
 
   </div>
@@ -23,7 +23,7 @@
   <!-- Order List -->
   <div *ngIf="levels.length > 0">
 
-    <ion-card *ngFor="let item of levels" (click)="openPurchasedPage()">
+    <ion-card *ngFor="let item of levels" (click)="openPurchasedPage(item)">
 
       <div class="order-card">
 
@@ -32,15 +32,15 @@
 
           <img
           *ngIf="item.courseType?.toLowerCase().includes('abacus junior')"
-          src="../../../assets/abacusjunior.png">
+          src="../../../assets/abacusjunior.jpg">
 
           <img
           *ngIf="item.courseType?.toLowerCase().includes('abacus senior')"
-          src="../../../assets/abacussenior.png">
+          src="../../../assets/abacussenior.jpg">
 
           <img
           *ngIf="item.courseType?.toLowerCase().includes('vedic maths')"
-          src="../../../assets/vedicmaths.png">
+          src="../../../assets/vedicmaths.jpg">
 
         </div>
 
@@ -50,8 +50,8 @@
           <h2>{{item.courseType}}</h2>
 
           <p>
-            Master mental math with ancient techniques
-          </p>
+      {{ getLevelsText(item.courseLevels) }}
+    </p>
 
         </div>
 

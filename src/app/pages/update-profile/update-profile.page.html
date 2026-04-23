@@ -1,10 +1,20 @@
-<ion-header>
-  <ion-toolbar>
-    <ion-title>Update Profile</ion-title>
-  </ion-toolbar>
+<ion-header class="custom-header">
+   <ion-toolbar style="--background:#4e148c; color:white;">
+  <div class="ios-header">
+
+    <div class="back-circle" (click)="goHome()" style="background-color: white;">
+      <ion-icon name="arrow-back-outline"></ion-icon>
+    </div>
+
+    <div class="header-title" style="color: white;">
+      Update Profile
+    </div>
+
+  </div>
+   </ion-toolbar>
 </ion-header>
 
-<ion-content>
+<ion-content fullscreen>
 
   <div class="container">
 

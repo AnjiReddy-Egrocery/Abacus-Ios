@@ -3,8 +3,9 @@ import { Component, CUSTOM_ELEMENTS_SCHEMA, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { IonicModule, MenuController } from '@ionic/angular';
-import {  Chart,ChartConfiguration, ChartType, Plugin } from 'chart.js';
+import { Chart,ChartConfiguration, ChartType, Plugin } from 'chart.js';
 import { BaseChartDirective } from 'ng2-charts';
+import ChartDataLabels from 'chartjs-plugin-datalabels';
 import { ViewTopicResultServices } from 'src/app/services/view-topic-result-services';
 
 
@@ -76,6 +77,11 @@ const connectorLinePlugin: Plugin<'doughnut'> = {
     });
   }
 };
+
+
+// ✅ REGISTER PLUGINS
+// ✅ REGISTER PLUGINS
+Chart.register(ChartDataLabels);
 
 @Component({
   selector: 'app-allocated-assignment-view-result-practices',
@@ -240,6 +246,7 @@ async loadResult(examRnm: any) {
 
 }
 
+
 fixImagePath(html: string): string {
   if (!html) return '';
 
@@ -297,7 +304,7 @@ fixImagePath(html: string): string {
 
   const formatted = now.toLocaleString('en-US', options);
 
-  // replace comma format to match Android style
+
   return formatted.replace(',', ' |');
 }
 }

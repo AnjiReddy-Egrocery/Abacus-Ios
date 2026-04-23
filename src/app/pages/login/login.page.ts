@@ -27,6 +27,7 @@ export class LoginPage {
   password = '';
 
   firstName = '';
+  middleName = '';
   lastName = '';
   dob = '';
   motherTongue = '';
@@ -160,6 +161,7 @@ async registerUser() {
 
 
   if (!this.firstName) return;
+  if( ! this.middleName) return;
   if (!this.lastName) return;
   if (!this.gender) return;
    
@@ -177,6 +179,7 @@ async registerUser() {
 
     const rawRes = await this.loginService.register(
       this.firstName,
+      this.middleName,
       this.lastName,
       this.gender,
       formattedDob,

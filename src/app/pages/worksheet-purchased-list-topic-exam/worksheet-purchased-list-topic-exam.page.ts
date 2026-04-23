@@ -2,7 +2,7 @@ import { CommonModule } from '@angular/common';
 import { Component, CUSTOM_ELEMENTS_SCHEMA, ElementRef, OnInit, QueryList, ViewChild, ViewChildren } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { AlertController, IonicModule, NavController, ToastController } from '@ionic/angular';
+import { AlertController, IonicModule, MenuController, NavController, ToastController } from '@ionic/angular';
 
 import { WorksheetPurchasedListToopicExamServices } from 'src/app/services/worksheet-purchased-list-toopic-exam-services';
 
@@ -45,6 +45,7 @@ questionTimes:number[]=[];
 
 constructor(
 private route:ActivatedRoute,
+ private menu: MenuController,
 private examService:WorksheetPurchasedListToopicExamServices,
 private alertController: AlertController,
 private router: Router 
@@ -102,8 +103,32 @@ getQuestionImage(question: string): string | null {
 if (!question) return null;
 
   const match = question.match(/<img[^>]+src="([^">]+)"/);
-  return match ? match[1] : null;
+  if (!match) return null;
+
+  let imgPath = match[1];
+  console.log("RAW PATH:", imgPath);
+
+ if (imgPath.startsWith('http')) {
+    console.log("FINAL URL:", imgPath);
+    return imgPath;
+  }
+
+  // ✅ Case 2: Relative path → clean it
+  imgPath = imgPath.replace(/\.\.\.\//g, '');
+
+
+
+  // ✅ Remove "assets/" (optional but safe)
+  imgPath = imgPath.replace(/^assets\//, '');
+
+
+  const finalUrl = 'https://www.abacustrainer.com/' + imgPath;
+
+  console.log("FINAL URL:", finalUrl);
+
+  return finalUrl;
 }
+
 getQuestionText(question: string): string {
   if (!question) return '';
 
@@ -168,8 +193,14 @@ await alert.present();
 }
   
 
-goBack() {
-  window.history.back();
+  async goBack() {
+  await this.menu.close();
+  this.router.navigate(['/worksheet-list'], {
+    queryParams: {
+      studentId: this.studentId,
+     
+    }
+  });
 }
 
 prevQuestion(){

@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Component, CUSTOM_ELEMENTS_SCHEMA, OnInit } from '@angular/core';
-import { AlertController, IonicModule } from '@ionic/angular';
+import { AlertController, IonicModule, MenuController } from '@ionic/angular';
 import { Camera, CameraResultType, CameraSource } from '@capacitor/camera';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
@@ -40,7 +40,8 @@ studentId: any;
     private studentService: Student,
     private route: ActivatedRoute,
     private router: Router,
-     private authService: Auth 
+     private authService: Auth,
+     private menu: MenuController
   ) {}
 
   ngOnInit() {
@@ -327,6 +328,15 @@ fileToBase64(file: File): Promise<string> {
     };
     reader.onerror = (error) => reject(error);
     reader.readAsDataURL(file);
+  });
+}
+ async goHome() {
+      await this.menu.close();
+
+  this.router.navigate(['/dashboard'], {
+    queryParams: {
+      tab: 'profile'
+    }
   });
 }
 }

@@ -46,9 +46,11 @@ questionTimes:number[]=[];
 
 stopTTS = false;
 
- displayText: string = '';
+ // 🔥 NEW
+  displayText: string = '';
   isQuestionActive = false;
   isButtonsEnabled = false;
+
 
 constructor(
 private route:ActivatedRoute,
@@ -83,7 +85,7 @@ console.log("EXAM API:",res);
 if(res.errorCode=='200'){
 
 this.practiceId=res.result.practiceId;
-this.examRnm=res.result.examRnm;
+this.examRnm = res.result.examRnm;
 
 let questionData = res.result.questionsList;
 
@@ -109,7 +111,9 @@ this.startTimer();
 }
 getQuestionImage(question: string): string | null {
 
-  
+  // if (!question) return null;
+
+  // const match = question.match(/<img[^>]+src="([^">]+)"/);
 
   return null;
 }
@@ -128,16 +132,15 @@ getQuestionText(question: string): string {
 get currentQuestion(){
 return this.questions[this.currentIndex]?.question;
 }
-
 handleQuestionDisplay() {
 
     const question = this.currentQuestion;
     if (!question) return;
 
     // if image → skip TTS
-    if (/<img[^>]+src="([^">]+)"/.test(question)) {
+      if (/<img[^>]+src="([^">]+)"/.test(question)) {
 
-    this.displayText = 'Beads question not available for visualization practice.';
+     this.displayText = 'Beads question not available for visualization practice.';
 
     this.isQuestionActive = false;
     this.isButtonsEnabled = false;
@@ -149,18 +152,15 @@ handleQuestionDisplay() {
       this.goBack();
     }, 3000);
 
-
-    return; // 🔥 stop further execution
+    return; // stop
   }
-
-
     const text = this.getQuestionText(question);
     const elements = text.split(/\s+/);
 
     this.speakAndDisplayOneByOne();
   }
 
-  async showImageAlert() {
+   async showImageAlert() {
   this.displayText = 'Beads question not available for visualization practice.';
   this.isQuestionActive = true;
   this.isButtonsEnabled = false;
@@ -181,20 +181,32 @@ handleQuestionDisplay() {
   this.goBack();
 }
 
+  focusAnswerInput() {
+  setTimeout(() => {
+    if (this.answerInput) {
+      this.answerInput.setFocus(); // ✅ focus
+    }
+  }, 300);
+}
+
+
   async speakAndDisplayOneByOne() {
 
      const question = this.currentQuestion;
   if (!question) return;
- this.stopTTS = false; // ✅ RESET FLAG
+
+    this.stopTTS = false; // ✅ RESET FLAG
 
   this.isQuestionActive = true;
   this.isButtonsEnabled = false;
-    const elements = this.splitQuestion(question);
+  const elements = this.splitQuestion(question);
   this.displayText = '';
 
   for (let i = 0; i < elements.length; i++) {
 
-     let clean = elements[i].trim();
+     if (this.stopTTS) return; // 🛑 STOP IMMEDIATELY
+
+    let clean = elements[i].trim();
     if (!clean) continue;
 
     let speakText = '';
@@ -232,9 +244,7 @@ handleQuestionDisplay() {
     await this.delay(1000);
 
     // ❌ CLEAR (this is the key fix)
-    this.displayText = '';
 
-    await this.delay(300); // small gap before next number
   }
 
   // ✅ FINAL
@@ -247,21 +257,13 @@ handleQuestionDisplay() {
 
   this.isButtonsEnabled = true;
   this.isQuestionActive = false;
-    this.focusAnswerInput();
+   this.focusAnswerInput();
   this.startQuestionTimer();
   }
 
   delay(ms: number) {
     return new Promise(resolve => setTimeout(resolve, ms));
   }
-
-  focusAnswerInput() {
-  setTimeout(() => {
-    if (this.answerInput) {
-      this.answerInput.setFocus(); // ✅ focus
-    }
-  }, 300);
-}
 
 nextQuestion() {
    if (this.isQuestionActive) return;
@@ -278,8 +280,7 @@ nextQuestion() {
      this.updateQuestionTimeUI();
     this.currentIndex++;
     this.answer = this.answers[this.currentIndex] || '';
-   // this.startQuestionTimer();
-setTimeout(() => {
+     setTimeout(() => {
         this.scrollToActiveStep();
         this.handleQuestionDisplay();
       }, 50);
@@ -294,7 +295,7 @@ setTimeout(() => {
   }
 }
   async showCompletionPopup() {
-    this.questionTimes[this.currentIndex] = this.questionSeconds;
+   this.questionTimes[this.currentIndex] = this.questionSeconds;
 
   const alert = await this.alertController.create({
     header: 'www.abacustrainer.com',
@@ -314,14 +315,28 @@ setTimeout(() => {
   });
 
 await alert.present();
+}
+  
+
+  async goBack() {
+ this.stopTTS = true; // ✅ STOP LOOP
+
+  try {
+    await TextToSpeech.stop();
+  } catch (e) {
+    console.log('TTS stop error:', e);
   }
 
-goBack() {
+  clearInterval(this.timerInterval);
+  clearInterval(this.questionTimerInterval);
+
+  this.isQuestionActive = false;
+
   window.history.back();
 }
 
 prevQuestion(){
- if (this.isQuestionActive) return;
+if (this.isQuestionActive) return;
 this.answers[this.currentIndex] = this.answer;
   this.isAnswered[this.currentIndex] = this.answer.trim() !== '';
 
@@ -330,33 +345,31 @@ this.answers[this.currentIndex] = this.answer;
 
   if (this.currentIndex > 0) {
     this.currentIndex--;
-      clearInterval(this.questionTimerInterval);
+     clearInterval(this.questionTimerInterval);
     this.questionSeconds = 0;
      this.updateQuestionTimeUI();
     this.answer = this.answers[this.currentIndex] || '';
    // this.startQuestionTimer();
 
-    setTimeout(() => {
+   setTimeout(() => {
         this.scrollToActiveStep();
         this.handleQuestionDisplay();
-      }, 200);
+      }, 50);
   }
 }
 
 goToQuestion(i:number){
-
-   if (this.isQuestionActive) return;
+if (this.isQuestionActive) return;
 this.answers[this.currentIndex] = this.answer;
 this.isAnswered[this.currentIndex] = this.answer.trim() !== '';
 
 this.currentIndex = i;
-  
-     this.updateQuestionTimeUI();
+this.updateQuestionTimeUI();
 this.answer = this.answers[i] || '';
 
 //this.startQuestionTimer();
 
-setTimeout(() => {
+ setTimeout(() => {
       this.scrollToActiveStep();
       this.handleQuestionDisplay();
     }, 50);
@@ -433,12 +446,11 @@ block:'nearest'
 }
 
 onAnswerChange(event:any){
-  if (this.isQuestionActive) return;
+   if (this.isQuestionActive) return;
 this.answer = event.target.value ? event.target.value.toString() : '';
 }
 
   async submitExam(){
-    if (this.isQuestionActive) return;
 this.answers[this.currentIndex] = this.answer;
 this.isAnswered[this.currentIndex] = this.answer.trim() !== '';
 this.questionTimes[this.currentIndex] = this.questionSeconds;
@@ -463,7 +475,7 @@ this.questionTimes[this.currentIndex] = this.questionSeconds;
 await alert.present();
 }
   async submitExamData() {
-      const questionData = this.questions.map((q, i) => {
+       const questionData = this.questions.map((q, i) => {
 
     const given = (this.answers[i] || '').trim();
     const correct = (q.answer || q.correctAnswer || '').trim();
@@ -479,7 +491,7 @@ await alert.present();
 
   });
   try {
-    const res = await this.examService.submitAllocatedAssignmentExam(this.practiceId, questionData);
+    const res = await this.examService.submitAllocatedAssignmentExam(this.examRnm, questionData);
     console.log('Submission response:', res);
 
     if (res.errorCode === '200') {
@@ -505,7 +517,7 @@ await alert.present();
   console.log("questionData:", questionData);
 
   
-    this.router.navigate(['/allocated-assignment-visualization-result-page'], {
+    this.router.navigate(['/allocated-assignment-exam-result-page'], {
       state: {
         topicName: this.topicName,
         totalTime: this.totalTime,
@@ -531,7 +543,8 @@ repeatQuestion() {
 }
 
 splitQuestion(q: string): string[] {
-const tokens = q.match(/[+-]?\d+/g) || [];
+  // 👉 split into numbers and operators separately
+  const tokens = q.match(/[+-]?\d+/g) || [];
 
   const result: string[] = [];
 
@@ -550,4 +563,5 @@ const tokens = q.match(/[+-]?\d+/g) || [];
 
   return result;
 }
+
 }

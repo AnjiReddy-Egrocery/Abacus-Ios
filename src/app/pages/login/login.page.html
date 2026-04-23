@@ -76,6 +76,11 @@
         <input type="firstName" placeholder="First Name" [(ngModel)]="firstName">        
       </div>
       <p class="error" *ngIf="submitted && !firstName">First Name is required</p>
+        <label>Middle Name</label>
+       <div class="input-box">
+        <input type="middleName" placeholder="Middle Name" [(ngModel)]="middleName">        
+      </div>
+      <p class="error" *ngIf="submitted && !firstName">Middle Name is required</p>
        <label>Last Name</label>
        <div class="input-box">
         <input type="lastName" placeholder="Last Name" [(ngModel)]="lastName">
