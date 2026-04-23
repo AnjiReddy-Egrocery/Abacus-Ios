@@ -6,9 +6,12 @@ import { AlertController, IonicModule } from '@ionic/angular';
 import { CartApiService } from 'src/app/services/cart-api-service';
 import { CartMangerSewrvice } from 'src/app/services/cart-manger-sewrvice';
 export interface CartItem {
-  cartId: string;
-  courseLevel: string;
-  courseLevelPrice: string;
+   courseType: string;
+  levels: {
+    cartId: string;
+    courseLevel: string;
+    courseLevelPrice: string;
+  }[];
 }
 @Component({
   selector: 'app-cart-page',
@@ -24,6 +27,9 @@ export class CartPagePage implements OnInit {
   studentId: string = '';
   totalAmount: number = 0;
 
+  cartGroups: any[] = [];
+
+
   constructor(
     private route: ActivatedRoute,
     private router: Router,
@@ -34,27 +40,43 @@ export class CartPagePage implements OnInit {
 
   ngOnInit() {
     this.route.queryParams.subscribe(params => {
-      this.workSheetRnm = params['worksheetRnm'];
-      this.studentId = params['studentId'] || '';
-      this.totalAmount = Number(params['totalAmount'] || 0); // ⚡ read totalAmount from query params
-    console.log('Worksheet RNM:', this.workSheetRnm);
-    console.log('Student ID:', this.studentId);
-    console.log('Total Amount:', this.totalAmount);
-       this.loadCartList(this.workSheetRnm);
-    });
+    this.workSheetRnm = params['worksheetRnm'];
+    this.studentId = params['studentId'];
+
+    console.log("RNM:", this.workSheetRnm);
+    console.log("StudentId:", this.studentId);
+
+    this.loadCart();
+  });
   }
 
- async loadCartList(workSheetRnm: string) {
+ async loadCart() {
+
   try {
-    const res: any = await this.api.getCartList(workSheetRnm);
-    if (res && res.errorCode === '200') {
-      this.cartItems = res.result.courseLevels.map((l: any) => ({
-        cartId: l.cartId,
-        courseLevel: l.courseLevel,
-        courseLevelPrice: l.courseLevelPrice
-      }));
+
+    console.log("LOAD CART RNM:", this.workSheetRnm);
+
+    const res: any = await this.api.getCartList(this.workSheetRnm);
+
+    if (res?.errorCode === '200' && res.result?.length > 0) {
+
+      this.cartGroups = res.result;   // ✅ FULL RESPONSE STORE
+
+      // flatten for total calculation
+      this.cartItems = res.result.flatMap((g: any) =>
+        g.courseLevels.map((l: any) => ({
+          ...l,
+          courseType: g.courseType
+        }))
+      );
+
       this.recalculateTotal();
+
+    } else {
+      this.cartGroups = [];
+      this.cartItems = [];
     }
+
   } catch (err) {
     console.error(err);
   }
@@ -63,11 +85,22 @@ export class CartPagePage implements OnInit {
 async removeCartItem(cartId: string) {
   try {
     const res: any = await this.api.deleteCartItem(cartId);
-    if (res && res.errorCode === '200') {
-      this.cartItems = this.cartItems.filter(item => item.cartId !== cartId);
+
+    if (res?.errorCode === '200') {
+
+      this.cartGroups = this.cartGroups.map(group => {
+        return {
+          ...group,
+          courseLevels: group.courseLevels.filter(
+            (l: any) => l.cartId !== cartId
+          )
+        };
+      }).filter(g => g.courseLevels.length > 0);
+
       this.recalculateTotal();
       this.showAlert('Item removed from cart');
     }
+
   } catch (err) {
     console.error(err);
   }
@@ -118,11 +151,17 @@ async checkout() {
     console.error('Checkout Error:', err);
   }
 }
-  recalculateTotal() {
-    this.totalAmount = this.cartItems.reduce((sum, item) => {
-      return sum + Number(item.courseLevelPrice || 0);
-    }, 0);
-  }
+ recalculateTotal() {
+  let total = 0;
+
+  this.cartGroups.forEach(group => {
+    group.courseLevels.forEach((level: any) => {
+      total += Number(level.courseLevelPrice || 0);
+    });
+  });
+
+  this.totalAmount = total;
+}
 
 
   continueShopping() {

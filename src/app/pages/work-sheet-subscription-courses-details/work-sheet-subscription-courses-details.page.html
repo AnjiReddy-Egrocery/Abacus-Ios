@@ -48,10 +48,14 @@
   <ion-checkbox
     slot="start"
     [(ngModel)]="level.selected"
+     [disabled]="level.isSubscribed === true"
     (ionChange)="onLevelChange(level, $event)">
   </ion-checkbox>
-    <ion-label>
+    <ion-label [style.opacity]="level.isSubscribed ? 0.5 : 1">
       {{ level.courseLevel }}
+       <span *ngIf="level.isSubscribed" style="color:red; font-size:12px;">
+    (Subscribed)
+  </span>
     </ion-label>
 
     <!-- Price right -->
@@ -84,7 +88,7 @@
     Add To Cart
   </ion-button>
 
-  <ion-button (click)="viewCart()">
+  <ion-button >
     View Cart
   </ion-button>
 

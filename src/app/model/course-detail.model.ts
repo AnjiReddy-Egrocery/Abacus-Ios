@@ -30,6 +30,7 @@ export interface CourseLevel {
   courseLevelAmounts?: CourseLevelAmount[];
   price?: number;
   selected?: boolean;
+  isSubscribed?: boolean; // 🔥 ADD THIS
 }
 export interface CourseLevelAmount {
   durationId: string;

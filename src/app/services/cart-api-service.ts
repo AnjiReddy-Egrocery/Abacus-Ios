@@ -18,29 +18,24 @@ export class CartApiService {
   durationId: string
 ) {
 
-  console.log('Sending to API:', {
-    worksheetRnm,
-    courseTypeId,
-    courseLevelId,
-    durationId
-  });
+  const body = new URLSearchParams();
+  body.append('worksheetRnm', worksheetRnm);
+  body.append('courseTypeId', courseTypeId);
+  body.append('courseLevelId', courseLevelId);
+  body.append('durationId', durationId);
+
+  console.log('Sending to API:', body.toString());
 
   try {
     const response = await CapacitorHttp.request({
       method: 'POST',
       url: this.baseUrl + 'worksheetAddToCart',
 
-      // 🔥 IMPORTANT CHANGE
       headers: {
-        'Content-Type': 'application/json'
+        'Content-Type': 'application/x-www-form-urlencoded'
       },
 
-      data: {
-        worksheetRnm: worksheetRnm,
-        courseTypeId: courseTypeId,
-        courseLevelId: courseLevelId,
-        durationId: durationId
-      }
+      data: body.toString()
     });
 
     console.log('RAW RESPONSE:', response);
@@ -60,38 +55,48 @@ export class CartApiService {
   }
 }
 
-  async getCartList(workSheetRnm: string) {
-    const body = new URLSearchParams();
-    body.append('worksheetRnm', workSheetRnm);
-   
+async getCartList(workSheetRnm: string) {
 
+ 
+
+  const body = new URLSearchParams();
+  body.set('worksheetRnm', workSheetRnm);
+
+  const response = await CapacitorHttp.request({
+    method: 'POST',
+    url: this.baseUrl + 'worksheetCartList', // ✅ correct endpoint
+    headers: {
+      'Content-Type': 'application/x-www-form-urlencoded'
+    },
+    data: body.toString()
+  });
+
+  console.log("RAW RESPONSE:", response);
+
+  let data: any = response.data;
+
+  // safe parsing (PHP sometimes returns string inside string)
+  if (typeof data === 'string') {
     try {
-      const response = await CapacitorHttp.request({
-        method: 'POST',
-        url: this.baseUrl + 'worksheetCartList',
-        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-        data: body.toString()
-      });
-
-      console.log('RAW CART RESPONSE:', response);
-
-      let data: any = response.data;
-
-      // Convert string → JSON if needed
-      if (typeof data === 'string') data = JSON.parse(data);
-
-      // Nested JSON check
-      if (typeof data.data === 'string') data = JSON.parse(data.data);
-
-      console.log('FINAL CART DATA:', data);
-
-      return data;
-
-    } catch (error) {
-      console.error('Cart List API Error:', error);
-      throw error;
+      data = JSON.parse(data);
+    } catch (e) {
+      console.error("JSON parse error:", e);
     }
   }
+
+  if (data?.data && typeof data.data === 'string') {
+    try {
+      data = JSON.parse(data.data);
+    } catch (e) {
+      console.error("Nested JSON parse error:", e);
+    }
+  }
+
+  console.log("CART RESPONSE:", data);
+
+  return data;
+}
+
 
   async deleteCartItem(cartId: string) {
     const body = new URLSearchParams();

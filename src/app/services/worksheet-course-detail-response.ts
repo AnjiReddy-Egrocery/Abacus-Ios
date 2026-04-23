@@ -99,4 +99,31 @@ export class WorksheetCourseDetailResponse {
 
 }
 
+async getSubscribedLevels(studentId: string): Promise<any> {
+
+  const body = new URLSearchParams();
+  body.append('studentId', studentId);
+
+  const response = await CapacitorHttp.request({
+    method: 'POST',
+    url: 'https://www.abacustrainer.com/apicalls/Index/getStudentSubscribedCourseLevels',
+    headers: {
+      'Content-Type': 'application/x-www-form-urlencoded'
+    },
+    data: body.toString()
+  });
+
+  let data = response.data;
+
+  if (typeof data === 'string') {
+    data = JSON.parse(data);
+  }
+
+  if (typeof data.data === 'string') {
+    data = JSON.parse(data.data);
+  }
+
+  return data;
+}
+
 }

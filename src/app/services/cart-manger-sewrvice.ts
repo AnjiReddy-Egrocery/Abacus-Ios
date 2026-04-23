@@ -11,6 +11,7 @@ export interface CourseLevel {
   providedIn: 'root',
 })
 export class CartMangerSewrvice {
+  
    private readonly STORAGE_KEY_RNM = 'worksheet_rnm';
   private readonly STORAGE_KEY_DURATION = 'selected_duration_';
   private readonly STORAGE_KEY_LEVELS = 'selected_levels_';
@@ -19,17 +20,27 @@ export class CartMangerSewrvice {
 
   // Generate or get existing worksheet RNM
   getWorksheetRnm(): string {
+
     let rnm = localStorage.getItem(this.STORAGE_KEY_RNM);
-    if (!rnm) {
+
+    console.log("📦 RNM FROM PREF:", rnm);
+
+    if (!rnm || rnm === 'null' || rnm === 'undefined') {
+
       rnm = this.generateSixDigitRnm();
+
+      console.log("🆕 NEW RNM CREATED:", rnm);
+
       localStorage.setItem(this.STORAGE_KEY_RNM, rnm);
     }
+
     return rnm;
   }
 
-  private generateSixDigitRnm(): string {
+   private generateSixDigitRnm(): string {
     return (100000 + Math.floor(Math.random() * 900000)).toString();
   }
+
 
   clearCart() {
     localStorage.clear();
