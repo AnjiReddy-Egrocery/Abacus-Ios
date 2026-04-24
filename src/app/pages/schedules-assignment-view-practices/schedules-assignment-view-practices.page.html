@@ -7,7 +7,7 @@
     </div>
 
     <div class="header-title" style="margin-left: 12px; color: white;">
-      View Level Practices 
+       {{ topicName || 'View Level Practices' }}
     </div>
 
   </div>
@@ -22,7 +22,7 @@
     <ion-card *ngFor="let practice of practices">
       <ion-card-header>
         <ion-card-subtitle>Practiced On: {{ practice.startedOn }}</ion-card-subtitle>
-        <ion-card-title>{{ practice.topicName }}</ion-card-title>
+      
       </ion-card-header>
 
       <ion-card-content>

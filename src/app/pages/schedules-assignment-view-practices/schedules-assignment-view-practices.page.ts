@@ -20,7 +20,7 @@ studentId: string='';
   topicId: string = '';
   practices: AllocatedPractice[] = [];
   loading = true;
-
+  topicName: string = '';
   constructor(
     private route: ActivatedRoute,
     private router: Router,
@@ -31,19 +31,26 @@ studentId: string='';
 
   ngOnInit() {
     this.route.queryParams.subscribe(params => {
+      console.log('Query Params:', params);
       this.studentId = params['studentId'];
       this.topicId = params['topicId'];
+
+      console.log('StudentId:', this.studentId);
+       console.log('TopicId:', this.topicId);
       this.loadPractices();
     });
   }
 
   async loadPractices() {
+      this.loading = true;
     try {
       const res = await this.topicService.getAllocatedAssignmentPractices(this.studentId, this.topicId);
-      this.loading = false;
-
-      if (res.errorCode === '200' && res.result?.practicesList?.length) {
+     
+    // ✅ ADD THIS LINE (important)
+     this.topicName = res.result?.topicName || '';
+      if (res.errorCode == '200' && res.result?.practicesList?.length) {
        this.practices = res.result.practicesList.reverse()
+       
       } else if (res.errorCode === '202') {
         this.practices = [];
         const toast = await this.toastCtrl.create({
@@ -71,14 +78,17 @@ studentId: string='';
       });
       toast.present();
       console.error(err);
-    }
+    } finally {
+    // ✅ ALWAYS stop loader here
+    this.loading = false;
+  }
   }
 
   openViewResult(practice: AllocatedPractice) {
     this.router.navigate(['/schedules-assignment-view-practices-result'], {
       queryParams: {
         examRnm: practice.examRnm,
-        topicName: practice.topicName,
+        topicName: this.topicName,
         startedOn: practice.startedOn,
         submitedOn: practice.submitedOn,
         practiceStatus: practice.practiceStatus

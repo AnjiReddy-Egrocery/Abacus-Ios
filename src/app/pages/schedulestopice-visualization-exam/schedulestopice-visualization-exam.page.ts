@@ -24,6 +24,7 @@ studentId:any;
 topicId:any;
 
 practiceId:any;
+examRnm: any;
 topicName:any;
 
 questions:any[] = [];
@@ -84,6 +85,7 @@ console.log("EXAM API:",res);
 if(res.errorCode=='200'){
 
 this.practiceId=res.result.practiceId;
+this.examRnm=res.result.examRnm;
 
 let questionData = res.result.questionsList;
 
@@ -100,7 +102,7 @@ this.questionTimes = new Array(this.questions.length).fill(0);
 this.startTimer();
 //this.startQuestionTimer();
 
- setTimeout(() => {
+setTimeout(() => {
       this.handleQuestionDisplay();
     }, 50);
 
@@ -109,26 +111,21 @@ this.startTimer();
 }
 
 getQuestionImage(question: string): string | null {
+// if (!question) return null;
 
-  // if (!question) return null;
-
-  // const match = question.match(/<img[^>]+src="([^">]+)"/);
-
+//   const match = question.match(/<img[^>]+src="([^">]+)"/);
   return null;
-
 }
-
 getQuestionText(question: string): string {
-
   if (!question) return '';
 
-  const cleaned = question.replace(/<img[^>]+>/g, '');
+  let cleaned = question.replace(/<img[^>]+>/g, '');
+  cleaned = cleaned.replace(/<br\s*\/?>/gi, '\n');
 
   const div = document.createElement('div');
   div.innerHTML = cleaned;
 
   return div.textContent?.replace(/\u00A0/g, '').trim() || '';
-
 }
 
 get currentQuestion(){
@@ -163,7 +160,7 @@ handleQuestionDisplay() {
     this.speakAndDisplayOneByOne();
   }
 
-   async showImageAlert() {
+    async showImageAlert() {
   this.displayText = 'Beads question not available for visualization practice.';
   this.isQuestionActive = true;
   this.isButtonsEnabled = false;
@@ -184,7 +181,7 @@ handleQuestionDisplay() {
   this.goBack();
 }
 
-  focusAnswerInput() {
+focusAnswerInput() {
   setTimeout(() => {
     if (this.answerInput) {
       this.answerInput.setFocus(); // ✅ focus
@@ -263,13 +260,14 @@ handleQuestionDisplay() {
    this.focusAnswerInput();
   this.startQuestionTimer();
   }
- delay(ms: number) {
+
+  delay(ms: number) {
     return new Promise(resolve => setTimeout(resolve, ms));
   }
+
 nextQuestion() {
-    if (this.isQuestionActive) return;
   // Save current answer
-  // Save current answer
+   if (this.isQuestionActive) return;
   this.answers[this.currentIndex] = this.answer;
   this.isAnswered[this.currentIndex] = this.answer.trim() !== '';
 
@@ -277,12 +275,14 @@ nextQuestion() {
   this.questionTimes[this.currentIndex] = this.questionSeconds;
 
   if (this.currentIndex < this.questions.length - 1) {
-     clearInterval(this.questionTimerInterval);
-      this.questionSeconds = 0;
+      clearInterval(this.questionTimerInterval);
+    this.questionSeconds = 0;
      this.updateQuestionTimeUI();
     this.currentIndex++;
     this.answer = this.answers[this.currentIndex] || '';
-    setTimeout(() => {
+   // this.startQuestionTimer();
+
+     setTimeout(() => {
         this.scrollToActiveStep();
         this.handleQuestionDisplay();
       }, 50);
@@ -318,7 +318,7 @@ await alert.present();
   }
 
   async goBack() {
-   this.stopTTS = true; // ✅ STOP LOOP
+  this.stopTTS = true; // ✅ STOP LOOP
 
   try {
     await TextToSpeech.stop();
@@ -335,7 +335,7 @@ await alert.present();
 }
 
 prevQuestion(){
-if (this.isQuestionActive) return;
+ if (this.isQuestionActive) return;
 this.answers[this.currentIndex] = this.answer;
   this.isAnswered[this.currentIndex] = this.answer.trim() !== '';
 
@@ -344,12 +344,12 @@ this.answers[this.currentIndex] = this.answer;
 
   if (this.currentIndex > 0) {
     this.currentIndex--;
-      clearInterval(this.questionTimerInterval);
+    clearInterval(this.questionTimerInterval);
     this.questionSeconds = 0;
      this.updateQuestionTimeUI();
     this.answer = this.answers[this.currentIndex] || '';
-   
-   setTimeout(() => {
+    //this.startQuestionTimer();
+ setTimeout(() => {
         this.scrollToActiveStep();
         this.handleQuestionDisplay();
       }, 50);
@@ -357,7 +357,7 @@ this.answers[this.currentIndex] = this.answer;
 }
 
 goToQuestion(i:number){
-if (this.isQuestionActive) return;
+  if (this.isQuestionActive) return;
 this.answers[this.currentIndex] = this.answer;
 this.isAnswered[this.currentIndex] = this.answer.trim() !== '';
 
@@ -444,14 +444,16 @@ block:'nearest'
 }
 
 onAnswerChange(event:any){
+   if (this.isQuestionActive) return;
 this.answer = event.target.value ? event.target.value.toString() : '';
 }
 
   async submitExam(){
-
+    if (this.isQuestionActive) return;
     this.answers[this.currentIndex] = this.answer;
     this.isAnswered[this.currentIndex] = this.answer.trim() !== '';
     this.questionTimes[this.currentIndex] = this.questionSeconds;
+
 
   const alert = await this.alertController.create({
     header: 'www.abacustrainer.com',
@@ -473,28 +475,52 @@ this.answer = event.target.value ? event.target.value.toString() : '';
 await alert.present();
 }
   async submitExamData() {
-      const questionData = this.questions.map((q, i) => ({
+    const questionData = this.questions.map((q, i) => {
+
+    const given = (this.answers[i] || '').trim();
+    const correct = (q.answer || q.correctAnswer || '').trim();
+
+    return {
       question: q.question,
-      given: this.answers[i] || '',        // ✅ student’s answer
-      answer: q.correctAnswer || q.answer, // API correct answer
-      is_correct: this.answers[i] === (q.correctAnswer || q.answer),
-      time_taken: this.questionTimes[i] || 0,
-      status: this.answers[i] ? 'answered' : 'not_answered',
-    }));
+      given: given,
+      answer: correct,
+      is_currect: given === correct ? 1 : 0, // ✅ EXACT ANDROID KEY
+      time_taken: Math.floor((this.questionTimes[i] || 0)), // seconds
+      status: given ? 1 : 0 // ✅ EXACT ANDROID FORMAT
+    };
+
+  });
+
+  console.log("FINAL SUBMIT DATA:", questionData);
+
   try {
-    const res = await this.examService.submitAllocatedTopicExam(this.practiceId, questionData);
-    console.log('Submission response:', res);
+
+    const res = await this.examService.submitAllocatedTopicExam(
+      this.examRnm,
+      questionData
+    );
+
+
+     console.log("ExamRnm",this.examRnm); 
+     console.log("SUBMIT API RAW RESPONSE:", res);
+    console.log("STATUS:", res?.status);
+    console.log("ERROR CODE:", res?.errorCode);
+    console.log("MESSAGE:", res?.message);
+    console.log("RESULT:", res?.result);
+
+    // ✅ PRETTY JSON (BEST)
+    console.log("FULL RESPONSE JSON:", JSON.stringify(res, null, 2));
 
     if (res.errorCode === '200') {
-      //alert('All Questions are Submitted');
       this.navigateToResultPage(questionData);
     } else {
-      alert('Submission failed: ' + res.message);
+      alert(res.message);
     }
+
   } catch (err) {
-    console.error('Submission error', err);
-    alert('Submission error!');
+    console.error(err);
   }
+
   }
   navigateToResultPage(questionData: any){
 
@@ -508,7 +534,7 @@ await alert.present();
   console.log("questionData:", questionData);
 
   
-    this.router.navigate(['/schedulestopic-visualization-result'], {
+    this.router.navigate(['/schedulestopicexam-result'], {
       state: {
         topicName: this.topicName,
         totalTime: this.totalTime,
@@ -516,7 +542,6 @@ await alert.present();
       }
     });
   }
-
 
 repeatQuestion() {
   // ❌ TTS running unte repeat allow cheyyakudadhu
@@ -535,6 +560,7 @@ repeatQuestion() {
 }
 
 splitQuestion(q: string): string[] {
+
   // 👉 split into numbers and operators separately
   const tokens = q.match(/[+-]?\d+/g) || [];
 
@@ -556,4 +582,3 @@ splitQuestion(q: string): string[] {
   return result;
 }
 }
-
