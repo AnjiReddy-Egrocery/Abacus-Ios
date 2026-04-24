@@ -7,6 +7,7 @@
     <h2>{{ topicName }}</h2> 
   </div>
 
+
   <div class="ion-text-center">
     <ion-button color="primary" fill="solid" (click)="backToDashboard()">Back to Dashboard</ion-button>
   </div>
@@ -29,7 +30,7 @@
  <!-- Pie Chart -->
 <!-- Chart + Legend Side by Side -->
 <div class="chart-legend-wrapper">
-
+<h6 style="align-items: flex-start;"> Performance OverView</h6>
   <div class="chart-box">
     <canvas baseChart
       [data]="pieChartData"
@@ -73,11 +74,13 @@
     <ion-col>Time Spent (s)</ion-col>
   </ion-row>
 
-  <ion-row *ngFor="let q of questionData"
-    [ngClass]="{'correct': q.given && q.given === q.answer, 'incorrect': q.given && q.given !== q.answer}">
+  <ion-row *ngFor="let q of questionData">
     <ion-col [innerHTML]="q.question"></ion-col>
     <ion-col>{{ q.answer }}</ion-col>        <!-- API correct answer -->
-    <ion-col>{{ q.given || '-' }}</ion-col>  <!-- student answer -->
+    <ion-col [ngClass]="{
+      'correct-bg': q.given && q.given === q.answer,
+      'incorrect-bg': q.given && q.given !== q.answer
+    }">{{ q.given || '-' }}</ion-col>  <!-- student answer -->
     <ion-col>{{ formatTime(q.time_taken) }}</ion-col>
   </ion-row>
 </ion-grid>

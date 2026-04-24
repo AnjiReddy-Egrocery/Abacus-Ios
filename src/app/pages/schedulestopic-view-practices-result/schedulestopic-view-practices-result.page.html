@@ -9,6 +9,10 @@
   <div class="level-info ion-text-center">
     <h2>{{ topicName }}</h2> 
   </div>
+ <div class="level-info ion-text-center">
+    <h2>{{ cufrrentDateTime }}</h2> 
+  </div>
+
 
   <!-- Button -->
   <div class="ion-text-center">
@@ -18,9 +22,7 @@
   </div>
 
   <!-- Total Time -->
-  <div class="total-time ion-text-center">
-    <strong>Total Time: {{ totalTime }}</strong>
-  </div>
+  
 
   <!-- Stats -->
   <ion-grid class="stats-grid">
@@ -53,7 +55,7 @@
 
   <!-- Chart + Legend -->
   <div class="chart-legend-wrapper">
-
+ <h6 style="align-items: flex-start;"> Performance OverView</h6>
     <div class="chart-box">
       <canvas baseChart
         [data]="pieChartData"

@@ -7,13 +7,15 @@
     <h2>{{ topicName }}</h2> 
   </div>
 
+   <div class="level-info ion-text-center">
+    <h2>{{ cufrrentDateTime }}</h2> 
+  </div>
+
   <div class="ion-text-center">
     <ion-button color="primary" (click)="backToDashboard()">Back to Dashboard</ion-button>
   </div>
 
-  <div class="total-time ion-text-center">
-    <strong>Total Time: {{ totalTime }}</strong>
-  </div>
+ 
 
   <!-- Stats Cards -->
   <ion-grid class="stats-grid">
@@ -27,6 +29,7 @@
 
 <!-- Chart + Legend Side by Side -->
 <div class="chart-legend-wrapper">
+<h6 style="align-items: flex-start;"> Performance OverView</h6>
 
   <div class="chart-box">
     <canvas baseChart

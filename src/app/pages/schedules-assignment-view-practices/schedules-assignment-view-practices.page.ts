@@ -43,9 +43,7 @@ studentId: string='';
       this.loading = false;
 
       if (res.errorCode === '200' && res.result?.practicesList?.length) {
-       this.practices = res.result.practicesList.sort((a, b) =>
-        new Date(b.startedOn).getTime() - new Date(a.startedOn).getTime()
-      );
+       this.practices = res.result.practicesList.reverse()
       } else if (res.errorCode === '202') {
         this.practices = [];
         const toast = await this.toastCtrl.create({

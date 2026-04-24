@@ -101,17 +101,17 @@ export class SchedulesAssignmentListPage implements OnInit {
 
   }
 
-  //   visualization(topic: any) {
+    visualization(topic: any) {
 
-  //   this.router.navigate(['/schedules-assignment-visualization-exam'], {
-  //     queryParams: {
-  //       topicId: topic.topicId,
-  //       studentId: this.studentId,
-  //       topicName: topic.topicName
-  //     }
-  //   });
+    this.router.navigate(['/schedules-assignment-visualization-exam'], {
+      queryParams: {
+        topicId: topic.topicId,
+        studentId: this.studentId,
+        topicName: topic.topicName
+      }
+    });
 
-  // }
+  }
 
   viewPractices(topic: any) {
 

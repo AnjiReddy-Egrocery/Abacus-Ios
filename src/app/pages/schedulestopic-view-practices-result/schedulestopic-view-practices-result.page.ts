@@ -3,8 +3,9 @@ import { Component, CUSTOM_ELEMENTS_SCHEMA, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { IonicModule, MenuController } from '@ionic/angular';
-import { ChartConfiguration, ChartType } from 'chart.js';
+import { Chart,ChartConfiguration, ChartType, Plugin } from 'chart.js';
 import { BaseChartDirective } from 'ng2-charts';
+import ChartDataLabels from 'chartjs-plugin-datalabels';
 import { ScheduleTopicViewResultResponse } from 'src/app/services/schedule-topic-view-result-response';
 
 interface QuestionItem {
@@ -18,6 +19,7 @@ interface QuestionItem {
   // UI purpose
   is_correct?: boolean;
 }
+
 
 
 // API result interface
@@ -44,6 +46,47 @@ interface AllocatedResultResponse {
   result?: AllocatedResult;
 }
 
+const connectorLinePlugin: Plugin<'doughnut'> = {
+  id: 'connectorLinePlugin',
+
+  afterDatasetsDraw(chart) {
+    const { ctx } = chart;
+    const meta = chart.getDatasetMeta(0);
+
+    (meta.data as any[]).forEach((arc, index) => {
+
+      const props = arc.getProps(
+        ['x', 'y', 'startAngle', 'endAngle', 'outerRadius'],
+        true
+      );
+
+      const angle = (props.startAngle + props.endAngle) / 2;
+
+      const x1 = props.x + Math.cos(angle) * props.outerRadius;
+      const y1 = props.y + Math.sin(angle) * props.outerRadius;
+
+      const x2 = props.x + Math.cos(angle) * (props.outerRadius + 30);
+      const y2 = props.y + Math.sin(angle) * (props.outerRadius + 30);
+
+      ctx.beginPath();
+      ctx.moveTo(x1, y1);
+      ctx.lineTo(x2, y2);
+
+      const dataset = chart.data.datasets[0];
+      const color = (dataset.backgroundColor as string[])[index];
+
+      ctx.strokeStyle = color; // ✅ same as slice
+      ctx.lineWidth = 0.2;
+      ctx.stroke();
+    });
+  }
+};
+
+
+// ✅ REGISTER PLUGINS
+// ✅ REGISTER PLUGINS
+Chart.register(ChartDataLabels);
+
 
 @Component({
   selector: 'app-schedulestopic-view-practices-result',
@@ -57,7 +100,7 @@ export class SchedulestopicViewPracticesResultPage implements OnInit {
 topicName: string = '';
   totalTime: string = '';
   questionData: QuestionItem[] = [];
-
+cufrrentDateTime: string = '';  
   totalQuestions = 0;
   attemptedCount = 0;
   correctCount = 0;
@@ -65,7 +108,7 @@ topicName: string = '';
 
   pieChartType: ChartType = 'doughnut';
 
-  pieChartData: ChartConfiguration<'doughnut'>['data'] = {
+ pieChartData: ChartConfiguration<'doughnut'>['data'] = {
     labels: ['Attempted', 'Not Attempted', 'Correct', 'Incorrect'],
     datasets: [
       {
@@ -75,11 +118,34 @@ topicName: string = '';
     ],
   };
 
-  pieChartOptions: ChartConfiguration<'doughnut'>['options'] = {
+ pieChartOptions: ChartConfiguration<'doughnut'>['options'] = {
     responsive: true,
-    plugins: {
-      legend: { display: false },
+    layout: {
+      padding: 0
     },
+    plugins: {
+      legend: {
+        display: false
+      },
+      datalabels: {
+         display: true,
+          color: '#000',
+          anchor: 'center',
+          align: 'center',
+    
+
+       formatter: (value: any) => {
+          const total = this.totalQuestions;
+          return total ? Math.round((value / total) * 100) + '%' : '0%';
+        },
+
+
+        font: {
+          size: 12,
+          weight: 'bold'
+        }
+      }
+    }
   };
 
   constructor(
@@ -90,6 +156,7 @@ topicName: string = '';
   ) {}
 
   ngOnInit() {
+    this.cufrrentDateTime = this.getCurrentDateTime();
     this.route.queryParams.subscribe(params => {
       const examRnm = params['examRnm'];
       this.topicName = params['topicName'];
@@ -210,5 +277,23 @@ topicName: string = '';
   }
 
   return 'incorrect';         // red
+}
+
+ getCurrentDateTime(): string {
+  const now = new Date();
+
+  const options: Intl.DateTimeFormatOptions = {
+    month: 'short',
+    day: '2-digit',
+    year: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
+    hour12: true
+  };
+
+  const formatted = now.toLocaleString('en-US', options);
+
+
+  return formatted.replace(',', ' |');
 }
 }
